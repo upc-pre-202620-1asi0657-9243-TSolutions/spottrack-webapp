@@ -1,0 +1,48 @@
+@startuml BC-07_Routines
+
+package "routines.presentation.views" {
+  interface Alternative {
+    + nameKey: string
+    + free: boolean
+  }
+
+  interface Routine {
+    + id: string
+    + exerciseKey: string
+    + machineKey: string
+    + tagKey: string
+    + filterGroup: FilterGroup
+    + level: Level
+    + machineStatus: MachineStatus
+    + alternatives?: Alternative[]
+  }
+
+  class RoutinesComponent <<component>> {
+    - snackBar: MatSnackBar
+    - translate: TranslateService
+    + searchQuery: Signal<string>
+    + activeFilter: Signal<FilterGroup>
+    + showModal: Signal<boolean>
+    + routineName: string
+    + selectedObjective: string | null
+    + selectedLevel: Level
+    + routineNotes: string
+    + objectives: string[]
+    + levels: Level[]
+    + filters: FilterGroup[]
+    + routines: Signal<Routine[]>
+    + filteredRoutines: Signal<Routine[]>
+    + setFilter(filter: FilterGroup): void
+    + onSearch(event: Event): void
+    + getStatusDotColor(status: MachineStatus): string
+    + hasAlternatives(routine: Routine): boolean
+    + openModal(): void
+    + closeModal(): void
+    + createRoutine(): void
+  }
+}
+
+RoutinesComponent --> Routine : manages
+Routine --> Alternative : has
+
+@enduml

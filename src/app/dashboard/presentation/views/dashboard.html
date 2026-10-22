@@ -1,0 +1,265 @@
+<div class="dash-page">
+
+  <div class="kpi-row">
+
+    <div class="kpi-card" [appContextMenu]="kpiMenu">
+      <div class="kpi-card__icon kpi-card__icon--green">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+      <div class="kpi-card__body">
+        <p class="kpi-card__label">{{ 'dashboardAdmin.kpis.operationalEquipment' | translate }}</p>
+        <p class="kpi-card__value">{{ store.operationalCount() }}</p>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-card__icon kpi-card__icon--amber">
+        <mat-icon>build</mat-icon>
+      </div>
+      <div class="kpi-card__body">
+        <p class="kpi-card__label">{{ 'dashboardAdmin.kpis.maintenance' | translate }}</p>
+        <p class="kpi-card__value kpi-card__value--amber">{{ store.maintenanceCount() }}</p>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-card__icon kpi-card__icon--red">
+        <mat-icon>cancel</mat-icon>
+      </div>
+      <div class="kpi-card__body">
+        <p class="kpi-card__label">{{ 'dashboardAdmin.kpis.outOfService' | translate }}</p>
+        <p class="kpi-card__value kpi-card__value--red">{{ store.outOfOrderCount() }}</p>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-card__icon kpi-card__icon--blue">
+        <mat-icon>confirmation_number</mat-icon>
+      </div>
+      <div class="kpi-card__body">
+        <p class="kpi-card__label">{{ 'dashboardAdmin.kpis.totalTickets' | translate }}</p>
+        <p class="kpi-card__value">{{ store.totalTickets() }}</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="charts-row">
+
+    <div class="chart-card">
+      <h2 class="chart-card__title">{{ 'dashboardAdmin.charts.peakCapacityHours' | translate }}</h2>
+
+      @if (store.loading()) {
+        <div class="chart-state">
+          <mat-icon class="spin">sync</mat-icon>
+        </div>
+      } @else if (store.hourlyCapacityData().length === 0) {
+        <div class="chart-state">
+          <mat-icon>show_chart</mat-icon>
+          <p>{{ 'dashboardAdmin.charts.noCapacityData' | translate }}</p>
+        </div>
+      } @else {
+        <div class="line-chart-wrap">
+          <svg
+            [attr.viewBox]="'0 0 ' + SVG_W + ' ' + (SVG_H + 24)"
+            preserveAspectRatio="none"
+            class="line-svg"
+          >
+            <defs>
+              <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%"   stop-color="#f5bc36" stop-opacity="0.25"/>
+                <stop offset="100%" stop-color="#f5bc36" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+
+            @for (tick of yTicks; track tick.label) {
+              <line
+                [attr.x1]="0"
+                [attr.y1]="tick.y"
+                [attr.x2]="SVG_W"
+                [attr.y2]="tick.y"
+                class="grid-line"
+              />
+              <text
+                [attr.x]="-6"
+                [attr.y]="tick.y + 4"
+                class="axis-label axis-label--y"
+                text-anchor="end"
+              >{{ tick.label }}</text>
+            }
+
+            <path [attr.d]="store.areaPath()" fill="url(#areaGrad)" class="area-fill"/>
+
+            <polyline [attr.points]="store.polylinePoints()" class="line-stroke"/>
+
+            @for (pt of store.linePoints(); track pt.hour) {
+              <circle
+                [attr.cx]="pt.x"
+                [attr.cy]="pt.y"
+                r="5"
+                class="data-dot"
+              />
+            }
+
+            @for (pt of store.linePoints(); track pt.hour; let i = $index) {
+              @if (i % 2 === 0 || i === store.linePoints().length - 1) {
+                <text
+                  [attr.x]="pt.x"
+                  [attr.y]="SVG_H + 18"
+                  class="axis-label"
+                  text-anchor="middle"
+                >{{ pt.hour }}</text>
+              }
+            }
+          </svg>
+        </div>
+      }
+    </div>
+
+    <div class="chart-card">
+      <h2 class="chart-card__title">{{ 'dashboardAdmin.charts.machineUsage' | translate }}</h2>
+
+      @if (store.loading()) {
+        <div class="chart-state">
+          <mat-icon class="spin">sync</mat-icon>
+        </div>
+      } @else if (store.machineUsageBars().length === 0) {
+        <div class="chart-state">
+          <mat-icon>bar_chart</mat-icon>
+          <p>{{ 'dashboardAdmin.charts.noUsageData' | translate }}</p>
+        </div>
+      } @else {
+        <div class="bar-chart-wrap">
+          <div class="bar-chart">
+            @for (bar of store.machineUsageBars(); track bar.name) {
+              <div class="bar-col">
+                <span class="bar-col__hours">{{ bar.hours }}h</span>
+                <div class="bar-col__track">
+                  <div
+                    class="bar-col__fill"
+                    [style.height.%]="(bar.hours / store.maxBarHours()) * 100"
+                  ></div>
+                </div>
+                <span class="bar-col__label">{{ barShortName(bar.name) }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+  </div>
+
+  <div class="bottom-row">
+
+    <div class="table-card">
+      <h2 class="chart-card__title">{{ 'dashboardAdmin.table.title' | translate }}</h2>
+
+      <table class="data-table">
+        <thead>
+        <tr>
+          <th>{{ 'dashboardAdmin.table.headers.machineId' | translate }}</th>
+          <th>{{ 'dashboardAdmin.table.headers.location' | translate }}</th>
+          <th>{{ 'dashboardAdmin.table.headers.hours' | translate }}</th>
+          <th>{{ 'dashboardAdmin.table.headers.roi' | translate }}</th>
+        </tr>
+        </thead>
+        <tbody>
+          @if (store.loading()) {
+            <tr>
+              <td colspan="4" class="table-state">
+                <mat-icon class="spin">sync</mat-icon>
+              </td>
+            </tr>
+          } @else if (store.underutilizedEquipment().length === 0) {
+            <tr>
+              <td colspan="4" class="table-state table-state--empty">
+                {{ 'dashboardAdmin.table.empty' | translate }}
+              </td>
+            </tr>
+          } @else {
+            @for (row of store.underutilizedEquipment(); track row.machineId) {
+              <tr [appContextMenu]="tableMenu">
+                <td class="cell--id">{{ row.machineId }}</td>
+                <td>{{ row.location }}</td>
+                <td>{{ row.hours }}</td>
+                <td>
+                  <span class="roi-badge roi-badge--{{ roiClass(row.roi) }}">
+                    {{ row.roi }}
+                  </span>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="kanban-card">
+      <h2 class="chart-card__title">{{ 'dashboardAdmin.maintenanceCenter.title' | translate }}</h2>
+
+      <div class="kanban-board">
+
+        <div class="kanban-col">
+          <p class="kanban-col__header">{{ 'dashboardAdmin.maintenanceCenter.columns.todo' | translate }}</p>
+          <div class="kanban-col__items">
+            @if (store.pendingTickets().length === 0) {
+              <p class="kanban-empty">{{ 'dashboardAdmin.maintenanceCenter.empty' | translate }}</p>
+            }
+            @for (ticket of store.pendingTickets(); track ticket.id) {
+              <div class="kanban-item kanban-item--open" [appContextMenu]="kanbanMenu">
+                <div class="kanban-item__top">
+                  <mat-icon class="ki-icon ki-icon--warn">warning</mat-icon>
+                  <span class="kanban-item__id">{{ store.ticketLabel(ticket.id) }}</span>
+                </div>
+                <p class="kanban-item__name">{{ store.equipmentName(ticket.equipmentId) }}</p>
+                <p class="kanban-item__desc">{{ ticketDesc(ticket.type) }}</p>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="kanban-col">
+          <p class="kanban-col__header">{{ 'dashboardAdmin.maintenanceCenter.columns.inProgress' | translate }}</p>
+          <div class="kanban-col__items">
+            @if (store.inProgressTickets().length === 0) {
+              <p class="kanban-empty">{{ 'dashboardAdmin.maintenanceCenter.empty' | translate }}</p>
+            }
+            @for (ticket of store.inProgressTickets(); track ticket.id) {
+              <div class="kanban-item kanban-item--progress" [appContextMenu]="kanbanMenu">
+                <div class="kanban-item__top">
+                  <mat-icon class="ki-icon ki-icon--blue">build</mat-icon>
+                  <span class="kanban-item__id">{{ store.ticketLabel(ticket.id) }}</span>
+                </div>
+                <p class="kanban-item__name">{{ store.equipmentName(ticket.equipmentId) }}</p>
+                <p class="kanban-item__desc">{{ ticketDesc(ticket.type) }}</p>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="kanban-col">
+          <p class="kanban-col__header">{{ 'dashboardAdmin.maintenanceCenter.columns.completed' | translate }}</p>
+          <div class="kanban-col__items">
+            @if (store.resolvedTickets().length === 0) {
+              <p class="kanban-empty">{{ 'dashboardAdmin.maintenanceCenter.empty' | translate }}</p>
+            }
+            @for (ticket of store.resolvedTickets(); track ticket.id) {
+              <div class="kanban-item kanban-item--resolved" [appContextMenu]="kanbanMenu">
+                <div class="kanban-item__top">
+                  <mat-icon class="ki-icon ki-icon--green">task_alt</mat-icon>
+                  <span class="kanban-item__id">{{ store.ticketLabel(ticket.id) }}</span>
+                </div>
+                <p class="kanban-item__name">{{ store.equipmentName(ticket.equipmentId) }}</p>
+                <p class="kanban-item__desc">{{ ticketDesc(ticket.type) }}</p>
+              </div>
+            }
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>

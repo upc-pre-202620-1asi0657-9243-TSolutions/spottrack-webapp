@@ -1,0 +1,684 @@
+// Variables
+$bg-main: #141414;
+$bg-card: #1f1f1f;
+$bg-item: #2a2a2a;
+$text-primary: #ffffff;
+$text-secondary: #a3a3a3;
+$accent-gold: #f5b041;
+$success-green: #2ecc71;
+$border-color: #333333;
+$border-radius: 12px;
+$font-family: 'Inter', 'Segoe UI', sans-serif;
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: $bg-main;
+  color: $text-primary;
+  font-family: $font-family;
+}
+
+.profile-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+// Header
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+
+  .back-btn {
+    background: transparent;
+    border: none;
+    color: $text-primary;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  h1 {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+}
+
+// Cards
+.card {
+  background-color: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.text-muted {
+  color: $text-secondary;
+  font-size: 0.875rem;
+}
+
+// User Card Specific
+.user-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .avatar {
+      background-color: $accent-gold;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .user-details {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      align-items: flex-start;
+
+      h2 {
+        font-size: 1rem;
+      }
+
+      .badge {
+        font-size: 0.75rem;
+        padding: 0.15rem 0.5rem;
+        border-radius: 4px;
+        margin-top: 0.25rem;
+
+        &.badge-outline {
+          border: 1px solid $accent-gold;
+          color: $accent-gold;
+        }
+      }
+    }
+  }
+
+}
+
+// Nuevas variables sugeridas al principio del archivo
+$accent-cyan: #0ab5c3;
+$danger-color: #ef4444;
+
+// Estilos para Formularios y Tarjetas de Configuración
+.form-card, .settings-card {
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+
+    h3 {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+  }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  label {
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .help-text {
+    font-size: 0.75rem;
+    color: $text-secondary;
+    margin-top: 0.25rem;
+  }
+}
+
+.form-control {
+  background-color: $bg-main;
+  border: 1px solid $border-color;
+  color: $text-primary;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-family: inherit;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.2s;
+
+  &:focus {
+    border-color: $text-secondary;
+  }
+}
+
+// Contenedor del Select para el icono personalizado
+.select-wrapper {
+  position: relative;
+
+  select {
+    appearance: none;
+    cursor: pointer;
+  }
+
+  .select-icon {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: $text-secondary;
+  }
+}
+
+// Lista de Notificaciones (Checkboxes Personalizados)
+.notification-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+
+  .notification-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .notification-text {
+      h4 {
+        font-size: 0.875rem;
+        margin-bottom: 0.25rem;
+      }
+      p {
+        font-size: 0.75rem;
+        color: $text-secondary;
+      }
+    }
+  }
+}
+
+.custom-checkbox {
+  position: relative;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+
+    &:checked ~ .checkmark {
+      background-color: $accent-cyan;
+      border-color: $accent-cyan;
+
+      svg {
+        display: block;
+      }
+    }
+  }
+
+  .checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: transparent;
+    border: 2px solid $text-secondary;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+
+    svg {
+      display: none;
+      width: 14px;
+      height: 14px;
+      color: $bg-main;
+    }
+  }
+}
+
+// Acciones de Seguridad
+.security-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+// Botones Generales
+.btn-outline {
+  background-color: transparent;
+  border: 1px solid $border-color;
+  color: $text-primary;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  &:hover {
+    background-color: $bg-item;
+  }
+
+  &.btn-danger {
+    color: $danger-color;
+    &:hover {
+      background-color: rgba($danger-color, 0.1);
+      border-color: rgba($danger-color, 0.5);
+    }
+  }
+}
+
+.btn-primary {
+  width: 100%;
+  background-color: $accent-gold;
+  color: $bg-main;
+  border: none;
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  margin-top: 1rem;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+// ── Card header (shared for admin sections) ───────────────────────────────────
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+
+  mat-icon { color: $accent-gold; font-size: 20px; width: 20px; height: 20px; }
+
+  h3 { font-size: 1rem; font-weight: 600; }
+}
+
+// ── Admin identity card ───────────────────────────────────────────────────────
+.admin-identity-card {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.admin-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba($accent-gold, 0.12);
+  border: 2px solid rgba($accent-gold, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  mat-icon {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+    color: $accent-gold;
+  }
+}
+
+.admin-identity-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.admin-email {
+  font-size: 0.875rem;
+  color: $text-secondary;
+}
+
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.7rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  width: fit-content;
+
+  &--admin {
+    background: rgba($accent-gold, 0.12);
+    border: 1px solid rgba($accent-gold, 0.4);
+    color: $accent-gold;
+  }
+}
+
+.admin-since {
+  text-align: right;
+  flex-shrink: 0;
+
+  &__label { font-size: 0.75rem; color: $text-secondary; margin-bottom: 2px; }
+  &__value { font-size: 0.9rem; font-weight: 600; color: $text-primary; }
+}
+
+// ── Section heading ───────────────────────────────────────────────────────────
+.section-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+
+  &__icon { color: $accent-gold; font-size: 22px; width: 22px; height: 22px; }
+  &__title { font-size: 1.1rem; font-weight: 700; color: $text-primary; }
+}
+
+// ── Gym stat cards grid ───────────────────────────────────────────────────────
+.gym-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.gym-stat-card {
+  background: $bg-card;
+  border: 1px solid $border-color;
+  border-radius: $border-radius;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-left: 3px solid transparent;
+
+  &__icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    mat-icon { font-size: 22px; width: 22px; height: 22px; }
+  }
+
+  &__body { display: flex; flex-direction: column; gap: 3px; }
+
+  &__value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1;
+    color: $text-primary;
+  }
+
+  &__label { font-size: 0.78rem; color: $text-secondary; }
+
+  &--blue  { border-left-color: #4fc3f7; .gym-stat-card__icon { background: rgba(79,195,247,.12); mat-icon { color: #4fc3f7; } } .gym-stat-card__value { color: #4fc3f7; } }
+  &--yellow { border-left-color: $accent-gold; .gym-stat-card__icon { background: rgba($accent-gold,.12); mat-icon { color: $accent-gold; } } .gym-stat-card__value { color: $accent-gold; } }
+  &--green { border-left-color: $success-green; .gym-stat-card__icon { background: rgba($success-green,.12); mat-icon { color: $success-green; } } .gym-stat-card__value { color: $success-green; } }
+  &--teal  { border-left-color: #00bcd4; .gym-stat-card__icon { background: rgba(0,188,212,.12); mat-icon { color: #00bcd4; } } .gym-stat-card__value { color: #00bcd4; } }
+  &--link  { text-decoration: none; cursor: pointer; transition: background 0.15s, transform 0.1s; &:hover { background: lighten($bg-card, 4%); transform: translateY(-1px); } }
+}
+
+// ── Admin plan card ───────────────────────────────────────────────────────────
+.admin-plan-card {
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+  }
+
+  &__title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  &__icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: rgba($accent-gold, 0.12);
+    border: 1px solid rgba($accent-gold, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    mat-icon { font-size: 24px; width: 24px; height: 24px; color: $accent-gold; }
+  }
+
+  &__name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: $text-primary;
+  }
+}
+
+.plan-badge {
+  padding: 0.25rem 0.85rem;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  background: rgba($success-green, 0.12);
+  border: 1px solid rgba($success-green, 0.4);
+  color: $success-green;
+  white-space: nowrap;
+}
+
+.admin-plan-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 1.25rem;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #d1d5db;
+  }
+
+  &__check {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: $success-green;
+    flex-shrink: 0;
+  }
+}
+
+.admin-plan-renewal {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: $bg-item;
+  padding: 0.85rem 1rem;
+  border-radius: 8px;
+
+  mat-icon { color: $text-secondary; font-size: 20px; width: 20px; height: 20px; flex-shrink: 0; }
+
+  &__label { font-size: 0.875rem; font-weight: 500; color: $text-primary; margin-bottom: 2px; }
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────────
+@media (max-width: 640px) {
+  .profile-container { padding: 1rem; }
+
+  .gym-stats { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+
+  .user-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .admin-identity-card { gap: 1rem; }
+  .admin-since { text-align: left; }
+}
+
+@media (max-width: 480px) {
+  .profile-container { padding: 0.75rem; }
+
+  .gym-stats { grid-template-columns: 1fr; gap: 0.6rem; }
+
+  .gym-stat-card__value { font-size: 1.4rem; }
+
+  .admin-identity-card { flex-direction: column; align-items: flex-start; }
+
+  .admin-plan-card__header { flex-direction: column; align-items: flex-start; }
+}
+
+/* ── Inline change-password form ──────────────────────────────────────────── */
+.change-pwd-form {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid $border-color;
+}
+
+.cpwd-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cpwd-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  font-size: 0.875rem;
+  mat-icon { font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; }
+}
+
+.cpwd-success {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+  font-size: 0.875rem;
+  mat-icon { font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; }
+}
+
+// ── Plan badge status variants ────────────────────────────────────────────────
+.plan-badge--suspended {
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.4);
+  color: #f59e0b;
+}
+
+.plan-badge--cancelled {
+  background: rgba($danger-color, 0.12);
+  border-color: rgba($danger-color, 0.4);
+  color: $danger-color;
+}
+
+// ── Plan notice (cancelAtPeriodEnd / pendingDowngrade) ────────────────────────
+.plan-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 0.65rem 0.9rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  margin-bottom: 0.75rem;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; }
+
+  &--warn {
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    color: #f59e0b;
+  }
+
+  &--info {
+    background: rgba($text-secondary, 0.08);
+    border: 1px solid rgba($text-secondary, 0.2);
+    color: $text-secondary;
+  }
+}
+
+// ── Membership manage button ──────────────────────────────────────────────────
+.membership-manage-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 1rem;
+  padding: 0.6rem 1rem;
+  background: rgba($accent-gold, 0.1);
+  border: 1px solid rgba($accent-gold, 0.35);
+  color: $accent-gold;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+
+  &:hover { background: rgba($accent-gold, 0.18); }
+}
+
+// ── Plan loading skeleton ─────────────────────────────────────────────────────
+.plan-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  &__line {
+    height: 14px;
+    border-radius: 4px;
+    background: rgba($text-secondary, 0.15);
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+
+    &--wide  { width: 120px; }
+    &--short { width: 80px; height: 12px; }
+  }
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}

@@ -1,0 +1,50 @@
+.client-home {
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 32px;
+}
+
+.client-home__card {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: 480px;
+}
+
+.client-home__icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  color: #f5bc36;
+}
+
+.client-home__title {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.client-home__subtitle {
+  margin: 0;
+  font-size: 1rem;
+  color: #9ca3af;
+  line-height: 1.6;
+}
+
+.client-home__badge {
+  display: inline-block;
+  padding: 4px 14px;
+  background: rgba(245, 188, 54, 0.15);
+  color: #f5bc36;
+  border: 1px solid #f5bc36;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}

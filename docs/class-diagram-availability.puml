@@ -1,0 +1,39 @@
+@startuml BC-06_Booking
+
+package "booking.presentation.views" {
+  interface Booking {
+    + id: string
+    + machineKey: string
+    + zoneKey: string
+    + icon: string
+    + timerSeconds: number
+  }
+
+  interface AvailableMachine {
+    + key: string
+    + zoneKey: string
+    + icon: string
+  }
+
+  class BookingComponent <<component>> {
+    + bookings: Signal<Booking[]>
+    + availableMachines: AvailableMachine[]
+    + durations: number[]
+    + showModal: boolean
+    + selectedMachine: string | null
+    + selectedDuration: number
+    + ngOnInit(): void
+    + ngOnDestroy(): void
+    + isExpired(b: Booking): boolean
+    + cancelBooking(id: string): void
+    + formatTimer(seconds: number): string
+    + openModal(): void
+    + closeModal(): void
+    + createBooking(): void
+  }
+}
+
+BookingComponent --> Booking : manages
+BookingComponent --> AvailableMachine : references
+
+@enduml

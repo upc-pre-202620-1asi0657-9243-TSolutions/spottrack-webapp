@@ -1,0 +1,101 @@
+<div class="wl-page">
+
+  <!-- Page Header -->
+  <div class="wl-header">
+    <div class="wl-header__text">
+      <h1 class="wl-header__title">{{ 'whitelist.title' | translate }}</h1>
+      <p class="wl-header__subtitle">{{ 'whitelist.subtitle' | translate }}</p>
+    </div>
+    @if (adminGymStore.primaryGym()) {
+      <span class="wl-gym-badge">
+        <mat-icon>fitness_center</mat-icon>
+        {{ adminGymStore.primaryGym()!.name }}
+      </span>
+    }
+  </div>
+
+  <!-- Gym load error -->
+  @if (adminGymStore.error()) {
+    <div class="wl-banner wl-banner--error">
+      <mat-icon>error_outline</mat-icon>
+      {{ adminGymStore.error()! | translate }}
+    </div>
+  }
+
+  @if (adminGymStore.primaryGym()) {
+
+    <!-- Add DNI form -->
+    <div class="wl-add-card">
+      <p class="wl-add-card__label">{{ 'whitelist.addDni' | translate }}</p>
+      <div class="wl-add-row">
+        <input
+          class="wl-add-input"
+          type="text"
+          maxlength="8"
+          [placeholder]="'whitelist.dniPlaceholder' | translate"
+          [(ngModel)]="dniInput"
+          (input)="onDniInputChange()"
+          (keydown.enter)="addDni()"
+        />
+        <button class="btn-add" (click)="addDni()">
+          <mat-icon>add</mat-icon>
+          {{ 'whitelist.addBtn' | translate }}
+        </button>
+      </div>
+      @if (dniFormatError()) {
+        <span class="wl-field-error">{{ dniFormatError()! | translate }}</span>
+      }
+      @if (whitelistStore.addError()) {
+        <span class="wl-field-error">{{ whitelistStore.addError()! | translate }}</span>
+      }
+    </div>
+
+    <!-- Whitelist load error -->
+    @if (whitelistStore.error()) {
+      <div class="wl-banner wl-banner--error">
+        <mat-icon>error_outline</mat-icon>
+        {{ whitelistStore.error()! | translate }}
+      </div>
+    }
+
+    <!-- Whitelist content -->
+    @if (whitelistStore.loading()) {
+      <div class="wl-loading">
+        <mat-icon class="wl-spinner">autorenew</mat-icon>
+      </div>
+    } @else if (!whitelistStore.error()) {
+      @if (whitelistStore.whitelist().length === 0) {
+        <div class="wl-empty">
+          <mat-icon>group_off</mat-icon>
+          <p>{{ 'whitelist.empty' | translate }}</p>
+        </div>
+      } @else {
+        <div class="wl-card">
+          <div class="wl-card__header">
+            <span class="wl-count">
+              {{ 'whitelist.dniCount' | translate: { count: whitelistStore.whitelist().length } }}
+            </span>
+          </div>
+          <ul class="wl-list">
+            @for (entry of whitelistStore.whitelist(); track entry.dni) {
+              <li class="wl-item">
+                <div class="wl-item__info">
+                  <mat-icon class="wl-item__icon">person</mat-icon>
+                  <span class="wl-item__dni">{{ entry.dni }}</span>
+                </div>
+                <button
+                  class="btn-remove"
+                  [attr.aria-label]="'whitelist.removeDni' | translate"
+                  (click)="removeDni(entry.dni)">
+                  <mat-icon>remove_circle_outline</mat-icon>
+                </button>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+    }
+
+  }
+
+</div>

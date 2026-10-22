@@ -1,0 +1,322 @@
+<div class="iot-page">
+
+  <!-- Header -->
+  <div class="iot-header">
+    <div class="iot-header__text">
+      <h1 class="iot-header__title">{{ 'iot.title' | translate }}</h1>
+      <p class="iot-header__subtitle">{{ 'iot.subtitle' | translate }}</p>
+    </div>
+    <button class="btn-refresh" (click)="onRefresh()">
+      <mat-icon>refresh</mat-icon>
+      {{ 'iot.actions.refresh' | translate }}
+    </button>
+  </div>
+
+  <!-- Quick actions -->
+  <div class="quick-actions">
+    <a class="quick-action" routerLink="/monitoring/sensors">
+      <mat-icon>sensors</mat-icon>
+      <span>{{ 'iot.quickActions.registerSensors' | translate }}</span>
+      <mat-icon class="quick-action__arrow">chevron_right</mat-icon>
+    </a>
+    <a class="quick-action" routerLink="/monitoring/anomalies/report">
+      <mat-icon>warning_amber</mat-icon>
+      <span>{{ 'iot.quickActions.reportAnomaly' | translate }}</span>
+      <mat-icon class="quick-action__arrow">chevron_right</mat-icon>
+    </a>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="iot-stats">
+    <div class="stat-card stat-card--online">
+      <mat-icon>sensors</mat-icon>
+      <div class="stat-card__info">
+        <span class="stat-card__value">{{ totalSensorCount() }}</span>
+        <span class="stat-card__label">{{ 'iot.stats.totalSensors' | translate }}</span>
+      </div>
+    </div>
+    <div class="stat-card stat-card--battery">
+      <mat-icon>videocam</mat-icon>
+      <div class="stat-card__info">
+        <span class="stat-card__value">{{ cameraSensorCount() }}</span>
+        <span class="stat-card__label">{{ 'iot.stats.cameraSensors' | translate }}</span>
+      </div>
+    </div>
+    <div class="stat-card stat-card--offline">
+      <mat-icon>sensors</mat-icon>
+      <div class="stat-card__info">
+        <span class="stat-card__value">{{ motionSensorCount() }}</span>
+        <span class="stat-card__label">{{ 'iot.stats.motionSensors' | translate }}</span>
+      </div>
+    </div>
+    <div class="stat-card stat-card--no-alerts">
+      <mat-icon>play_circle</mat-icon>
+      <div class="stat-card__info">
+        <span class="stat-card__value">{{ activeSessionCount() }}</span>
+        <span class="stat-card__label">{{ 'iot.stats.activeSessions' | translate }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search + Filter -->
+  <div class="iot-filters">
+    <div class="iot-search">
+      <mat-icon class="iot-search__icon">search</mat-icon>
+      <input
+        class="iot-search__input"
+        type="text"
+        [placeholder]="'iot.search' | translate"
+        [ngModel]="searchQuery()"
+        (ngModelChange)="onSearchChange($event)"
+      />
+    </div>
+    <mat-form-field appearance="outline" class="iot-filter-select">
+      <mat-label>{{ 'iot.filter.type' | translate }}</mat-label>
+      <mat-select [ngModel]="typeFilter()" (ngModelChange)="onTypeFilterChange($event)">
+        <mat-option value="">{{ 'iot.filter.allTypes' | translate }}</mat-option>
+        <mat-option value="camera">{{ 'iot.filter.camera' | translate }}</mat-option>
+        <mat-option value="motion">{{ 'iot.filter.motion' | translate }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <!-- Sensor Table -->
+  <div class="iot-card">
+    <div class="iot-card__header">
+      <h2 class="iot-card__title">{{ 'iot.table.title' | translate }} ({{ totalSensorCount() }})</h2>
+    </div>
+
+    @if (isLoading()) {
+      <div class="iot-loading">
+        <mat-spinner diameter="48"></mat-spinner>
+      </div>
+    }
+
+    <table mat-table [dataSource]="filteredSensors()" class="iot-table">
+
+      <ng-container matColumnDef="sensorId">
+        <th mat-header-cell *matHeaderCellDef>{{ 'iot.table.id' | translate }}</th>
+        <td mat-cell *matCellDef="let row"><span class="cell-id">{{ row.sensorId }}</span></td>
+      </ng-container>
+
+      <ng-container matColumnDef="type">
+        <th mat-header-cell *matHeaderCellDef>{{ 'iot.table.type' | translate }}</th>
+        <td mat-cell *matCellDef="let row" class="cell-secondary">
+          <mat-icon>{{ row.type === 'camera' ? 'videocam' : 'sensors' }}</mat-icon>
+          {{ 'iot.filter.' + row.type | translate }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="equipment">
+        <th mat-header-cell *matHeaderCellDef>{{ 'iot.table.equipment' | translate }}</th>
+        <td mat-cell *matCellDef="let row" class="cell-secondary">{{ row.equipmentName ?? row.equipmentId }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>{{ 'iot.table.status' | translate }}</th>
+        <td mat-cell *matCellDef="let row">
+          @if (row.equipmentStatus) {
+            <span class="badge" [ngClass]="'badge--status-' + row.equipmentStatus.toLowerCase()">
+              {{ ('equipment.status.' + row.equipmentStatus | translate) }}
+            </span>
+          }
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="connectivity">
+        <th mat-header-cell *matHeaderCellDef>{{ 'iot.table.connectivity' | translate }}</th>
+        <td mat-cell *matCellDef="let row">
+          @if (row.type === 'motion') {
+            <span class="badge" [ngClass]="row.online ? 'badge--online' : 'badge--offline'">
+              <mat-icon>{{ row.online ? 'wifi' : 'wifi_off' }}</mat-icon>
+              {{ (row.online ? 'iot.table.online' : 'iot.table.offline') | translate }}
+            </span>
+          }
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="registeredAt">
+        <th mat-header-cell *matHeaderCellDef>{{ 'iot.table.registeredAt' | translate }}</th>
+        <td mat-cell *matCellDef="let row" class="cell-secondary">{{ row.registeredAt | date:'short' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>{{ 'iot.table.actions' | translate }}</th>
+        <td mat-cell *matCellDef="let row">
+          <button type="button" class="btn-simulate-motion" [disabled]="isLoading()" (click)="simulateMotion(row)">
+            <mat-icon>directions_run</mat-icon>
+            {{ 'iot.table.simulateMotion' | translate }}
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="iot-row"></tr>
+
+      <tr class="mat-mdc-no-data-row" *matNoDataRow>
+        <td [colSpan]="displayedColumns.length" class="no-data-cell">
+          <mat-icon>sensors_off</mat-icon>
+          <span>{{ 'iot.table.noData' | translate }}</span>
+        </td>
+      </tr>
+
+    </table>
+  </div>
+
+  <!-- Session monitoring: usage detection, inactivity, session time calculation -->
+  <div class="session-monitoring">
+    <h2 class="section-title">{{ 'monitoring.sessionTracking.title' | translate }}</h2>
+
+    @if (sessionError()) {
+      <div class="error-state">
+        <mat-icon>error_outline</mat-icon>
+        <p>{{ sessionError() }}</p>
+      </div>
+    }
+
+    <!-- Tracked sessions list (created automatically: on reservation, or on the
+         first sensor motion detected for equipment with no reservation) -->
+    <div class="section-card">
+      <div class="section-header">
+        <mat-icon>list</mat-icon>
+        <h2>{{ 'monitoring.sessionTracking.trackedTitle' | translate }}</h2>
+        <span class="count-badge">{{ trackedSessions().length }}</span>
+        <button type="button" class="btn-refresh-inline" [disabled]="sessionLoading()" (click)="sessionStore.loadSessionTrackers()">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
+      @if (trackedSessions().length === 0) {
+        <p class="empty-msg">{{ 'monitoring.sessionTracking.noneTracked' | translate }}</p>
+      } @else {
+        <div class="tracked-list">
+          @for (s of trackedSessions(); track s.sessionTrackerId) {
+            <button type="button" class="tracked-row"
+                    [class.tracked-row--selected]="s.sessionTrackerId === selectedSessionId()"
+                    (click)="selectSession(s.sessionTrackerId)">
+              <div class="tracked-row__main">
+                <span class="tracked-row__equipment">{{ s.equipmentName ?? s.equipmentId }}</span>
+                <span class="mono tracked-row__id">{{ s.sessionTrackerId }}</span>
+              </div>
+              <span class="tag">{{ s.clientName ? s.clientName : (s.reservationId ? ('monitoring.sessionTracking.reservationId' | translate) + ': ' + s.reservationId : ('monitoring.sessionTracking.walkUp' | translate)) }}</span>
+              @if (s.sessionIsActive) {
+                <span class="status-badge status-badge--active">
+                  <mat-icon>play_circle</mat-icon>
+                  {{ 'monitoring.sessionTracking.active' | translate }}
+                </span>
+              }
+              @if (s.sessionIsInactive) {
+                <span class="status-badge status-badge--inactive">
+                  <mat-icon>pause_circle</mat-icon>
+                  {{ 'monitoring.sessionTracking.inactive' | translate }}
+                </span>
+              }
+            </button>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Session actions -->
+    @if (selectedSession(); as session) {
+      <div class="section-card">
+        <div class="section-header">
+          <mat-icon>tune</mat-icon>
+          <h2>{{ 'monitoring.sessionTracking.actionsTitle' | translate }}: {{ session.sessionTrackerId }}</h2>
+        </div>
+
+        <div class="status-strip">
+          <div class="status-cell">
+            <span class="status-cell__label">{{ 'monitoring.sessionTracking.equipment' | translate }}</span>
+            <span>{{ session.equipmentName ?? session.equipmentId }}</span>
+          </div>
+          <div class="status-cell">
+            <span class="status-cell__label">{{ 'monitoring.sessionTracking.client' | translate }}</span>
+            <span>{{ session.clientName ?? ('monitoring.sessionTracking.walkUp' | translate) }}</span>
+          </div>
+          <div class="status-cell">
+            <span class="status-cell__label">{{ 'monitoring.sessionTracking.reservationId' | translate }}</span>
+            <span class="mono">{{ session.reservationId ?? ('monitoring.sessionTracking.walkUp' | translate) }}</span>
+          </div>
+          <div class="status-cell">
+            <span class="status-cell__label">{{ 'monitoring.sessionTracking.continuousActivity' | translate }}</span>
+            <span class="mono">{{ session.continouosActivitiy }}</span>
+          </div>
+          <div class="status-cell">
+            <span class="status-cell__label">{{ 'monitoring.sessionTracking.status' | translate }}</span>
+            @if (session.sessionIsActive) {
+              <span class="status-badge status-badge--active">
+                <mat-icon>play_circle</mat-icon>{{ 'monitoring.sessionTracking.active' | translate }}
+              </span>
+            } @else {
+              <span class="status-badge status-badge--inactive">
+                <mat-icon>stop_circle</mat-icon>{{ 'monitoring.sessionTracking.ended' | translate }}
+              </span>
+            }
+          </div>
+          <div class="status-cell">
+            <span class="status-cell__label">{{ 'monitoring.sessionTracking.usage' | translate }}</span>
+            @if (session.sessionIsInactive) {
+              <span class="status-badge status-badge--warning">
+                <mat-icon>warning_amber</mat-icon>{{ 'monitoring.sessionTracking.inactive' | translate }}
+              </span>
+            } @else {
+              <span class="status-badge status-badge--ok">
+                <mat-icon>check_circle</mat-icon>{{ 'monitoring.sessionTracking.inUse' | translate }}
+              </span>
+            }
+          </div>
+        </div>
+
+        <div class="action-groups">
+
+          <div class="action-group">
+            <span class="action-group__label">{{ 'monitoring.sessionTracking.lifecycle' | translate }}</span>
+            <div class="action-buttons">
+              <button type="button" class="btn-action" [disabled]="sessionLoading()" (click)="verifySession()">
+                <mat-icon>fact_check</mat-icon>{{ 'monitoring.sessionTracking.verify' | translate }}
+              </button>
+              <button type="button" class="btn-action btn-action--danger" [disabled]="sessionLoading()" (click)="endSession()">
+                <mat-icon>stop_circle</mat-icon>{{ 'monitoring.sessionTracking.end' | translate }}
+              </button>
+              <button type="button" class="btn-action btn-action--accent" [disabled]="sessionLoading()" (click)="calculateSessionTime()">
+                <mat-icon>timer</mat-icon>{{ 'monitoring.sessionTracking.calculateTime' | translate }}
+              </button>
+            </div>
+            @if (lastCalculatedTime(); as calculated) {
+              <p class="calculated-time-hint">
+                <mat-icon>info</mat-icon>
+                {{ 'monitoring.sessionTracking.calculatedTimeResult' | translate }}: <span class="mono">{{ calculated }}</span>
+              </p>
+            }
+          </div>
+
+          <div class="action-group">
+            <span class="action-group__label">{{ 'monitoring.sessionTracking.cameraMotion' | translate }}</span>
+            <div class="action-buttons">
+              <button type="button" class="btn-action btn-action--ok" [disabled]="sessionLoading()" (click)="captureCameraMotion(true)">
+                <mat-icon>videocam</mat-icon>{{ 'monitoring.sessionTracking.motionDetected' | translate }}
+              </button>
+              <button type="button" class="btn-action" [disabled]="sessionLoading()" (click)="captureCameraMotion(false)">
+                <mat-icon>videocam_off</mat-icon>{{ 'monitoring.sessionTracking.noMotion' | translate }}
+              </button>
+            </div>
+          </div>
+
+          <div class="action-group">
+            <span class="action-group__label">{{ 'monitoring.sessionTracking.motionSensor' | translate }}</span>
+            <div class="action-buttons">
+              <button type="button" class="btn-action btn-action--ok" [disabled]="sessionLoading()" (click)="captureMotionReading(true)">
+                <mat-icon>sensors</mat-icon>{{ 'monitoring.sessionTracking.motionDetected' | translate }}
+              </button>
+              <button type="button" class="btn-action" [disabled]="sessionLoading()" (click)="captureMotionReading(false)">
+                <mat-icon>sensors_off</mat-icon>{{ 'monitoring.sessionTracking.noMotion' | translate }}
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    }
+  </div>
+
+</div>

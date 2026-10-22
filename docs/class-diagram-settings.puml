@@ -1,0 +1,96 @@
+@startuml BC-11_Configuration
+
+package "configuration.domain.model" {
+  interface MaintenanceThreshold {
+    + criticalUsageHours: number
+    + maxInactiveTime: number
+    + peakHoursBuffer: number
+  }
+
+  interface IoTConfiguration {
+    + lowBatteryThreshold: number
+    + pingInterval: number
+    + offlineGracePeriod: number
+  }
+
+  interface FinancialConfiguration {
+    + costPerHourDowntime: number
+    + monthlyMembership: number
+    + systemCurrency: string
+  }
+
+  interface Configuration {
+    + maintenanceThresholds: MaintenanceThreshold
+    + iotConfig: IoTConfiguration
+    + financialConfig: FinancialConfiguration
+    + notificationEmail: string
+    + enabledAlertTypes: AlertType[]
+    + intelligentScheduling: boolean
+    + lastUpdated?: Date
+  }
+
+  interface ConfigurationSection {
+    + id: string
+    + title: string
+    + description: string
+    + icon: string
+    + config: object
+  }
+
+  enum AlertType {
+    PREVENTIVE_MAINTENANCE
+    OFFLINE_SENSORS
+    LOW_BATTERY
+    WEEKLY_REPORTS
+  }
+}
+
+package "configuration.application" {
+  class ConfigurationStore {
+    - maintenanceThresholds: Signal<MaintenanceThreshold>
+    - iotConfig: Signal<IoTConfiguration>
+    - financialConfig: Signal<FinancialConfiguration>
+    - notificationEmail: Signal<string>
+    - enabledAlertTypes: Signal<AlertType[]>
+    - intelligentScheduling: Signal<boolean>
+    - loading: Signal<boolean>
+    - isDirty: Signal<boolean>
+    + maintenanceThresholds$: Signal<MaintenanceThreshold>
+    + iotConfig$: Signal<IoTConfiguration>
+    + financialConfig$: Signal<FinancialConfiguration>
+    + notificationEmail$: Signal<string>
+    + enabledAlertTypes$: Signal<AlertType[]>
+    + intelligentScheduling$: Signal<boolean>
+    + loading$: Signal<boolean>
+    + isDirty$: Signal<boolean>
+    + configuration: Signal<Configuration>
+    + updateMaintenanceThresholds(thresholds: Partial<MaintenanceThreshold>): void
+    + updateIoTConfig(config: Partial<IoTConfiguration>): void
+    + updateFinancialConfig(config: Partial<FinancialConfiguration>): void
+    + setNotificationEmail(email: string): void
+    + setEnabledAlertTypes(types: AlertType[]): void
+    + setIntelligentScheduling(enabled: boolean): void
+    + saveConfiguration(): Promise<void>
+    + reloadConfiguration(): Promise<void>
+    + resetChanges(): void
+  }
+}
+
+package "configuration.presentation.views" {
+  class ConfigurationComponent <<component>> {
+    - store: ConfigurationStore
+    + onSave(): void
+    + onReload(): void
+    + onReset(): void
+  }
+}
+
+ConfigurationStore --> Configuration : produces
+Configuration --> MaintenanceThreshold : contains
+Configuration --> IoTConfiguration : contains
+Configuration --> FinancialConfiguration : contains
+Configuration --> AlertType : uses
+ConfigurationComponent --> ConfigurationStore : uses
+ConfigurationComponent --> ConfigurationSection : renders
+
+@enduml

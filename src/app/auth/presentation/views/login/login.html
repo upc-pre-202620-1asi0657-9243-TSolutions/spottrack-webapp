@@ -1,0 +1,92 @@
+<div class="login-page">
+  <div class="login-card">
+
+    <!-- Brand -->
+    <div class="login-header">
+      <div class="login-brand">
+        <img class="login-brand__logo" src="MOscuroSinBG.svg" alt="SpotTrack logo">
+        <span class="login-brand__name">SpotTrack</span>
+      </div>
+      <h1 class="login-title">{{ 'auth.login.title' | translate }}</h1>
+      <p class="login-subtitle">{{ 'auth.login.subtitle' | translate }}</p>
+    </div>
+
+    <!-- Form -->
+    <div class="login-body">
+
+      <!-- Email -->
+      <div class="form-field">
+        <label class="form-field__label">{{ 'auth.login.emailLabel' | translate }}</label>
+        <input
+          class="form-field__input"
+          type="email"
+          [(ngModel)]="email"
+          (ngModelChange)="onInputChange()"
+          [placeholder]="'auth.login.emailPlaceholder' | translate"
+          autocomplete="email"
+        />
+      </div>
+
+      <!-- Password -->
+      <div class="form-field">
+        <label class="form-field__label">{{ 'auth.login.passwordLabel' | translate }}</label>
+        <div class="form-field__password-wrap">
+          <input
+            class="form-field__input"
+            [type]="showPass ? 'text' : 'password'"
+            [(ngModel)]="password"
+            (ngModelChange)="onInputChange()"
+            [placeholder]="'auth.login.passwordPlaceholder' | translate"
+            autocomplete="current-password"
+          />
+          <button class="form-field__eye" type="button" (click)="showPass = !showPass">
+            <mat-icon>{{ showPass ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Error banner -->
+      @if (loginError()) {
+        <div class="error-banner">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ loginError()! | translate }}</span>
+        </div>
+      }
+
+      <!-- Submit -->
+      <button class="btn-submit" type="button" (click)="onSubmit()">
+        {{ 'auth.login.submitBtn' | translate }}
+      </button>
+
+      <!-- Forgot password link -->
+      <p class="register-hint">
+        <a class="register-hint__link" routerLink="/forgot-password">{{ 'auth.login.forgotPassword' | translate }}</a>
+      </p>
+
+      <!-- Register link -->
+      <p class="register-hint">
+        {{ 'auth.login.noAccount' | translate }}
+        <a class="register-hint__link" href="javascript:void(0)" (click)="goToRegister()">{{ 'auth.login.register' | translate }}</a>
+      </p>
+
+      <!-- Demo credentials -->
+      <div class="demo-section">
+        <p class="demo-section__label">{{ 'auth.login.demoTitle' | translate }}</p>
+        <button class="demo-card" type="button" (click)="fillAdmin()">
+          <span class="demo-card__email">Admin: admin&#64;spottrack.com</span>
+          <span class="demo-card__pass">{{ 'auth.login.demoPassword' | translate }}</span>
+        </button>
+        <button class="demo-card" type="button" (click)="fillClient()">
+          <span class="demo-card__email">Cliente: cliente&#64;email.com</span>
+          <span class="demo-card__pass">{{ 'auth.login.demoPassword' | translate }}</span>
+        </button>
+      </div>
+
+      <!-- Language switcher -->
+      <div class="lang-row">
+        <app-language-switcher></app-language-switcher>
+      </div>
+
+    </div>
+  </div>
+</div>

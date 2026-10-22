@@ -1,0 +1,316 @@
+<div class="register-page">
+  <div class="register-card">
+
+    <!-- Brand -->
+    <div class="register-header">
+      <div class="register-brand">
+        <img class="register-brand__logo" src="MOscuroSinBG.svg" alt="SpotTrack logo">
+        <span class="register-brand__name">SpotTrack</span>
+      </div>
+      <h1 class="register-title">{{ 'auth.register.title' | translate }}</h1>
+      <p class="register-subtitle">{{ 'auth.register.subtitle' | translate }}</p>
+    </div>
+
+    <!-- Form -->
+    <form class="register-body" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+      <!-- Account type -->
+      <div class="account-type">
+        <label class="account-type__label">{{ 'auth.register.accountTypeLabel' | translate }}</label>
+        <div class="account-type__options">
+          <button
+            type="button"
+            class="account-type__card"
+            [class.account-type__card--active]="accountType === 'client'"
+            (click)="selectAccountType('client')"
+          >
+            <mat-icon>person</mat-icon>
+            <span class="account-type__title">{{ 'auth.register.clientOption' | translate }}</span>
+            <span class="account-type__desc">{{ 'auth.register.clientOptionDesc' | translate }}</span>
+          </button>
+          <button
+            type="button"
+            class="account-type__card"
+            [class.account-type__card--active]="accountType === 'business'"
+            (click)="selectAccountType('business')"
+          >
+            <mat-icon>storefront</mat-icon>
+            <span class="account-type__title">{{ 'auth.register.businessOption' | translate }}</span>
+            <span class="account-type__desc">{{ 'auth.register.businessOptionDesc' | translate }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- First / Last name -->
+      <div class="form-row">
+        <div class="form-field">
+          <label class="form-field__label">{{ 'auth.register.firstNameLabel' | translate }}</label>
+          <input
+            class="form-field__input"
+            type="text"
+            formControlName="firstName"
+            (input)="onInputChange()"
+            [placeholder]="'auth.register.firstNamePlaceholder' | translate"
+            autocomplete="given-name"
+          />
+          @if (f.firstName.invalid && f.firstName.touched) {
+            <span class="field-error">{{ 'auth.register.error.required' | translate }}</span>
+          }
+        </div>
+        <div class="form-field">
+          <label class="form-field__label">{{ 'auth.register.lastNameLabel' | translate }}</label>
+          <input
+            class="form-field__input"
+            type="text"
+            formControlName="lastName"
+            (input)="onInputChange()"
+            [placeholder]="'auth.register.lastNamePlaceholder' | translate"
+            autocomplete="family-name"
+          />
+          @if (f.lastName.invalid && f.lastName.touched) {
+            <span class="field-error">{{ 'auth.register.error.required' | translate }}</span>
+          }
+        </div>
+      </div>
+
+      <!-- DNI / Phone -->
+      <div class="form-row">
+        <div class="form-field">
+          <label class="form-field__label">{{ 'auth.register.dniLabel' | translate }}</label>
+          <input
+            class="form-field__input"
+            type="text"
+            inputmode="numeric"
+            formControlName="dni"
+            (input)="onInputChange()"
+            [placeholder]="'auth.register.dniPlaceholder' | translate"
+          />
+          @if (f.dni.invalid && f.dni.touched) {
+            <span class="field-error">{{ 'auth.register.error.dni' | translate }}</span>
+          }
+        </div>
+        <div class="form-field">
+          <label class="form-field__label">{{ 'auth.register.phoneLabel' | translate }}</label>
+          <input
+            class="form-field__input"
+            type="tel"
+            inputmode="numeric"
+            formControlName="phoneNumber"
+            (input)="onInputChange()"
+            [placeholder]="'auth.register.phonePlaceholder' | translate"
+            autocomplete="tel"
+          />
+          @if (f.phoneNumber.invalid && f.phoneNumber.touched) {
+            <span class="field-error">{{ 'auth.register.error.phone' | translate }}</span>
+          }
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="form-field">
+        <label class="form-field__label">{{ 'auth.register.emailLabel' | translate }}</label>
+        <input
+          class="form-field__input"
+          type="email"
+          formControlName="email"
+          (input)="onInputChange()"
+          [placeholder]="'auth.register.emailPlaceholder' | translate"
+          autocomplete="email"
+        />
+        @if (f.email.invalid && f.email.touched) {
+          <span class="field-error">{{ 'auth.register.error.email' | translate }}</span>
+        }
+      </div>
+
+      <!-- Company info (business accounts only) -->
+      @if (isBusiness) {
+        <div class="company-section">
+          <label class="company-section__label">{{ 'auth.register.companySectionLabel' | translate }}</label>
+
+          <div class="form-field">
+            <label class="form-field__label">{{ 'auth.register.companyNameLabel' | translate }}</label>
+            <input
+              class="form-field__input"
+              type="text"
+              formControlName="companyName"
+              (input)="onInputChange()"
+              [placeholder]="'auth.register.companyNamePlaceholder' | translate"
+            />
+            @if (f.companyName.invalid && f.companyName.touched) {
+              <span class="field-error">{{ 'auth.register.error.required' | translate }}</span>
+            }
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label class="form-field__label">{{ 'auth.register.rucLabel' | translate }}</label>
+              <input
+                class="form-field__input"
+                type="text"
+                inputmode="numeric"
+                formControlName="ruc"
+                (input)="onInputChange()"
+                [placeholder]="'auth.register.rucPlaceholder' | translate"
+              />
+              @if (f.ruc.invalid && f.ruc.touched) {
+                <span class="field-error">{{ 'auth.register.error.ruc' | translate }}</span>
+              }
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">{{ 'auth.register.legalTypeLabel' | translate }}</label>
+              <select class="form-field__input" formControlName="legalType" (change)="onInputChange()">
+                <option value="" disabled>{{ 'auth.register.legalTypePlaceholder' | translate }}</option>
+                @for (type of legalTypes; track type) {
+                  <option [value]="type">{{ type }}</option>
+                }
+              </select>
+              @if (f.legalType.invalid && f.legalType.touched) {
+                <span class="field-error">{{ 'auth.register.error.required' | translate }}</span>
+              }
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label class="form-field__label">{{ 'auth.register.companyPhoneLabel' | translate }}</label>
+              <input
+                class="form-field__input"
+                type="tel"
+                inputmode="numeric"
+                formControlName="companyPhone"
+                (input)="onInputChange()"
+                [placeholder]="'auth.register.companyPhonePlaceholder' | translate"
+              />
+              @if (f.companyPhone.invalid && f.companyPhone.touched) {
+                <span class="field-error">{{ 'auth.register.error.phone' | translate }}</span>
+              }
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">{{ 'auth.register.companyEmailLabel' | translate }}</label>
+              <input
+                class="form-field__input"
+                type="email"
+                formControlName="companyEmail"
+                (input)="onInputChange()"
+                [placeholder]="'auth.register.companyEmailPlaceholder' | translate"
+              />
+              @if (f.companyEmail.invalid && f.companyEmail.touched) {
+                <span class="field-error">{{ 'auth.register.error.email' | translate }}</span>
+              }
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label class="form-field__label">{{ 'auth.register.streetLabel' | translate }}</label>
+            <input
+              class="form-field__input"
+              type="text"
+              formControlName="street"
+              (input)="onInputChange()"
+              [placeholder]="'auth.register.streetPlaceholder' | translate"
+            />
+            @if (f.street.invalid && f.street.touched) {
+              <span class="field-error">{{ 'auth.register.error.required' | translate }}</span>
+            }
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label class="form-field__label">{{ 'auth.register.cityLabel' | translate }}</label>
+              <input
+                class="form-field__input"
+                type="text"
+                formControlName="city"
+                (input)="onInputChange()"
+                [placeholder]="'auth.register.cityPlaceholder' | translate"
+              />
+              @if (f.city.invalid && f.city.touched) {
+                <span class="field-error">{{ 'auth.register.error.required' | translate }}</span>
+              }
+            </div>
+            <div class="form-field">
+              <label class="form-field__label">{{ 'auth.register.districtLabel' | translate }}</label>
+              <input
+                class="form-field__input"
+                type="text"
+                formControlName="district"
+                (input)="onInputChange()"
+                [placeholder]="'auth.register.districtPlaceholder' | translate"
+              />
+              @if (f.district.invalid && f.district.touched) {
+                <span class="field-error">{{ 'auth.register.error.required' | translate }}</span>
+              }
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Password -->
+      <div class="form-field">
+        <label class="form-field__label">{{ 'auth.register.passwordLabel' | translate }}</label>
+        <div class="form-field__password-wrap">
+          <input
+            class="form-field__input"
+            [type]="showPass ? 'text' : 'password'"
+            formControlName="password"
+            (input)="onInputChange()"
+            [placeholder]="'auth.register.passwordPlaceholder' | translate"
+            autocomplete="new-password"
+          />
+          <button class="form-field__eye" type="button" (click)="showPass = !showPass">
+            <mat-icon>{{ showPass ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </div>
+        @if (f.password.invalid && f.password.touched) {
+          <span class="field-error">{{ 'auth.register.error.password' | translate }}</span>
+        }
+      </div>
+
+      <!-- Confirm password -->
+      <div class="form-field">
+        <label class="form-field__label">{{ 'auth.register.confirmPasswordLabel' | translate }}</label>
+        <div class="form-field__password-wrap">
+          <input
+            class="form-field__input"
+            [type]="showConfirmPass ? 'text' : 'password'"
+            formControlName="confirmPassword"
+            (input)="onInputChange()"
+            [placeholder]="'auth.register.confirmPasswordPlaceholder' | translate"
+            autocomplete="new-password"
+          />
+          <button class="form-field__eye" type="button" (click)="showConfirmPass = !showConfirmPass">
+            <mat-icon>{{ showConfirmPass ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+        </div>
+        @if (form.errors?.['passwordMismatch'] && f.confirmPassword.touched) {
+          <span class="field-error">{{ 'auth.register.error.passwordMismatch' | translate }}</span>
+        }
+      </div>
+
+      <!-- Error banner -->
+      @if (registerError()) {
+        <div class="error-banner">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ registerError()! | translate }}</span>
+        </div>
+      }
+
+      <!-- Submit -->
+      <button class="btn-submit" type="submit" [disabled]="registerLoading()">
+        {{ (registerLoading() ? 'auth.register.submitting' : 'auth.register.submitBtn') | translate }}
+      </button>
+
+      <!-- Login link -->
+      <p class="register-hint">
+        {{ 'auth.register.haveAccount' | translate }}
+        <a class="register-hint__link" href="javascript:void(0)" (click)="goToLogin()">{{ 'auth.register.loginLink' | translate }}</a>
+      </p>
+
+      <!-- Language switcher -->
+      <div class="lang-row">
+        <app-language-switcher></app-language-switcher>
+      </div>
+
+    </form>
+  </div>
+</div>

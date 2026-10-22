@@ -1,0 +1,239 @@
+.gym-switcher {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gym-switcher__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.gym-switcher__header-icon {
+  color: #4fc3f7;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.gym-switcher__title {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0;
+  color: #f0f0f0;
+}
+
+.gym-switcher__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gym-switcher__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: border-color 0.2s;
+
+  &--active {
+    border-color: #4fc3f7;
+    background: rgba(79, 195, 247, 0.08);
+  }
+}
+
+.gym-switcher__item-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gym-switcher__item-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: #aaa;
+
+  .gym-switcher__item--active & {
+    color: #4fc3f7;
+  }
+}
+
+.gym-switcher__item-name {
+  font-size: 14px;
+  color: #e0e0e0;
+}
+
+.gym-switcher__badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: rgba(79, 195, 247, 0.18);
+  color: #4fc3f7;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.gym-switcher__btn-switch {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 4px 8px;
+  cursor: pointer;
+  color: #aaa;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s, border-color 0.2s;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    color: #4fc3f7;
+    border-color: #4fc3f7;
+  }
+}
+
+.gym-switcher__btn-add {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  color: #aaa;
+  font-size: 14px;
+  width: 100%;
+  transition: color 0.2s, border-color 0.2s;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    color: #4fc3f7;
+    border-color: #4fc3f7;
+  }
+}
+
+.gym-switcher__add-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.gym-switcher__add-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.gym-switcher__add-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #ccc;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.gym-switcher__btn-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #888;
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  border-radius: 4px;
+  transition: color 0.2s;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover { color: #e0e0e0; }
+}
+
+.gym-switcher__btn-join {
+  font-size: 13px;
+  font-weight: 500;
+  padding: 5px 14px;
+  border-radius: 8px;
+  background: #4fc3f7;
+  color: #000;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
+  min-width: 60px;
+  justify-content: center;
+
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+  &:hover:not(:disabled) { opacity: 0.85; }
+}
+
+.gym-switcher__error {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(229, 57, 53, 0.12);
+  border: 1px solid rgba(229, 57, 53, 0.3);
+  color: #ef9a9a;
+  font-size: 13px;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+}
+
+.gym-switcher__loading {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.gym-switcher__spinner {
+  animation: spin 1s linear infinite;
+  color: #4fc3f7;
+}
+
+.gym-switcher__empty {
+  font-size: 13px;
+  color: #888;
+  margin: 0;
+  text-align: center;
+  padding: 8px 0;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}

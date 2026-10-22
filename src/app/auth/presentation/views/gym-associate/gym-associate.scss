@@ -1,0 +1,164 @@
+.gym-associate {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 40px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+// ── Header ────────────────────────────────────────────────────────────────────
+.gym-associate__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.gym-associate__icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  color: #f5bc36;
+}
+
+.gym-associate__title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.gym-associate__subtitle {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #9ca3af;
+}
+
+// ── Error banner ──────────────────────────────────────────────────────────────
+.gym-associate__error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: 8px;
+  color: #ef4444;
+  font-size: 0.875rem;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; }
+}
+
+// ── Loading ───────────────────────────────────────────────────────────────────
+.gym-associate__loading {
+  display: flex;
+  justify-content: center;
+  padding: 32px 0;
+}
+
+.gym-associate__spinner {
+  color: #f5bc36;
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+// ── Empty state ───────────────────────────────────────────────────────────────
+.gym-associate__empty {
+  margin: 0;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 0.9rem;
+  padding: 32px 0;
+}
+
+// ── Gym list ──────────────────────────────────────────────────────────────────
+.gym-associate__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gym-associate__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 10px;
+}
+
+.gym-associate__item-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.gym-associate__item-icon {
+  color: #9ca3af;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.gym-associate__item-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// ── Joined badge ──────────────────────────────────────────────────────────────
+.gym-associate__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+
+  mat-icon { font-size: 14px; width: 14px; height: 14px; }
+
+  &--joined {
+    background: rgba(34, 197, 94, 0.12);
+    color: #22c55e;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+  }
+}
+
+// ── Join button ───────────────────────────────────────────────────────────────
+.gym-associate__btn-join {
+  padding: 6px 18px;
+  background: #f5bc36;
+  color: #000;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: opacity 0.15s;
+
+  &:hover:not(:disabled) { opacity: 0.85; }
+  &:disabled { opacity: 0.45; cursor: not-allowed; }
+}

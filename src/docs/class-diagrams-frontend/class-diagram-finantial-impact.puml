@@ -1,0 +1,165 @@
+@startuml BC-10_FinancialImpact
+
+package "financial-impact.domain.model" {
+  class AnalyticsStat {
+    - _id: number
+    - _equipmentId: number
+    - _equipmentName: string
+    - _zoneId: number
+    - _totalUsageHours: number
+    - _usageCountDaily: number
+    - _estimatedWearLevel: number
+    - _status: string
+    + id: number
+    + equipmentId: number
+    + equipmentName: string
+    + zoneId: number
+    + totalUsageHours: number
+    + usageCountDaily: number
+    + estimatedWearLevel: number
+    + status: string
+  }
+}
+
+package "financial-impact.application" {
+  interface BranchStats {
+    + totalHours: number
+    + hoursChange: number
+    + occupancy: number
+    + occupancyChange: number
+    + peak: number
+    + peakTime: string
+    + inactive: number
+    + inactiveChange: number
+  }
+
+  interface WeekDay {
+    + day: string
+    + usage: number
+    + prevUsage: number
+  }
+
+  interface HourlyPoint {
+    + hour: string
+    + occupancy: number
+  }
+
+  interface MachineTypeSegment {
+    + label: string
+    + pct: number
+    + color: string
+  }
+
+  interface RelocationRec {
+    + machine: string
+    + fromBranch: string
+    + fromOccupancy: number
+    + toBranch: string
+    + toOccupancy: number
+    + savingsPerMonth: number
+    + priority: "LOW" | "MEDIUM" | "HIGH"
+  }
+
+  class FinancialImpactStore {
+    - _usageStats: Signal<EquipmentUsageStatResource[]>
+    - _equipments: Signal<EquipmentResource[]>
+    - _loading: Signal<boolean>
+    - _error: Signal<string | null>
+    + loading: Signal<boolean>
+    + error: Signal<string | null>
+    + selectedBranch: Signal<"all" | "main">
+    + stats: Signal<BranchStats>
+    + weeklyData: Signal<WeekDay[]>
+    + maxCapacity: Signal<number>
+    + hourlyData: Signal<HourlyPoint[]>
+    + machineTypes: Signal<MachineTypeSegment[]>
+    + relocationData: Signal<RelocationRec[]>
+    + linePoints: Signal<object[]>
+    + polylinePoints: Signal<string>
+    + areaPath: Signal<string>
+    + pieGradient(): string
+    - load(): void
+  }
+}
+
+package "financial-impact.infrastructure" {
+  interface EquipmentUsageStatResource {
+    + id: number
+    + equipment_id: number
+    + total_usage_hours: number
+    + usage_count_daily: number
+    + estimated_wear_level: number
+  }
+
+  interface EquipmentResource {
+    + id: number
+    + zone_id: number
+    + name: string
+    + brand: string
+    + model: string
+    + purchase_price: number
+    + status: string
+  }
+
+  class FinancialApi {
+    - statsUrl: string
+    - equipUrl: string
+    + getUsageStats(): Observable<EquipmentUsageStatResource[]>
+    + getEquipments(): Observable<EquipmentResource[]>
+  }
+}
+
+package "financial-impact.presentation.views" {
+  interface InactivityRow {
+    + machine: string
+    + hours: number
+    + ratePerHour: number
+    + total: number
+  }
+
+  interface MaintenanceType {
+    + label: string
+    + amount: number
+    + pct: number
+    + color: string
+  }
+
+  interface RoiMonth {
+    + month: string
+    + cumulative: number
+  }
+
+  class FinancialImpactComponent <<component>> {
+    + stats: object
+    + inactivityLoss: InactivityRow[]
+    + maintenanceTypes: MaintenanceType[]
+    + simMachineCost: Signal<number>
+    + simUnmetDemand: Signal<number>
+    + simRevenuePerUser: Signal<number>
+    + totalMonthlyLoss: Signal<number>
+    + roiProjectionData: Signal<RoiMonth[]>
+    + roiYAxisLabels: string[]
+    + maintenancePieGradient(): string
+    + roiZeroLinePct(): string
+    + roiBarHeight(value: number): string
+    + calculateRoi(): void
+    + exportCsv(): void
+    + generatePdf(): void
+  }
+}
+
+FinancialImpactStore --> FinancialApi : uses
+FinancialImpactStore --> EquipmentUsageStatResource : reads
+FinancialImpactStore --> EquipmentResource : reads
+FinancialImpactStore ..> AnalyticsStat : aggregates
+FinancialImpactStore --> BranchStats : computes
+FinancialImpactStore --> WeekDay : computes
+FinancialImpactStore --> HourlyPoint : computes
+FinancialImpactStore --> MachineTypeSegment : computes
+FinancialImpactStore --> RelocationRec : computes
+FinancialImpactComponent --> FinancialImpactStore : uses
+FinancialImpactComponent --> InactivityRow : displays
+FinancialImpactComponent --> MaintenanceType : displays
+FinancialImpactComponent --> RoiMonth : computes
+
+@enduml

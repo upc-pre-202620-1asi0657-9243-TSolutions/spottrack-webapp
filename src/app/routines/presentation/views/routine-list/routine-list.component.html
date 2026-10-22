@@ -1,0 +1,118 @@
+<div class="routines-container">
+
+  <!-- HEADER -->
+  <header class="routines-header">
+    <div class="header-info">
+      <h1 class="routines-title">{{ 'routines.title' | translate }}</h1>
+      <p class="routines-subtitle">{{ 'routines.subtitle' | translate }}</p>
+    </div>
+    <button class="new-routine-btn" (click)="openModal()">
+      <mat-icon>add</mat-icon>
+      {{ 'routines.newRoutine' | translate }}
+    </button>
+  </header>
+
+  <!-- SEARCH BAR -->
+  <div class="search-bar">
+    <mat-icon class="search-icon">search</mat-icon>
+    <input
+      type="text"
+      class="search-input"
+      [placeholder]="'routines.search' | translate"
+      [value]="searchQuery()"
+      (input)="onSearch($event)"
+    />
+  </div>
+
+  @if (error()) {
+    <div class="error-banner">{{ error() }}</div>
+  }
+
+  @if (loading()) {
+    <div class="loading-state">
+      <mat-icon class="spin">refresh</mat-icon>
+      {{ 'routines.loading' | translate }}
+    </div>
+  }
+
+  <!-- ROUTINE CARDS LIST -->
+  <div class="routines-list">
+    @for (routine of routines(); track routine.id) {
+      <mat-card class="routine-card" [appContextMenu]="routineMenu(routine)" [routerLink]="['/routines', routine.id]">
+        <mat-card-content class="card-content">
+
+          <!-- Card Top: Routine Name + Active Session Badge -->
+          <div class="card-top">
+            <div class="exercise-info">
+              <h3 class="exercise-name">{{ routine.routineName }}</h3>
+              <p class="machine-name">{{ routine.exerciseBlockCount }} {{ 'routines.card.exercises' | translate }}</p>
+            </div>
+            @if (hasActiveSession(routine)) {
+              <span class="tag tag--level">{{ 'routines.session.activeLabel' | translate }}</span>
+            }
+          </div>
+
+        </mat-card-content>
+      </mat-card>
+    }
+
+    @if (!loading() && routines().length === 0) {
+      <p class="empty-msg">{{ 'routines.empty' | translate }}</p>
+    }
+  </div>
+
+</div>
+
+<!-- NUEVA RUTINA MODAL -->
+@if (showModal()) {
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title">{{ 'routines.modal.title' | translate }}</h2>
+          <p class="modal-subtitle">{{ 'routines.modal.subtitle' | translate }}</p>
+        </div>
+        <button class="modal-close-btn" (click)="closeModal()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <!-- Form Body -->
+      <div class="modal-body">
+
+        <!-- Nombre de la Rutina -->
+        <div class="field-group">
+          <label class="field-label">
+            {{ 'routines.modal.name' | translate }}
+            <span class="required">*</span>
+          </label>
+          <input
+            type="text"
+            class="field-input"
+            [placeholder]="'routines.modal.namePlaceholder' | translate"
+            [(ngModel)]="routineName"
+          />
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="closeModal()">
+          {{ 'routines.modal.cancel' | translate }}
+        </button>
+        <button
+          class="btn-create"
+          [disabled]="!routineName.trim()"
+          (click)="createRoutine()"
+        >
+          {{ 'routines.modal.create' | translate }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+}
+

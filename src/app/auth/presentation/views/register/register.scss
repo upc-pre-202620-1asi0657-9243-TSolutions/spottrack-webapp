@@ -1,0 +1,265 @@
+.register-page {
+  min-height: 100vh;
+  background: #121212;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+// ── Card ─────────────────────────────────────────────────────────────────────
+.register-card {
+  width: 100%;
+  max-width: 520px;
+  background: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+// ── Header ───────────────────────────────────────────────────────────────────
+.register-header {
+  padding: 24px 24px 20px;
+  border-bottom: 1px solid #2a2a2a;
+  text-align: center;
+}
+
+.register-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.register-brand__logo {
+  height: 32px;
+  width: auto;
+}
+
+.register-brand__name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.02em;
+}
+
+.register-title {
+  margin: 0 0 6px;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.register-subtitle {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #9ca3af;
+}
+
+// ── Body ─────────────────────────────────────────────────────────────────────
+.register-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+// ── Account type toggle ──────────────────────────────────────────────────────
+.account-type {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.account-type__label {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.account-type__options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.account-type__card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 12px;
+  background: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s;
+
+  mat-icon { color: #9ca3af; }
+
+  &:hover { border-color: #555; }
+
+  &--active {
+    border-color: #f5bc36;
+    background: rgba(245, 188, 54, 0.08);
+
+    mat-icon { color: #f5bc36; }
+  }
+}
+
+.account-type__title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.account-type__desc {
+  font-size: 0.75rem;
+  color: #9ca3af;
+}
+
+// ── Field rows ───────────────────────────────────────────────────────────────
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+// ── Company section ──────────────────────────────────────────────────────────
+.company-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 14px;
+  border: 1px solid #333;
+  border-radius: 8px;
+  background: rgba(245, 188, 54, 0.04);
+}
+
+.company-section__label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #f5bc36;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+select.form-field__input {
+  appearance: none;
+  cursor: pointer;
+}
+
+// ── Form fields ──────────────────────────────────────────────────────────────
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-field__label {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.form-field__input {
+  width: 100%;
+  background: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.875rem;
+  color: #fff;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+
+  &::placeholder { color: #9ca3af; }
+  &:focus        { border-color: #f5bc36; }
+}
+
+.form-field__password-wrap {
+  position: relative;
+
+  .form-field__input { padding-right: 40px; }
+}
+
+.form-field__eye {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  &:hover { color: #fff; }
+}
+
+.field-error {
+  font-size: 0.75rem;
+  color: #ef4444;
+}
+
+// ── Error banner ─────────────────────────────────────────────────────────────
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: 6px;
+  color: #ef4444;
+  font-size: 0.875rem;
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; flex-shrink: 0; }
+}
+
+// ── Submit button ─────────────────────────────────────────────────────────────
+.btn-submit {
+  width: 100%;
+  padding: 10px;
+  background: #f5bc36;
+  color: #000;
+  font-size: 0.875rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+
+  &:hover:not(:disabled) { opacity: 0.88; }
+  &:disabled { opacity: 0.55; cursor: not-allowed; }
+}
+
+// ── Login hint ───────────────────────────────────────────────────────────────
+.register-hint {
+  margin: 0;
+  text-align: center;
+  font-size: 0.875rem;
+  color: #9ca3af;
+}
+
+.register-hint__link {
+  color: #f5bc36;
+  font-weight: 700;
+  text-decoration: none;
+  margin-left: 4px;
+  cursor: pointer;
+
+  &:hover { text-decoration: underline; }
+}
+
+// ── Language switcher row ─────────────────────────────────────────────────────
+.lang-row {
+  display: flex;
+  justify-content: center;
+  padding-top: 4px;
+}

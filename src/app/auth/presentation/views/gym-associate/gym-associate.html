@@ -1,0 +1,53 @@
+<div class="gym-associate">
+  <div class="gym-associate__header">
+    <mat-icon class="gym-associate__icon">fitness_center</mat-icon>
+    <h1 class="gym-associate__title">{{ 'gym.associate.title' | translate }}</h1>
+    <p class="gym-associate__subtitle">{{ 'gym.associate.subtitle' | translate }}</p>
+  </div>
+
+  @if (activeGymStore.associateError()) {
+    <div class="gym-associate__error">
+      <mat-icon>error_outline</mat-icon>
+      {{ activeGymStore.associateError()! | translate }}
+    </div>
+  }
+
+  @if (gymListStore.error()) {
+    <div class="gym-associate__error">
+      <mat-icon>error_outline</mat-icon>
+      {{ gymListStore.error()! | translate }}
+    </div>
+  }
+
+  @if (gymListStore.loading()) {
+    <div class="gym-associate__loading">
+      <mat-icon class="gym-associate__spinner">autorenew</mat-icon>
+    </div>
+  } @else if (gymListStore.gyms().length === 0 && !gymListStore.error()) {
+    <p class="gym-associate__empty">{{ 'gym.associate.noGyms' | translate }}</p>
+  } @else {
+    <ul class="gym-associate__list">
+      @for (gym of gymListStore.gyms(); track gym.gymId) {
+        <li class="gym-associate__item">
+          <div class="gym-associate__item-info">
+            <mat-icon class="gym-associate__item-icon">storefront</mat-icon>
+            <span class="gym-associate__item-name">{{ gym.name }}</span>
+          </div>
+          @if (isAssociated(gym.gymId)) {
+            <span class="gym-associate__badge gym-associate__badge--joined">
+              <mat-icon>check_circle</mat-icon>
+              {{ 'gym.associate.alreadyJoined' | translate }}
+            </span>
+          } @else {
+            <button
+              class="gym-associate__btn-join"
+              [disabled]="joiningGymId() === gym.gymId"
+              (click)="joinGym(gym.gymId)">
+              {{ 'gym.associate.joinBtn' | translate }}
+            </button>
+          }
+        </li>
+      }
+    </ul>
+  }
+</div>

@@ -1,0 +1,1081 @@
+{
+  "client": {
+    "welcome": "Welcome",
+    "subtitle": "Track machines, book equipment, and manage your routines",
+    "role": "Client"
+  },
+  "auth": {
+    "login": {
+      "title": "Sign In",
+      "subtitle": "Welcome back! Enter your credentials to continue",
+      "emailLabel": "Email",
+      "emailPlaceholder": "your@email.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "submitBtn": "Sign In",
+      "noAccount": "Don't have an account?",
+      "register": "Sign up",
+      "forgotPassword": "Forgot your password?",
+      "demoTitle": "Demo credentials",
+      "demoPassword": "Password: demo1234"
+    },
+    "register": {
+      "title": "Create Account",
+      "subtitle": "Join SpotTrack to start tracking your gym",
+      "accountTypeLabel": "I want to register as",
+      "clientOption": "Client",
+      "clientOptionDesc": "Book equipment and track my workouts",
+      "businessOption": "Business",
+      "businessOptionDesc": "Manage a gym and subscribe to a plan",
+      "firstNameLabel": "First name",
+      "firstNamePlaceholder": "John",
+      "lastNameLabel": "Last name",
+      "lastNamePlaceholder": "Doe",
+      "dniLabel": "DNI / National ID",
+      "dniPlaceholder": "12345678",
+      "phoneLabel": "Phone number",
+      "phonePlaceholder": "987654321",
+      "emailLabel": "Email",
+      "emailPlaceholder": "your@email.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "At least 8 characters",
+      "confirmPasswordLabel": "Confirm password",
+      "confirmPasswordPlaceholder": "Repeat your password",
+      "companySectionLabel": "Business information",
+      "companyNameLabel": "Company name",
+      "companyNamePlaceholder": "Acme S.A.C.",
+      "rucLabel": "RUC",
+      "rucPlaceholder": "20123456789",
+      "legalTypeLabel": "Legal structure",
+      "legalTypePlaceholder": "Select a legal type",
+      "companyPhoneLabel": "Company phone",
+      "companyPhonePlaceholder": "014567890",
+      "companyEmailLabel": "Company email",
+      "companyEmailPlaceholder": "contact@company.com",
+      "streetLabel": "Street address",
+      "streetPlaceholder": "Av. Javier Prado 123",
+      "cityLabel": "City",
+      "cityPlaceholder": "Lima",
+      "districtLabel": "District",
+      "districtPlaceholder": "San Isidro",
+      "submitBtn": "Create account",
+      "submitting": "Creating account…",
+      "haveAccount": "Already have an account?",
+      "loginLink": "Sign in",
+      "error": {
+        "required": "This field is required",
+        "dni": "DNI must be exactly 8 digits",
+        "phone": "Enter a valid phone number (7-15 digits)",
+        "ruc": "RUC must be exactly 11 digits",
+        "email": "Enter a valid email address",
+        "password": "Password must be at least 8 characters",
+        "passwordMismatch": "Passwords do not match"
+      }
+    },
+    "plans": {
+      "title": "Choose your plan",
+      "subtitle": "Select the plan that fits your gym, then continue to payment",
+      "popularBadge": "Most popular",
+      "perMonth": "/mo",
+      "proceedBtn": "Continue to payment",
+      "processing": "Redirecting to payment…",
+      "checkoutError": "Payment service unavailable. Please try again later.",
+      "tier": {
+        "basic": "Basic",
+        "mid": "Mid",
+        "platinum": "Platinum"
+      },
+      "feature": {
+        "plan20Equipment": "Up to 20 equipment units",
+        "planRealtimeMonitoring": "Real-time monitoring",
+        "planMaintenanceAlerts": "Maintenance alerts",
+        "planEmailSupport": "Email support",
+        "plan60Equipment": "Up to 60 equipment units",
+        "planAdvancedAlerts": "Advanced alerts & reports",
+        "planPrioritySupport": "Priority email support",
+        "planAnalytics": "Analytics dashboard",
+        "planUnlimitedEquipment": "Unlimited equipment units",
+        "planCustomReports": "Custom alerts & reports",
+        "plan24Support": "24/7 priority support",
+        "planFullAnalytics": "Full analytics suite"
+      }
+    },
+    "payment": {
+      "successTitle": "Payment confirmed",
+      "successSubtitle": "Sign in with the email and password you registered to access your account.",
+      "continueBtn": "Sign in",
+      "cancelTitle": "Payment cancelled",
+      "cancelSubtitle": "Your payment was not completed. You can pick a plan again whenever you're ready.",
+      "retryBtn": "Choose a plan again"
+    },
+    "changePassword": {
+      "currentLabel": "Current password",
+      "newLabel": "New password",
+      "confirmLabel": "Confirm new password",
+      "submitBtn": "Update password",
+      "cancelBtn": "Cancel",
+      "success": "Password updated successfully.",
+      "error": {
+        "noMatch": "Passwords do not match.",
+        "wrongCurrent": "Current password is incorrect.",
+        "failed": "Could not update password. Please try again."
+      }
+    },
+    "forgotPassword": {
+      "step1": {
+        "title": "Forgot your password?",
+        "subtitle": "Enter your email address and we'll help you reset it.",
+        "emailLabel": "Email",
+        "emailPlaceholder": "your@email.com",
+        "submitBtn": "Continue"
+      },
+      "step2": {
+        "title": "Reset your password",
+        "subtitle": "Enter your DNI and choose a new password.",
+        "emailLabel": "Email",
+        "dniLabel": "DNI",
+        "dniPlaceholder": "12345678",
+        "newPasswordLabel": "New password",
+        "confirmPasswordLabel": "Confirm new password",
+        "submitBtn": "Reset password"
+      },
+      "success": {
+        "title": "Password reset",
+        "desc": "Your password has been updated. You can now sign in with your new password."
+      },
+      "backToLogin": "Back to sign in",
+      "error": {
+        "failed": "Could not reset password. Please check your details and try again."
+      }
+    },
+    "error": {
+      "emptyFields": "Please enter your email and password",
+      "invalidCredentials": "Invalid email or password",
+      "sessionExpired": "Your session has expired. Please sign in again.",
+      "registerFailed": "Could not create your account. Please try again.",
+      "emailTaken": "This email is already registered. Please use a different one.",
+      "profileFailed": "Your account was created, but we couldn't save your profile. Please try again from your profile page."
+    }
+  },
+  "machines": {
+    "zones": {
+      "fuerza": "Strength Zone",
+      "cardio": "Cardio Zone"
+    },
+    "names": {
+      "cinta1": "Treadmill 1",
+      "cinta2": "Treadmill 2",
+      "prensa": "Leg Press",
+      "prensaPiernas": "Leg Press",
+      "poleaAlta": "High Cable",
+      "rackSentadilla1": "Squat Rack #1",
+      "rackSentadilla2": "Squat Rack #2",
+      "bancoPecho": "Bench Press",
+      "bancoPechoPlano": "Flat Bench Press",
+      "bancoPechoInclinado": "Incline Bench Press",
+      "maquinaRemo": "Rowing Machine",
+      "remo": "Rowing",
+      "eliptica": "Elliptical",
+      "raquetmaquina": "Multi-Function Machine"
+    }
+  },
+  "map": {
+    "title": "Real-Time Availability Map",
+    "subtitle": "View the status of all gym machines",
+    "cardTitle": "Availability Map",
+    "filter": {
+      "all": "All",
+      "strength": "Strength",
+      "cardio": "Cardio"
+    },
+    "legend": {
+      "available": "Free ({{count}})",
+      "inUse": "In Use ({{count}})",
+      "reserved": "Reserved ({{count}})"
+    },
+    "view": {
+      "map": "Map",
+      "heat": "Heat",
+      "allBranches": "All Branches"
+    },
+    "branches": {
+      "allBranches": "All Branches",
+      "networkOverview": "Network Overview",
+      "clickToView": "Click a branch to view its floor map",
+      "loading": "Loading branches…",
+      "noBranches": "No branches configured yet",
+      "noZones": "No zones configured for this branch"
+    },
+    "zone": {
+      "unzoned": "Unassigned"
+    },
+    "stats": {
+      "free": "Free",
+      "inUse": "In Use",
+      "reserved": "Reserved",
+      "util": "Util"
+    },
+    "detail": {
+      "statusLabel": "Status",
+      "status": {
+        "AVAILABLE": "Available",
+        "IN_USE": "In Use",
+        "RESERVED": "Reserved"
+      },
+      "reservedByUser": "You have reserved this machine",
+      "notifyBtn": "Notify me when free",
+      "alternativesBtn": "See alternatives",
+      "reportFreeBtn": "Report as free",
+      "reserveBtn": "Reserve",
+      "reportOccupiedBtn": "Report as occupied",
+      "notifications": {
+        "notified": "You'll be notified when this machine is free",
+        "reportedFree": "Machine reported as free. Thank you!",
+        "reserved": "Machine reserved successfully",
+        "reportedOccupied": "Machine reported as occupied. Thank you!"
+      }
+    },
+    "alternatives": {
+      "title": "Alternative Machines",
+      "subtitle": "Available machines in the same category",
+      "free": "Free",
+      "reserveBtn": "Reserve"
+    },
+    "muscleGroups": {
+      "cardio": "Cardio",
+      "legs": "Legs",
+      "back": "Back",
+      "chest": "Chest"
+    }
+  },
+  "reservation": {
+    "title": "My Reservations",
+    "subtitle": "Manage your active reservations and create new ones",
+    "newReservation": "New Reservation",
+    "reportIssue": "Report an issue",
+    "timeRemaining": "Time remaining",
+    "activationWindow": "Activation window",
+    "pending": {
+      "title": "Waiting for activation",
+      "subtitle": "Activate within the time limit or it will be cancelled"
+    },
+    "expired": {
+      "title": "Reservation expired",
+      "subtitle": "The machine is now available for other users"
+    },
+    "how": {
+      "title": "How do reservations work?",
+      "item1": "Create a reservation for an available machine",
+      "item2": "You have 5 minutes to activate your reservation from this screen",
+      "item3": "Once activated, the countdown timer starts for your selected duration",
+      "item4": "If not activated in time, the reservation is automatically cancelled"
+    },
+    "modal": {
+      "title": "New Reservation",
+      "subtitle": "Reserve an available machine for a limited time",
+      "machine": "Machine",
+      "selectMachine": "Select a machine",
+      "machinePlaceholder": "Select a machine",
+      "duration": "Duration",
+      "minutesSuffix": "minutes",
+      "warning": "After creating the reservation, you have 5 minutes to activate it. If not activated in time, it will be automatically cancelled.",
+      "option10s": "10 seconds",
+      "option10m": "10 minutes",
+      "option15m": "15 minutes",
+      "option20m": "20 minutes",
+      "cancel": "Cancel",
+      "create": "Create Reservation",
+      "confirm": "Reserve"
+    },
+    "error": {
+      "alreadyActive": "You already have an active reservation. Cancel it or wait for it to expire before creating a new one.",
+      "generic": "Could not create the reservation. Please try again."
+    },
+    "history": {
+      "title": "Reservation History",
+      "subtitle": "All your past and active reservations",
+      "loading": "Loading reservations...",
+      "empty": "No reservations found",
+      "col": {
+        "equipment": "Equipment",
+        "status": "Status",
+        "started": "Started",
+        "window": "Time window"
+      }
+    }
+  },
+  "clientAlerts": {
+    "reservationExpired": {
+      "title": "Reservation Expired: {{machine}}",
+      "description": "Your reservation for {{machine}} has ended. The machine is now available for other users."
+    }
+  },
+  "alerts": {
+    "emptyState": "No pending alerts",
+    "detailsBtn": "View details →",
+    "deleteTitle": "Delete alert",
+    "clearAll": "Clear all",
+    "severity": {
+      "WARNING": "Warning",
+      "CRITICAL": "Critical"
+    },
+    "time": {
+      "moment":  "Just now",
+      "minute":  "{{count}} minute ago",
+      "minutes": "{{count}} minutes ago",
+      "hour":    "{{count}} hour ago",
+      "hours":   "{{count}} hours ago",
+      "day":     "{{count}} day ago",
+      "days":    "{{count}} days ago"
+    },
+    "backend": {
+      "maintenanceThreshold": {
+        "title": "Maintenance Threshold Reached"
+      },
+      "anomalyReported": {
+        "title": "Anomaly Reported"
+      }
+    }
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "equipment": "Equipment",
+    "iot": "IoT Monitoring",
+    "maintenance": "Maintenance",
+    "analytics": "Analytics",
+    "alerts": "Alerts",
+    "map": "Map",
+    "routines": "Routines",
+    "bookings": "My Bookings",
+    "reservations": "My Reservations",
+    "profile": "My Profile",
+    "financial": "Financial Impact",
+    "settings": "Settings"
+  },
+  "monitoring": {
+    "sensors": {
+      "title": "Sensor Registration",
+      "subtitle": "Register cameras and motion sensors for IoT monitoring",
+      "cameraTitle": "Camera Sensor",
+      "motionTitle": "Motion Sensor",
+      "equipment": "Equipment",
+      "registerCamera": "Register Camera",
+      "registerMotion": "Register Motion Sensor"
+    },
+    "sessionTracking": {
+      "title": "Session Tracking",
+      "subtitle": "Usage detection, inactivity, and session time calculation",
+      "equipmentId": "Equipment ID",
+      "equipment": "Equipment",
+      "client": "Client",
+      "reservationId": "Reservation ID",
+      "walkUp": "Walk-up usage",
+      "continuousActivity": "Continuous Activity",
+      "seconds": "Elapsed Time",
+      "trackedTitle": "Tracked Sessions",
+      "noneTracked": "No active sessions. They're created automatically on a reservation or when motion is detected on a piece of equipment.",
+      "actionsTitle": "Session Actions",
+      "status": "Status",
+      "usage": "Usage",
+      "active": "Active",
+      "inactive": "Inactive",
+      "ended": "Ended",
+      "inUse": "In Use",
+      "lifecycle": "Lifecycle",
+      "verify": "Verify Usage",
+      "end": "End Session",
+      "calculateTime": "Calculate Time",
+      "calculatedTimeResult": "Current true activity",
+      "cameraMotion": "Camera — Motion Detection",
+      "motionSensor": "Motion Sensor — Reading",
+      "motionDetected": "Motion Detected",
+      "noMotion": "No Motion"
+    },
+    "anomalyReport": {
+      "title": "Report Anomaly",
+      "subtitle": "Manually report an issue detected on a piece of equipment",
+      "formTitle": "New Report",
+      "reservation": "Reservation",
+      "noReservations": "You have no reservations to report an anomaly for.",
+      "zoneId": "Zone ID",
+      "description": "Description",
+      "descriptionPlaceholder": "Describe the observed anomaly...",
+      "submit": "Report Anomaly",
+      "listTitle": "Reported Anomalies",
+      "noneReported": "No anomalies reported yet."
+    }
+  },
+  "dashboard": {
+    "welcome": "Welcome back, {{name}}!",
+    "client_intro": "Here is a summary of your activity.",
+    "admin_panel": "Administration Panel"
+  },
+  "iot": {
+    "title": "IoT Monitoring",
+    "subtitle": "Real-time status of Edge IoT sensors installed on equipment",
+    "search": "Search by sensor ID or equipment...",
+    "actions": {
+      "refresh": "Refresh"
+    },
+    "quickActions": {
+      "registerSensors": "Register Sensors",
+      "reportAnomaly": "Report Anomaly"
+    },
+    "filter": {
+      "type": "Type",
+      "allTypes": "All Types",
+      "camera": "Camera",
+      "motion": "Motion"
+    },
+    "stats": {
+      "totalSensors": "Total Sensors",
+      "cameraSensors": "Camera Sensors",
+      "motionSensors": "Motion Sensors",
+      "activeSessions": "Active Sessions"
+    },
+    "table": {
+      "title": "Sensor Status",
+      "id": "Sensor ID",
+      "type": "Type",
+      "equipment": "Equipment",
+      "status": "Status",
+      "connectivity": "Connectivity",
+      "online": "Online",
+      "offline": "Offline",
+      "registeredAt": "Registered At",
+      "actions": "Actions",
+      "simulateMotion": "Simulate Motion",
+      "noData": "No sensors found"
+    }
+  },
+  "equipment": {
+    "title": "Gym Equipment",
+    "subtitle": "Monitor and manage all gym equipment",
+    "search": "Search by name, brand or model...",
+    "filter": {
+      "allStatuses": "All statuses",
+      "status": "Status"
+    },
+    "actions": {
+      "register": "Register Equipment",
+      "edit": "Edit",
+      "editStatus": "Update status",
+      "decommission": "Decommission",
+      "save": "Register",
+      "updateStatus": "Update Status",
+      "cancel": "Cancel",
+      "confirm": "Confirm"
+    },
+    "table": {
+      "id": "ID",
+      "name": "Name",
+      "brand": "Brand / Manufacturer",
+      "model": "Model",
+      "zoneId": "Zone",
+      "purchaseAmount": "Purchase Price",
+      "status": "Status",
+      "actions": "Actions",
+      "noData": "No equipment registered yet"
+    },
+    "stats": {
+      "total": "Total Equipment",
+      "available": "Available",
+      "inUse": "In Use",
+      "maintenance": "In Maintenance",
+      "outOfService": "Out of Service"
+    },
+    "status": {
+      "AVAILABLE": "Available",
+      "MAINTENANCE": "Maintenance",
+      "OUT_OF_SERVICE": "Out of Service",
+      "OCCUPIED": "Occupied",
+      "ACTIVE": "Active",
+      "DECOMMISSIONED": "Decommissioned"
+    },
+    "dialog": {
+      "addTitle": "Register New Equipment",
+      "editTitle": "Update Equipment Status",
+      "subtitle": "Fill in all required fields to register the equipment in the system.",
+      "editHint": "In edit mode only the status can be updated.",
+      "editMode": "Edit mode",
+      "newMode": "New equipment",
+      "deleteTitle": "Decommission Equipment",
+      "deleteMessage": "Are you sure you want to decommission this equipment? This action cannot be undone.",
+      "sections": {
+        "identification": "Identification",
+        "configuration": "Pricing & Location",
+        "status": "Operational Status"
+      },
+      "fields": {
+        "name": "Equipment name",
+        "brand": "Brand / Manufacturer",
+        "model": "Model",
+        "zoneId": "Zone",
+        "purchaseCurrency": "Currency",
+        "purchaseAmount": "Purchase amount",
+        "status": "Status",
+        "maintenanceThreshold": "Maintenance threshold date"
+      },
+      "hints": {
+        "maintenanceThresholdNew": "Leave empty to default to today; you can adjust it later.",
+        "maintenanceThresholdEdit": "Editing this resets the preventive maintenance alert for this equipment."
+      },
+      "zonesLoading": "Loading zones…",
+      "noZones": "No zones available. Create zones in Branch Management first.",
+      "validation": {
+        "required": "This field is required",
+        "min": "Value must be 0 or greater"
+      }
+    }
+  },
+  "analytics": {
+    "title": "Reports & Analytics",
+    "subtitle": "Detailed analysis of usage, traffic and operational performance",
+    "exportCsv": "Export CSV",
+    "generatePdf": "Generate PDF",
+    "filters": {
+      "period": {
+        "label": "Period",
+        "month": "Last month",
+        "quarter": "Last 3 months",
+        "year": "Last year"
+      },
+      "branch": {
+        "label": "Branch",
+        "all": "All branches",
+        "main": "Main Branch"
+      },
+      "customRange": "Custom Range",
+      "dateStart": "Start",
+      "dateEnd": "End"
+    },
+    "stats": {
+      "totalHours": "Total Usage Hours",
+      "occupancyRate": "Occupancy Rate",
+      "peakUsage": "Peak Usage",
+      "inactiveTime": "Inactive Time",
+      "vsLastMonth": "vs last month"
+    },
+    "charts": {
+      "weeklyUsage": "Weekly Usage vs Capacity",
+      "showComparison": "Show Comparison",
+      "hideComparison": "Hide Comparison",
+      "prevMonth": "Previous month",
+      "usage": "Usage",
+      "capacity": "Capacity",
+      "machineTypes": "Distribution by Machine Type",
+      "stressPeaks": "Stress Peaks by Hour (Occupancy > 90%)"
+    },
+    "relocation": {
+      "title": "Relocation Recommendations",
+      "subtitle": "Underutilized machines identified across branches — relocate to maximize asset ROI",
+      "opportunities": "opportunities",
+      "action": "Relocate"
+    },
+    "executive": {
+      "title": "Executive Summary",
+      "positive": {
+        "title": "Positive Performance",
+        "description": "Machine usage has increased 12% this month, indicating better client retention and improved asset utilization."
+      },
+      "bottleneck": {
+        "title": "Bottleneck Detected",
+        "description": "Hours from 18:00 to 20:00 consistently exceed 90% capacity. Recommendation: Consider acquiring 2 additional high-use machines or implementing a reservation system."
+      },
+      "optimization": {
+        "title": "Optimization Required",
+        "description": "124 hours of scheduled downtime recorded for maintenance. Applying the smart scheduler could reduce this figure by 30%."
+      }
+    },
+    "financial": {
+      "title": "Financial Impact & ROI",
+      "subtitle": "Analysis of hidden costs, inactivity losses and investment projections",
+      "lossInactivity": "Inactivity Loss",
+      "maintenanceCost": "Maintenance Cost",
+      "potentialSavings": "Potential Savings",
+      "withPredictive": "With predictive maintenance",
+      "avgRoi": "Average ROI",
+      "months": "months",
+      "investmentRecovery": "Investment recovery",
+      "costBreakdown": "Maintenance Cost Breakdown",
+      "lossTable": {
+        "title": "Equipment Inactivity Loss",
+        "machine": "Machine",
+        "hours": "Hours",
+        "ratePerHour": "$/Hour",
+        "total": "Total",
+        "monthlyTotal": "TOTAL MONTHLY LOSS"
+      },
+      "costLabels": {
+        "corrective": "Corrective Maintenance (3-5x more expensive)",
+        "preventive": "Preventive Maintenance",
+        "inventory": "Spare Parts Inventory"
+      },
+      "roiProjection": {
+        "title": "ROI Projection – New Machine"
+      },
+      "simulator": {
+        "title": "Return on Investment (ROI) Simulator",
+        "machineCost": "Machine Cost ($)",
+        "unmetDemand": "Unmet Demand (users/month)",
+        "revenuePerUser": "Revenue per User ($)",
+        "calculate": "Calculate ROI"
+      },
+      "recommendations": {
+        "title": "Financial Recommendations",
+        "preventive": {
+          "title": "Migrate to Preventive Maintenance",
+          "description": "Implementing automatic alerts can reduce corrective costs by 60%, saving approximately $1,920/month."
+        },
+        "investment": {
+          "title": "Recommended Investment: 2 Squat Racks",
+          "description": "Analysis shows 98% occupancy during peak hours. A $10,000 investment would be recovered in ~7 months based on current demand."
+        },
+        "relocation": {
+          "title": "Relocate Underutilized Equipment",
+          "description": "3 machines with <30% usage in Surco could generate $1,200/month additional revenue if relocated to Miraflores."
+        }
+      }
+    }
+  },
+  "financialImpact": {
+    "title": "Financial Impact & ROI",
+    "subtitle": "Analysis of hidden costs, inactivity losses and investment projections",
+    "exportCsv": "Export CSV",
+    "generatePdf": "Generate PDF",
+    "stats": {
+      "lossInactivity": "Inactivity Loss",
+      "maintenanceCost": "Maintenance Cost",
+      "potentialSavings": "Potential Savings",
+      "withPredictive": "With predictive maintenance",
+      "avgRoi": "Average ROI",
+      "months": "months",
+      "investmentRecovery": "Investment recovery",
+      "lastMonth": "Last month"
+    },
+    "lossTable": {
+      "title": "Equipment Inactivity Loss",
+      "machine": "Machine",
+      "hours": "Hours",
+      "ratePerHour": "$/Hour",
+      "total": "Total",
+      "monthlyTotal": "TOTAL MONTHLY LOSS"
+    },
+    "costBreakdown": {
+      "title": "Maintenance Cost Breakdown"
+    },
+    "costLabels": {
+      "corrective": "Corrective Maintenance (3-5x more expensive)",
+      "preventive": "Preventive Maintenance",
+      "inventory": "Spare Parts Inventory"
+    },
+    "roiProjection": {
+      "title": "ROI Projection – New Machine"
+    },
+    "simulator": {
+      "title": "Return on Investment (ROI) Simulator",
+      "machineCost": "Machine Cost ($)",
+      "unmetDemand": "Unmet Demand (users/month)",
+      "revenuePerUser": "Revenue per User ($)",
+      "calculate": "Calculate ROI"
+    },
+    "recommendations": {
+      "title": "Financial Recommendations",
+      "preventive": {
+        "title": "Migrate to Preventive Maintenance",
+        "description": "Implementing automatic alerts can reduce corrective costs by 60%, saving approximately $1,920/month."
+      },
+      "investment": {
+        "title": "Recommended Investment: 2 Squat Racks",
+        "description": "Analysis shows 98% occupancy during peak hours. A $10,000 investment would be recovered in ~7 months based on current demand."
+      },
+      "relocation": {
+        "title": "Relocate Underutilized Equipment",
+        "description": "3 machines with <30% usage in Surco could generate $1,200/month additional revenue if relocated to Miraflores."
+      }
+    }
+  },
+  "maintenance": {
+    "title": "Maintenance Center",
+    "subtitle": "Manage preventive and corrective maintenance tickets",
+    "newTicket": "New Ticket",
+    "search": "Search by ID, machine or description...",
+    "assignedTo": "Assigned to",
+    "completedBy": "Completed by",
+    "stats": {
+      "totalTickets": "Total Tickets",
+      "pending": "Pending",
+      "inProgress": "In Progress",
+      "completed": "Completed"
+    },
+    "filter": {
+      "allStatuses": "All Statuses",
+      "allPriorities": "All Priorities"
+    },
+    "col": {
+      "pending": "Pending",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "empty": "No tickets"
+    },
+    "action": {
+      "start": "Start",
+      "complete": "Complete"
+    },
+    "form": {
+      "title": "New Maintenance Ticket",
+      "equipment": "Equipment",
+      "priority": "Priority",
+      "type": "Type",
+      "date": "Scheduled Date",
+      "time": "Scheduled Time",
+      "description": "Description",
+      "cancel": "Cancel",
+      "submit": "Create Ticket"
+    },
+    "scheduler": {
+      "peakWarning": "Peak demand hour",
+      "peakWarningMsg": "This time slot has high gym traffic. Scheduling maintenance may disrupt members.",
+      "peakHint": "High demand — consider an off-peak slot",
+      "suggestions": "Suggested off-peak times:",
+      "confirmedMsg": "Off-peak slot — will not disrupt members"
+    },
+    "status": {
+      "OPEN": "Open",
+      "IN_PROGRESS": "In Progress",
+      "RESOLVED": "Resolved",
+      "PENDING": "Pending",
+      "CONFIRMED": "Confirmed",
+      "CANCELLED": "Cancelled"
+    },
+    "priority": {
+      "LOW": "Low",
+      "MEDIUM": "Medium",
+      "HIGH": "High",
+      "URGENT": "Urgent"
+    },
+    "type": {
+      "CORRECTIVE": "Corrective",
+      "PREVENTIVE": "Preventive",
+      "LUBRICATION": "Lubrication",
+      "INSPECTION": "Inspection",
+      "OVERHAUL": "Overhaul"
+    },
+    "controlPoint": {
+      "startTitle": "Assign technician",
+      "startHint": "Assigning a technician records who is responsible for this ticket before work begins.",
+      "technician": "Technician",
+      "technicianPlaceholder": "Technician name or ID",
+      "completeTitle": "Confirm completion",
+      "completeHint": "Describe what was fixed. This entry is logged permanently and tied to the assigned technician, so incomplete or incorrect work can be traced back later.",
+      "notes": "Completion notes",
+      "notesPlaceholder": "What was inspected, repaired or replaced...",
+      "cost": "Completion cost",
+      "costPlaceholder": "0.00",
+      "confirmStart": "Assign & start",
+      "confirmComplete": "Confirm & resolve",
+      "cancel": "Cancel",
+      "close": "Close",
+      "logTitle": "Completion log",
+      "logLoading": "Loading log...",
+      "logEmpty": "No completion log entries yet."
+    }
+  },
+  "routines": {
+    "title": "My Routines",
+    "subtitle": "Manage your workout routines",
+    "newRoutine": "New Routine",
+    "search": "Search routines...",
+    "loading": "Loading...",
+    "empty": "No routines yet — create your first one.",
+    "card": {
+      "exercises": "exercises"
+    },
+    "session": {
+      "start": "Start Routine",
+      "complete": "Complete",
+      "missed": "Mark as Missed",
+      "activeLabel": "In progress",
+      "status": {
+        "STARTED": "In progress",
+        "COMPLETED": "Completed",
+        "MISSED": "Missed"
+      },
+      "history": {
+        "title": "Session History",
+        "empty": "No sessions recorded yet."
+      }
+    },
+    "exerciseType": {
+      "CARDIO": "Cardio",
+      "STRENGTH": "Strength",
+      "FLEXIBILITY": "Flexibility"
+    },
+    "detail": {
+      "blocksTitle": "Exercise Blocks",
+      "noBlocks": "No exercise blocks yet.",
+      "notFound": "Routine not found.",
+      "addBlock": {
+        "title": "Add Exercise",
+        "name": "Exercise Name",
+        "type": "Type",
+        "sets": "Sets",
+        "reps": "Reps",
+        "setsAbbrev": "sets",
+        "repsAbbrev": "reps",
+        "submit": "Add"
+      }
+    },
+    "modal": {
+      "title": "New Routine",
+      "subtitle": "Create a personalized workout routine",
+      "name": "Routine Name",
+      "namePlaceholder": "e.g. Upper Body Day A",
+      "cancel": "Cancel",
+      "create": "Create Routine"
+    }
+  },
+  "profile": {
+    "admin": {
+      "title": "Admin Panel",
+      "roleBadge": "Administrator",
+      "memberSince": "Member since",
+      "stats": {
+        "locations": "Active branches",
+        "equipment": "Monitored equipment",
+        "sensors": "IoT sensors",
+        "members": "Registered members"
+      },
+      "plan": {
+        "active": "Active",
+        "renewal": "Next renewal",
+        "manage": "Manage membership"
+      }
+    },
+    "client": {
+      "title": "My Profile",
+      "roleBadge": "Client",
+      "notifications": {
+        "title": "Notifications",
+        "availability": {
+          "title": "Availability alerts",
+          "desc": "When a machine becomes free"
+        },
+        "maintenance": {
+          "title": "Scheduled maintenance",
+          "desc": "When equipment enters maintenance"
+        },
+        "rewards": {
+          "title": "Reward points",
+          "desc": "When you earn new points"
+        }
+      }
+    },
+    "account": {
+      "title": "Account Information",
+      "email": "Email",
+      "gymName": "Gym Name",
+      "phone": "Phone",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "dni": "National ID (DNI)",
+      "saveSuccess": "Profile updated successfully."
+    },
+    "language": {
+      "title": "Language Preferences",
+      "label": "Interface Language",
+      "hint": "Changes will apply immediately across the platform"
+    },
+    "security": {
+      "title": "Security",
+      "changePassword": "Change Password",
+      "logout": "Log Out"
+    },
+    "saveChanges": "Save Changes"
+  },
+  "dashboardAdmin": {
+    "kpis": {
+      "operationalEquipment": "Operational Equipment",
+      "maintenance": "In Maintenance",
+      "outOfService": "Out of Service",
+      "totalTickets": "Total Tickets"
+    },
+    "charts": {
+      "machineUsage": "Machine Usage",
+      "noUsageData": "No usage data available",
+      "peakCapacityHours": "Peak Capacity Hours",
+      "noCapacityData": "No reservation data available yet"
+    },
+    "table": {
+      "title": "Underutilized Equipment",
+      "headers": {
+        "machineId": "Machine ID",
+        "location": "Location",
+        "hours": "Hours",
+        "roi": "ROI"
+      },
+      "empty": "No underutilized equipment found"
+    },
+    "maintenanceCenter": {
+      "title": "Maintenance Center",
+      "columns": {
+        "todo": "Pending",
+        "inProgress": "In Progress",
+        "completed": "Completed"
+      },
+      "empty": "No tickets"
+    }
+  },
+  "gym": {
+    "associate": {
+      "title": "Choose your gym",
+      "subtitle": "Select a gym to get started",
+      "joinBtn": "Join",
+      "alreadyJoined": "Joined",
+      "noGyms": "No gyms available at the moment.",
+      "loadError": "Could not load the gym list. Please try again."
+    },
+    "create": {
+      "title": "Set up your gym",
+      "subtitle": "Enter a name to get started. You can add equipment and zones later.",
+      "namePlaceholder": "e.g. Power Gym",
+      "submitBtn": "Create Gym"
+    },
+    "switcher": {
+      "title": "My Gyms",
+      "active": "Active",
+      "switchBtn": "Switch to this gym",
+      "addGymBtn": "Add another gym",
+      "addGymTitle": "Join a new gym",
+      "addGymEmpty": "No other gyms available to join.",
+      "joinBtn": "Join",
+      "cancelBtn": "Cancel"
+    },
+    "error": {
+      "loadFailed": "Could not load your gym associations. Please try again.",
+      "switchFailed": "Could not switch the active gym. Please try again.",
+      "associateFailed": "Could not associate with this gym. Please try again.",
+      "associateAlreadyExists": "You already have an association with this gym.",
+      "myGymsFailed": "Could not load your gym information. Please try again.",
+      "createFailed": "Could not create the gym. Please try again.",
+      "access": {
+        "notWhitelisted": "Your account is not authorized to access this gym. Contact the gym administrator.",
+        "revoked": "You no longer have access to this gym. Contact the gym administrator."
+      }
+    }
+  },
+  "membership": {
+    "page": {
+      "title":    "Membership Plans",
+      "subtitle": "Manage your plans and venue access",
+      "loading":  "Loading membership…"
+    },
+    "lifecycle": {
+      "renewsOn": "Renews on",
+      "cancelAtPeriodEndNotice": "Cancels at end of current period ({{date}}). No further charges.",
+      "pendingDowngradeNotice": "Plan will downgrade to {{tier}} at end of current period.",
+      "cancelBtn": "Cancel Membership",
+      "undoCancelBtn": "Resume subscription",
+      "payDebtBtn": "Pay Debt",
+      "resubscribeBtn": "Resubscribe",
+      "upgradeBtn": "Upgrade",
+      "downgradeBtn": "Schedule Downgrade",
+      "status": {
+        "ACTIVE": "Active",
+        "SUSPENDED": "Suspended",
+        "CANCELLED": "Cancelled",
+        "EXPIRED": "Expired"
+      },
+      "suspended": {
+        "title": "Membership Suspended",
+        "desc": "Your membership is suspended due to an unpaid balance. Pay your debt to restore access."
+      },
+      "cancelled": {
+        "title": "Membership Cancelled",
+        "desc": "Your membership has been cancelled. Resubscribe to restore access to your gym."
+      },
+      "expired": {
+        "title": "Membership Expired",
+        "desc": "Your membership has expired. Resubscribe to restore access to your gym."
+      },
+      "error": {
+        "cancelFailed": "Could not cancel membership. Please try again.",
+        "undoCancelFailed": "Could not resume subscription. Please try again.",
+        "payDebtFailed": "Could not initiate debt payment. Please try again.",
+        "upgradeFailed": "Could not initiate plan upgrade. Please try again.",
+        "downgradeFailed": "Could not schedule plan downgrade. Please try again.",
+        "resubscribeFailed": "Could not initiate resubscription. Please try again."
+      }
+    }
+  },
+  "branches": {
+    "title": "Branch Management",
+    "subtitle": "Manage your gym's branches",
+    "addTitle": "Add new branch",
+    "namePlaceholder": "Branch name",
+    "addressPlaceholder": "Address",
+    "addBtn": "Add",
+    "count": "{{ count }} branch(es)",
+    "empty": "No branches registered yet.",
+    "error": {
+      "loadFailed": "Could not load the branch list. Please try again.",
+      "createFailed": "Could not create the branch. Please try again.",
+      "limitReached": "Need more locations? You've reached the limit for your current plan.",
+      "noActiveMembership": "No active membership. Regularize your account to manage branches.",
+      "upgradePlanLink": "Upgrade plan →",
+      "manageMembershipLink": "Manage membership →"
+    },
+    "zones": {
+      "manageBtn": "Manage Zones",
+      "addTitle": "Add zone",
+      "namePlaceholder": "Zone name",
+      "occupancyPlaceholder": "Max occupancy",
+      "addBtn": "Add zone",
+      "count": "{{ count }} zone(s)",
+      "empty": "No zones in this branch yet.",
+      "occupancy": "Max: {{ max }} people",
+      "error": {
+        "createFailed": "Could not create the zone. Please try again."
+      }
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your maintenance team",
+    "technicians": {
+      "title": "Technicians",
+      "subtitle": "Technicians available to assign to maintenance tickets",
+      "namePlaceholder": "Technician name",
+      "addBtn": "Add",
+      "empty": "No technicians registered yet. Add one above to assign maintenance tickets.",
+      "error": {
+        "nameRequired": "Enter a name for the technician"
+      }
+    },
+    "notifications": {
+      "title": "Notifications",
+      "subtitle": "Choose which alerts you want to be notified about",
+      "notifyOnCritical": "Notify me on critical alerts",
+      "notifyOnWarning": "Notify me on warning alerts",
+      "emailPlaceholder": "Notification email (optional)",
+      "saveBtn": "Save",
+      "savedMessage": "Preferences saved"
+    }
+  },
+  "whitelist": {
+    "title": "Whitelist Management",
+    "subtitle": "Manage which clients can access your gym by DNI",
+    "addDni": "Add DNI",
+    "dniPlaceholder": "8-digit DNI",
+    "addBtn": "Add",
+    "removeDni": "Remove",
+    "dniCount": "{{count}} registered DNIs",
+    "empty": "No DNIs registered yet. Add one above to allow client access.",
+    "error": {
+      "loadFailed": "Could not load the whitelist. Please try again.",
+      "addFailed": "Could not add DNI. Please try again.",
+      "duplicate": "This DNI is already in the whitelist.",
+      "invalidFormat": "DNI must be exactly 8 digits."
+    }
+  }
+}

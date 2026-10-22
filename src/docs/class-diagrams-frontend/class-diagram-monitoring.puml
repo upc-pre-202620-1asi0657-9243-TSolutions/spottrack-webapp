@@ -1,0 +1,147 @@
+@startuml BC-04_IoT
+
+package "iot.domain.model" {
+  class Iot {
+    - _id: number
+    - _equipmentId: number
+    - _macAddress: string
+    - _status: IotStatus
+    - _lastHeartbeat: string
+    - _location: string
+    - _batteryLevel: number
+    - _signalStrength: number
+    - _firmwareVersion: string
+    + id: number
+    + equipmentId: number
+    + macAddress: string
+    + status: IotStatus
+    + lastHeartbeat: string
+    + location: string
+    + batteryLevel: number
+    + signalStrength: number
+    + firmwareVersion: string
+  }
+
+  enum IotStatus {
+    ONLINE
+    OFFLINE
+    WARNING
+  }
+
+  enum AlertType {
+    DISCONNECTED
+    LOW_BATTERY
+    WEAK_SIGNAL
+  }
+}
+
+package "iot.application" {
+  class IotStore {
+    - devicesSignal: Signal<Iot[]>
+    - loadingSignal: Signal<boolean>
+    - errorSignal: Signal<string | null>
+    - reconnectedDeviceSignal: Signal<Iot | null>
+    - dismissedAlertIds: Signal<Set<number>>
+    + devices: Signal<Iot[]>
+    + loading: Signal<boolean>
+    + error: Signal<string | null>
+    + reconnectedDevice: Signal<Iot | null>
+    + deviceCount: Signal<number>
+    + onlineCount: Signal<number>
+    + offlineCount: Signal<number>
+    + warningCount: Signal<number>
+    + avgBattery: Signal<number>
+    + activeAlerts: Signal<Iot[]>
+    + refresh(): void
+    + investigateAlert(sensor: Iot): void
+    + scheduleReplacement(sensorId: number): void
+    + dismissReconnectedModal(): void
+    + getDeviceById(id: number): Signal<Iot | undefined>
+    - loadDevices(): void
+    - detectReconnections(prev: Iot[], next: Iot[]): void
+  }
+}
+
+package "iot.infrastructure" {
+  interface IotResource {
+    + id: number
+    + equipment_id: number
+    + mac_address: string
+    + status: string
+    + last_heartbeat: string
+    + location: string
+    + battery_level: number
+    + signal_strength: number
+    + firmware_version: string
+  }
+
+  class IotAssembler {
+    + toEntitiesFromResponse(response: IotResponse): Iot[]
+    + toEntityFromResource(resource: IotResource): Iot
+    + toResourceFromEntity(entity: Iot): IotResource
+    - mapStatus(raw: string): IotStatus
+  }
+
+  class IotApiEndpoint {
+    + constructor(http: HttpClient)
+  }
+
+  class IotApi {
+    - endpoint: IotApiEndpoint
+    + getDevices(): Observable<Iot[]>
+    + getDeviceById(id: number): Observable<Iot>
+    + registerDevice(entity: Iot): Observable<Iot>
+    + updateDevice(entity: Iot): Observable<Iot>
+    + deleteDevice(id: number): Observable<void>
+  }
+
+  abstract class BaseApi {
+  }
+
+  abstract class BaseApiEndpoint {
+    + getAll(): Observable<TEntity[]>
+    + getById(id: number): Observable<TEntity>
+    + create(entity: TEntity): Observable<TEntity>
+    + update(entity: TEntity, id: number): Observable<TEntity>
+    + delete(id: number): Observable<void>
+  }
+}
+
+package "iot.presentation.views" {
+  class IotMonitoringComponent <<component>> {
+    - store: IotStore
+    + isLoading: Signal<boolean>
+    + deviceCount: Signal<number>
+    + onlineCount: Signal<number>
+    + offlineCount: Signal<number>
+    + avgBattery: Signal<number>
+    + activeAlerts: Signal<Iot[]>
+    + reconnectedDevice: Signal<Iot | null>
+    + searchQuery: Signal<string>
+    + statusFilter: Signal<IotStatus | "">
+    + filteredDevices: Signal<Iot[]>
+    + sensorId(id: number): string
+    + statusIcon(status: IotStatus): string
+    + batteryIcon(level: number): string
+    + batteryClass(level: number): string
+    + onSearchChange(v: string): void
+    + onStatusFilterChange(v: string): void
+    + onRefresh(): void
+    + onInvestigate(sensor: Iot): void
+    + onScheduleReplacement(sensorId: number): void
+    + onDismissModal(): void
+  }
+}
+
+IotApi --|> BaseApi : extends
+IotApiEndpoint --|> BaseApiEndpoint : extends
+IotApi --> IotApiEndpoint : uses
+IotApiEndpoint --> IotAssembler : uses
+IotStore --> IotApi : uses
+IotAssembler ..> IotResource : transforms
+IotAssembler --> Iot : creates
+IotMonitoringComponent --> IotStore : uses
+Iot --> IotStatus : has
+IotStore --> AlertType : classifies
+
+@enduml

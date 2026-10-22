@@ -1,0 +1,421 @@
+<div class="map-root" (click)="closeMachineDetail()">
+
+  <!-- ── HEADER ─────────────────────────────────────────────────── -->
+  <header class="map-header">
+    <div class="header-meta">
+      <div class="live-pill">
+        <span class="live-dot"></span>
+        <span class="live-text">LIVE</span>
+      </div>
+      <div class="header-titles">
+        <h1 class="map-title">{{ 'map.title' | translate }}</h1>
+        <p class="map-subtitle">{{ 'map.subtitle' | translate }}</p>
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <div class="gym-selector">
+        <mat-icon class="gym-sel-icon">location_on</mat-icon>
+        <mat-select
+          [ngModel]="selectedBranchId()"
+          (ngModelChange)="selectedBranchId.set($event)"
+          class="gym-select"
+          panelClass="gym-panel"
+          disableRipple
+        >
+          @for (branch of branches(); track branch.branchId) {
+            <mat-option [value]="branch.branchId">{{ branch.name }}</mat-option>
+          }
+        </mat-select>
+      </div>
+
+      <div class="view-tabs">
+        <button class="view-tab" [class.active]="viewMode() === 'MAP'"
+          (click)="viewMode.set('MAP'); $event.stopPropagation()">
+          <mat-icon>map</mat-icon>{{ 'map.view.map' | translate }}
+        </button>
+        <button class="view-tab" [class.active]="viewMode() === 'HEATMAP'"
+          (click)="viewMode.set('HEATMAP'); $event.stopPropagation()">
+          <mat-icon>local_fire_department</mat-icon>{{ 'map.view.heat' | translate }}
+        </button>
+        <button class="view-tab" [class.active]="viewMode() === 'ALL_BRANCHES'"
+          (click)="viewMode.set('ALL_BRANCHES'); $event.stopPropagation()">
+          <mat-icon>business</mat-icon>{{ 'map.branches.allBranches' | translate }}
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── GLOBAL LOADING ────────────────────────────────────────── -->
+  @if (dataLoading()) {
+    <div class="loading-state">
+      <mat-icon class="spin">refresh</mat-icon>
+      <span>{{ 'map.branches.loading' | translate }}</span>
+    </div>
+  }
+
+  @if (!dataLoading()) {
+
+    <!-- ── LOAD ERROR (e.g. 403 on admin-only endpoints) ─────────── -->
+    @if (dataError()) {
+      <div class="error-state">
+        <mat-icon>error_outline</mat-icon>
+        <p>{{ dataError()! | translate }}</p>
+      </div>
+    }
+
+    <!-- ── NO BRANCHES EMPTY STATE ───────────────────────────────── -->
+    @if (!dataError() && branches().length === 0) {
+      <div class="empty-state">
+        <mat-icon class="empty-icon">location_off</mat-icon>
+        <p>{{ 'map.branches.noBranches' | translate }}</p>
+      </div>
+    }
+
+    @if (branches().length > 0) {
+
+      <!-- ── STATS BAR (MAP / HEATMAP only) ────────────────────── -->
+      @if (viewMode() !== 'ALL_BRANCHES') {
+        <div class="stats-bar">
+          <div class="stat-pill stat-green">
+            <mat-icon>check_circle</mat-icon>
+            <span class="stat-num">{{ availableCount }}</span>
+            <span class="stat-lbl">{{ 'map.stats.free' | translate }}</span>
+          </div>
+          <div class="stat-pill stat-red">
+            <mat-icon>person</mat-icon>
+            <span class="stat-num">{{ inUseCount }}</span>
+            <span class="stat-lbl">{{ 'map.stats.inUse' | translate }}</span>
+          </div>
+          <div class="stat-pill stat-yellow">
+            <mat-icon>schedule</mat-icon>
+            <span class="stat-num">{{ reservedCount }}</span>
+            <span class="stat-lbl">{{ 'map.stats.reserved' | translate }}</span>
+          </div>
+          <div class="stat-pill stat-util">
+            <mat-icon>bar_chart</mat-icon>
+            <span class="stat-num">{{ utilization }}%</span>
+            <span class="stat-lbl">{{ 'map.stats.util' | translate }}</span>
+          </div>
+        </div>
+      }
+
+      <!-- ── FILTER TABS (MAP only) ──────────────────────────────── -->
+      @if (viewMode() === 'MAP') {
+        <div class="filter-bar">
+          <button class="filter-chip" [class.active]="activeFilter() === 'ALL'"
+            (click)="setFilter('ALL'); $event.stopPropagation()">
+            {{ 'map.filter.all' | translate }}
+          </button>
+          <button class="filter-chip" [class.active]="activeFilter() === 'CARDIO'"
+            (click)="setFilter('CARDIO'); $event.stopPropagation()">
+            {{ 'map.filter.cardio' | translate }}
+          </button>
+          <button class="filter-chip" [class.active]="activeFilter() === 'STRENGTH'"
+            (click)="setFilter('STRENGTH'); $event.stopPropagation()">
+            {{ 'map.filter.strength' | translate }}
+          </button>
+        </div>
+      }
+
+      <!-- ── HEATMAP LEGEND ──────────────────────────────────────── -->
+      @if (viewMode() === 'HEATMAP') {
+        <div class="heat-legend-bar">
+          <span class="heat-lbl-text">Low</span>
+          <div class="heat-gradient-strip"></div>
+          <span class="heat-lbl-text">High</span>
+          <span class="heat-lbl-note">Live availability</span>
+        </div>
+      }
+
+      <!-- ── MAP VIEW ───────────────────────────────────────────── -->
+      @if (viewMode() === 'MAP') {
+        <div class="floor-plan-wrap">
+          <div class="floor-plan">
+            <div class="scan-line" aria-hidden="true"></div>
+            <div class="bp-inner-perim" aria-hidden="true"></div>
+
+            <!-- Structural column dots -->
+            <div class="bp-col" style="top:0;left:20%"    aria-hidden="true"></div>
+            <div class="bp-col" style="top:0;left:50%"    aria-hidden="true"></div>
+            <div class="bp-col" style="top:0;left:80%"    aria-hidden="true"></div>
+            <div class="bp-col" style="top:22%;left:0"    aria-hidden="true"></div>
+            <div class="bp-col" style="top:45%;left:0"    aria-hidden="true"></div>
+            <div class="bp-col" style="top:68%;left:0"    aria-hidden="true"></div>
+            <div class="bp-col" style="top:22%;left:100%" aria-hidden="true"></div>
+            <div class="bp-col" style="top:45%;left:100%" aria-hidden="true"></div>
+            <div class="bp-col" style="top:68%;left:100%" aria-hidden="true"></div>
+            <div class="bp-col" style="top:100%;left:22%" aria-hidden="true"></div>
+            <div class="bp-col" style="top:100%;left:50%" aria-hidden="true"></div>
+            <div class="bp-col" style="top:100%;left:78%" aria-hidden="true"></div>
+
+            <!-- Horizontal partition wall -->
+            <div class="bp-wall-h" style="top:68%;left:0;right:0" aria-hidden="true"></div>
+
+            <!-- Support rooms (decorative) -->
+            <div class="bp-support-room" style="top:69%;left:1%;width:20%;bottom:1%" aria-hidden="true">
+              <span class="bp-room-lbl">LOCKER</span>
+            </div>
+            <div class="bp-support-room" style="top:69%;left:22%;right:22%;bottom:1%" aria-hidden="true">
+              <span class="bp-room-lbl">LOBBY</span>
+            </div>
+            <div class="bp-entrance" style="top:69%;right:1%;width:20%;bottom:1%" aria-hidden="true">
+              <span class="bp-room-lbl">OFFICE</span>
+            </div>
+
+            <!-- Dynamic zone dividers + labels -->
+            @for (col of filteredZoneLayout; track col.zone?.zoneId ?? '__unzoned__'; let i = $index) {
+              @if (i > 0) {
+                <div class="bp-wall-v"
+                     [style.left]="col.colLeftPct + '%'"
+                     style="top:0;height:68%"
+                     aria-hidden="true"></div>
+              }
+              <div class="zone-label"
+                   [style.left]="(col.colLeftPct + col.colWidthPct / 2) + '%'"
+                   [style.transform]="'translateX(-50%)'"
+                   aria-hidden="true">
+                {{ col.zoneName === '__unzoned__' ? ('map.zone.unzoned' | translate) : col.zoneName }}
+              </div>
+            }
+
+            <!-- No zones configured -->
+            @if (filteredZoneLayout.length === 0) {
+              <div class="empty-zone-msg">
+                <mat-icon>location_searching</mat-icon>
+                <span>{{ 'map.branches.noZones' | translate }}</span>
+              </div>
+            }
+
+            <!-- Equipment pins across all zone columns -->
+            @for (col of filteredZoneLayout; track col.zone?.zoneId ?? '__unzoned__') {
+              @for (item of col.equipment; track item.eq.uuid) {
+                <div
+                  class="machine-pin"
+                  [ngClass]="pinStatusClass(item.eq.uuid, item.eq.status)"
+                  [style.top]="item.top"
+                  [style.left]="item.left"
+                  (click)="openEquipmentDetail(item.eq.uuid, $event)"
+                >
+                  <div class="pin-ring ring-a"></div>
+                  <div class="pin-ring ring-b"></div>
+                  <div class="pin-body">
+                    <mat-icon class="pin-icon">{{ item.icon }}</mat-icon>
+                  </div>
+                  <span class="pin-label">{{ item.eq.name }}</span>
+                </div>
+              }
+            }
+          </div>
+
+          <div class="floor-legend">
+            <div class="legend-item"><span class="ldot ldot-green"></span><span>{{ 'map.legend.available' | translate: { count: availableCount } }}</span></div>
+            <div class="legend-item"><span class="ldot ldot-red"></span><span>{{ 'map.legend.inUse' | translate: { count: inUseCount } }}</span></div>
+            <div class="legend-item"><span class="ldot ldot-yellow"></span><span>{{ 'map.legend.reserved' | translate: { count: reservedCount } }}</span></div>
+          </div>
+        </div>
+      }
+
+      <!-- ── HEATMAP VIEW ────────────────────────────────────────── -->
+      @if (viewMode() === 'HEATMAP') {
+        <div class="floor-plan-wrap">
+          <div class="floor-plan heat-mode">
+            <canvas #heatCanvas class="heat-canvas"></canvas>
+
+            @for (col of zoneLayout(); track col.zone?.zoneId ?? '__unzoned__') {
+              @for (item of col.equipment; track item.eq.uuid) {
+                <div class="machine-pin pin-ghost" [style.top]="item.top" [style.left]="item.left">
+                  <div class="ghost-body"><mat-icon class="ghost-icon">{{ item.icon }}</mat-icon></div>
+                  <span class="usage-chip">{{ (usageByUuid()[item.eq.uuid] ?? 0) }}</span>
+                  <span class="pin-label">{{ item.eq.name }}</span>
+                </div>
+              }
+            }
+          </div>
+        </div>
+      }
+
+      <!-- ── ALL BRANCHES VIEW ───────────────────────────────────── -->
+      @if (viewMode() === 'ALL_BRANCHES') {
+        <div class="all-gyms-section">
+          <div class="all-gyms-header">
+            <h2 class="all-gyms-title">{{ 'map.branches.networkOverview' | translate }}</h2>
+            <p class="all-gyms-sub">{{ 'map.branches.clickToView' | translate }}</p>
+          </div>
+
+          <div class="gym-cards-grid">
+            @for (branch of branches(); track branch.branchId; let i = $index) {
+              <div
+                class="gym-card"
+                [class.gym-card--active]="branch.branchId === selectedBranchId()"
+                [style.animation-delay]="(i * 90) + 'ms'"
+                (click)="selectBranch(branch.branchId); $event.stopPropagation()"
+              >
+                <div class="gym-card-top">
+                  <div class="gym-card-name">
+                    <mat-icon class="gym-card-icon">location_on</mat-icon>
+                    <span>{{ branch.name }}</span>
+                  </div>
+                  <div class="util-badge">{{ branchUtilization(branch.branchId) }}%</div>
+                </div>
+
+                <div class="mini-map">
+                  @for (item of branchMiniMapItems(branch.branchId); track item.key) {
+                    <div
+                      class="heat-blob"
+                      [style.top]="item.top"
+                      [style.left]="item.left"
+                      [style.background-color]="getBranchHeatColor(branch.branchId, item.key)"
+                      [style.opacity]="0.12 + getBranchHeatOpacity(branch.branchId, item.key) * 0.78"
+                    ></div>
+                  }
+                  @for (item of branchMiniMapItems(branch.branchId); track item.key) {
+                    <div class="mini-pin" [style.top]="item.top" [style.left]="item.left">
+                      <mat-icon class="mini-pin-icon">{{ item.icon }}</mat-icon>
+                    </div>
+                  }
+                </div>
+
+                <div class="gym-card-stats">
+                  <div class="gym-stat gym-stat--green">
+                    <span class="gym-stat-dot" style="background:#4caf50"></span>
+                    <span>{{ branchAvailable(branch.branchId) }} {{ 'map.stats.free' | translate }}</span>
+                  </div>
+                  <div class="gym-stat gym-stat--red">
+                    <span class="gym-stat-dot" style="background:#f44336"></span>
+                    <span>{{ branchInUse(branch.branchId) }} {{ 'map.stats.inUse' | translate }}</span>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+    }
+  }
+
+</div>
+
+<!-- ── MACHINE DETAIL POPUP ─────────────────────────────────── -->
+@if (selectedEquipment()) {
+  <div class="detail-backdrop" (click)="closeMachineDetail()">
+
+    @if (!showAlternativesPanel()) {
+      <div class="detail-popup" (click)="$event.stopPropagation()">
+
+        <div class="detail-header">
+          <div class="detail-header-info">
+            <div class="detail-icon-wrap"
+              [class.detail-icon--available]="selectedEquipment()!.eq.status === 'AVAILABLE'"
+              [class.detail-icon--in-use]="isInUse(selectedEquipment()!.eq.status)"
+              [class.detail-icon--reserved]="selectedEquipment()!.eq.status === 'MAINTENANCE'"
+            >
+              <mat-icon class="detail-icon">{{ selectedEquipment()!.icon }}</mat-icon>
+            </div>
+            <div>
+              <h3 class="detail-name">{{ selectedEquipment()!.eq.name }}</h3>
+              <p class="detail-status-row">
+                {{ 'map.detail.statusLabel' | translate }}:&nbsp;
+                <span
+                  [class.status-available]="selectedEquipment()!.eq.status === 'AVAILABLE' && !isPending(selectedEquipment()!.eq.uuid)"
+                  [class.status-reserved]="isPending(selectedEquipment()!.eq.uuid)"
+                  [class.status-in-use]="isInUse(selectedEquipment()!.eq.status)"
+                >
+                  @if (isPending(selectedEquipment()!.eq.uuid)) {
+                    {{ 'map.detail.status.RESERVED' | translate }}
+                  } @else {
+                    {{ selectedEquipment()!.eq.status }}
+                  }
+                </span>
+              </p>
+            </div>
+          </div>
+          <button class="detail-close" (click)="closeMachineDetail()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+
+        @if (isPending(selectedEquipment()!.eq.uuid)) {
+          <div class="detail-body-reserved">
+            <p class="reserved-msg">{{ 'map.detail.reservedByUser' | translate }}</p>
+          </div>
+        }
+
+        @if (isInUse(selectedEquipment()!.eq.status)) {
+          <div class="detail-actions">
+            <button class="btn-action-cyan" (click)="notifyWhenFree()">
+              <mat-icon>notifications</mat-icon>
+              {{ 'map.detail.notifyBtn' | translate }}
+            </button>
+            <button class="btn-action-dark" (click)="openAlternatives()">
+              <mat-icon>autorenew</mat-icon>
+              {{ 'map.detail.alternativesBtn' | translate }}
+            </button>
+            <button class="btn-action-dark" (click)="reportAsFree()">
+              <mat-icon>flag</mat-icon>
+              {{ 'map.detail.reportFreeBtn' | translate }}
+            </button>
+          </div>
+        }
+
+        @if (selectedEquipment()!.eq.status === 'MAINTENANCE' || selectedEquipment()!.eq.status === 'OUT_OF_SERVICE') {
+          <div class="detail-body-reserved">
+            <p class="reserved-msg">
+              {{ selectedEquipment()!.eq.status === 'MAINTENANCE'
+                ? ('map.detail.status.MAINTENANCE' | translate)
+                : ('map.detail.status.OUT_OF_SERVICE' | translate) }}
+            </p>
+          </div>
+        }
+
+        @if (selectedEquipment()!.eq.status === 'AVAILABLE' && !isPending(selectedEquipment()!.eq.uuid)) {
+          <div class="detail-actions">
+            <button class="btn-action-yellow" (click)="reserveMachine()">
+              <mat-icon>event</mat-icon>
+              {{ 'map.detail.reserveBtn' | translate }}
+            </button>
+            <button class="btn-action-dark" (click)="reportAsOccupied()">
+              <mat-icon>flag</mat-icon>
+              {{ 'map.detail.reportOccupiedBtn' | translate }}
+            </button>
+          </div>
+        }
+
+      </div>
+
+    } @else {
+
+      <div class="detail-popup" (click)="$event.stopPropagation()">
+        <div class="detail-header">
+          <h3 class="detail-name">{{ 'map.alternatives.title' | translate }}</h3>
+          <button class="detail-close" (click)="closeMachineDetail()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+        <p class="alt-subtitle">{{ 'map.alternatives.subtitle' | translate }}</p>
+        <div class="alt-list">
+          @for (alt of alternativeEquipment(); track alt.eq.uuid) {
+            <div class="alt-item">
+              <div class="alt-info">
+                <span class="alt-name">{{ alt.eq.name }}</span>
+                <span class="alt-group">{{ alt.category }}</span>
+              </div>
+              <div class="alt-status">
+                <span class="alt-free-dot"></span>
+                <span class="alt-free-txt">{{ 'map.alternatives.free' | translate }}</span>
+              </div>
+            </div>
+          }
+        </div>
+        <div class="alt-footer">
+          <button class="btn-action-yellow btn-full" (click)="reserveMachine()">
+            {{ 'map.alternatives.reserveBtn' | translate }}
+          </button>
+        </div>
+      </div>
+
+    }
+
+  </div>
+}

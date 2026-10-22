@@ -1,0 +1,52 @@
+<div class="plans-page">
+  <div class="plans-container">
+
+    <div class="plans-header">
+      <div class="plans-brand">
+        <img class="plans-brand__logo" src="MOscuroSinBG.svg" alt="SpotTrack logo">
+        <span class="plans-brand__name">SpotTrack</span>
+      </div>
+      <h1 class="plans-title">{{ 'auth.plans.title' | translate }}</h1>
+      <p class="plans-subtitle">{{ 'auth.plans.subtitle' | translate }}</p>
+    </div>
+
+    <div class="plans-grid">
+      @for (plan of plans; track plan.key) {
+        <div
+          class="plan-card"
+          [class.plan-card--selected]="selectedKey === plan.key"
+          (click)="selectPlan(plan.key)"
+        >
+          @if (plan.popular) {
+            <span class="plan-badge">{{ 'auth.plans.popularBadge' | translate }}</span>
+          }
+          <h2 class="plan-name">{{ ('auth.plans.tier.' + plan.key) | translate }}</h2>
+          <div class="plan-price">
+            <span class="price-value">${{ plan.price }}</span>
+            <span class="price-period">{{ 'auth.plans.perMonth' | translate }}</span>
+          </div>
+          <ul class="plan-features">
+            @for (feature of plan.features; track feature) {
+              <li>
+                <mat-icon class="check-icon">check_circle</mat-icon>
+                {{ ('auth.plans.feature.' + feature) | translate }}
+              </li>
+            }
+          </ul>
+        </div>
+      }
+    </div>
+
+    @if (errorMsg) {
+      <div class="error-banner">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ errorMsg | translate }}</span>
+      </div>
+    }
+
+    <button class="btn-pay" type="button" [disabled]="loadingPlan" (click)="proceedToPayment()">
+      {{ (loadingPlan ? 'auth.plans.processing' : 'auth.plans.proceedBtn') | translate }}
+    </button>
+
+  </div>
+</div>

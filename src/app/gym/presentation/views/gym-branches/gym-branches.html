@@ -1,0 +1,209 @@
+<div class="br-page">
+
+  <!-- Page Header -->
+  <div class="br-header">
+    <div class="br-header__text">
+      <h1 class="br-header__title">{{ 'branches.title' | translate }}</h1>
+      <p class="br-header__subtitle">{{ 'branches.subtitle' | translate }}</p>
+    </div>
+    @if (adminGymStore.primaryGym()) {
+      <span class="br-gym-badge">
+        <mat-icon>fitness_center</mat-icon>
+        {{ adminGymStore.primaryGym()!.name }}
+      </span>
+    }
+  </div>
+
+  <!-- Gym load error -->
+  @if (adminGymStore.error()) {
+    <div class="br-banner br-banner--error">
+      <mat-icon>error_outline</mat-icon>
+      {{ adminGymStore.error()! | translate }}
+    </div>
+  }
+
+  @if (adminGymStore.primaryGym()) {
+
+    <!-- Add branch form -->
+    <div class="br-add-card">
+      <p class="br-add-card__label">{{ 'branches.addTitle' | translate }}</p>
+      <div class="br-add-fields">
+        <input
+          class="br-add-input"
+          type="text"
+          [placeholder]="'branches.namePlaceholder' | translate"
+          [(ngModel)]="nameInput"
+          (input)="onInputChange()"
+          (keydown.enter)="addBranch()"
+        />
+        <input
+          class="br-add-input"
+          type="text"
+          [placeholder]="'branches.addressPlaceholder' | translate"
+          [(ngModel)]="addressInput"
+          (input)="onInputChange()"
+          (keydown.enter)="addBranch()"
+        />
+        <button
+          class="btn-add"
+          [disabled]="branchStore.createLoading()"
+          (click)="addBranch()">
+          <mat-icon>add</mat-icon>
+          {{ 'branches.addBtn' | translate }}
+        </button>
+      </div>
+
+      <!-- Create errors -->
+      @if (branchStore.createError() === 'branches.error.limitReached') {
+        <div class="br-limit-error">
+          <mat-icon>block</mat-icon>
+          <span>{{ 'branches.error.limitReached' | translate }}</span>
+          <a class="br-limit-error__link" routerLink="/membership">
+            {{ 'branches.error.upgradePlanLink' | translate }}
+          </a>
+        </div>
+      } @else if (branchStore.createError() === 'branches.error.noActiveMembership') {
+        <div class="br-limit-error">
+          <mat-icon>warning_amber</mat-icon>
+          <span>{{ 'branches.error.noActiveMembership' | translate }}</span>
+          <a class="br-limit-error__link" routerLink="/membership">
+            {{ 'branches.error.manageMembershipLink' | translate }}
+          </a>
+        </div>
+      } @else if (branchStore.createError()) {
+        <span class="br-field-error">{{ branchStore.createError()! | translate }}</span>
+      }
+    </div>
+
+    <!-- Branch list load error -->
+    @if (branchStore.error()) {
+      <div class="br-banner br-banner--error">
+        <mat-icon>error_outline</mat-icon>
+        {{ branchStore.error()! | translate }}
+      </div>
+    }
+
+    <!-- Branch list -->
+    @if (branchStore.loading()) {
+      <div class="br-loading">
+        <mat-icon class="br-spinner">autorenew</mat-icon>
+      </div>
+    } @else if (!branchStore.error()) {
+      @if (branchStore.branches().length === 0) {
+        <div class="br-empty">
+          <mat-icon>store_mall_directory</mat-icon>
+          <p>{{ 'branches.empty' | translate }}</p>
+        </div>
+      } @else {
+        <div class="br-card">
+          <div class="br-card__header">
+            <span class="br-count">
+              {{ 'branches.count' | translate: { count: branchStore.branches().length } }}
+            </span>
+          </div>
+          <ul class="br-list">
+            @for (branch of branchStore.branches(); track branch.branchId) {
+              <li class="br-item" [class.br-item--open]="expandedBranchId() === branch.branchId">
+
+                <!-- Branch row -->
+                <div class="br-item__row">
+                  <div class="br-item__icon-wrap">
+                    <mat-icon>location_on</mat-icon>
+                  </div>
+                  <div class="br-item__info">
+                    <span class="br-item__name">{{ branch.name }}</span>
+                    @if (branch.address) {
+                      <span class="br-item__address">{{ branch.address }}</span>
+                    }
+                  </div>
+                  <button
+                    class="br-item__zones-btn"
+                    type="button"
+                    (click)="toggleBranch(branch.branchId)">
+                    <mat-icon>grid_view</mat-icon>
+                    <span>{{ 'branches.zones.manageBtn' | translate }}</span>
+                    <mat-icon class="br-item__chevron">
+                      {{ expandedBranchId() === branch.branchId ? 'expand_less' : 'expand_more' }}
+                    </mat-icon>
+                  </button>
+                </div>
+
+                <!-- Zone panel -->
+                @if (expandedBranchId() === branch.branchId) {
+                  <div class="br-zones">
+
+                    <!-- Add zone form -->
+                    <div class="br-zones__add">
+                      <p class="br-zones__add-label">{{ 'branches.zones.addTitle' | translate }}</p>
+                      <div class="br-add-fields">
+                        <input
+                          class="br-add-input"
+                          type="text"
+                          [placeholder]="'branches.zones.namePlaceholder' | translate"
+                          [(ngModel)]="zoneNameInput"
+                          (input)="onZoneInputChange()"
+                          (keydown.enter)="addZone(branch.branchId)"
+                        />
+                        <input
+                          class="br-add-input br-add-input--num"
+                          type="number"
+                          min="1"
+                          [placeholder]="'branches.zones.occupancyPlaceholder' | translate"
+                          [(ngModel)]="zoneOccupancyInput"
+                          (input)="onZoneInputChange()"
+                          (keydown.enter)="addZone(branch.branchId)"
+                        />
+                        <button
+                          class="btn-add btn-add--zone"
+                          type="button"
+                          [disabled]="zoneStore.createLoading()"
+                          (click)="addZone(branch.branchId)">
+                          <mat-icon>add</mat-icon>
+                          {{ 'branches.zones.addBtn' | translate }}
+                        </button>
+                      </div>
+                      @if (zoneStore.createError()) {
+                        <span class="br-field-error">{{ zoneStore.createError()! | translate }}</span>
+                      }
+                    </div>
+
+                    <!-- Zone list -->
+                    @if (zonesFor(branch.branchId).length === 0) {
+                      <div class="br-zones__empty">
+                        <mat-icon>grid_off</mat-icon>
+                        <span>{{ 'branches.zones.empty' | translate }}</span>
+                      </div>
+                    } @else {
+                      <ul class="br-zones__list">
+                        @for (zone of zonesFor(branch.branchId); track zone.zoneId) {
+                          <li class="br-zone-item">
+                            <div class="br-zone-item__icon-wrap">
+                              <mat-icon>grid_view</mat-icon>
+                            </div>
+                            <div class="br-zone-item__info">
+                              <span class="br-zone-item__name">{{ zone.zoneName }}</span>
+                              <span class="br-zone-item__occ">
+                                {{ 'branches.zones.occupancy' | translate: { max: zone.maximumOccupancy } }}
+                              </span>
+                            </div>
+                          </li>
+                        }
+                      </ul>
+                      <p class="br-zones__count">
+                        {{ 'branches.zones.count' | translate: { count: zonesFor(branch.branchId).length } }}
+                      </p>
+                    }
+
+                  </div>
+                }
+
+              </li>
+            }
+          </ul>
+        </div>
+      }
+    }
+
+  }
+
+</div>

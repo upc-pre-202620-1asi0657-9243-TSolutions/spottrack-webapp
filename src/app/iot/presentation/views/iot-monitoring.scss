@@ -1,0 +1,546 @@
+.iot-page {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+// ── Header ──────────────────────────────────────────────────────────────────
+.iot-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.iot-header__title {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.iot-header__subtitle {
+  margin: 4px 0 0;
+  color: #aaa;
+  font-size: 0.9rem;
+}
+
+.btn-refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  background: #4fc3f7;
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+  &:hover { background: #81d4fa; }
+}
+
+// ── Quick actions ────────────────────────────────────────────────────────────
+.quick-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.quick-action {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  border-radius: 10px;
+  background: #1e1e1e;
+  border: 1px solid #2a2a2a;
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: border-color 0.15s;
+
+  &:hover { border-color: #f5bc36; }
+
+  mat-icon:first-child { color: #f5bc36; }
+}
+
+.quick-action__arrow { margin-left: auto; color: #666; flex-shrink: 0; }
+
+// ── KPI Cards ────────────────────────────────────────────────────────────────
+.iot-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  border-radius: 12px;
+  background: #1e1e1e;
+  border: 1px solid #2a2a2a;
+
+  mat-icon { font-size: 32px; width: 32px; height: 32px; flex-shrink: 0; }
+}
+
+.stat-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.stat-card__value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+}
+
+.stat-card__label {
+  font-size: 0.78rem;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat-card__sub {
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.stat-card--online    { border-left: 3px solid #66bb6a; mat-icon { color: #66bb6a; } }
+.stat-card--offline   { border-left: 3px solid #ef5350; mat-icon { color: #ef5350; } }
+.stat-card--battery   { border-left: 3px solid #ffa726; mat-icon { color: #ffa726; } }
+.stat-card--no-alerts { border-left: 3px solid #66bb6a; mat-icon { color: #66bb6a; } }
+
+// ── Responsive ───────────────────────────────────────────────────────────────
+@media (max-width: 1024px) {
+  .iot-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .iot-page {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .iot-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .btn-refresh {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .iot-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .iot-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .iot-search {
+    max-width: none;
+  }
+
+  .iot-filter-select {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .iot-page { padding: 12px; gap: 12px; }
+  .iot-header__title { font-size: 1.4rem; }
+  .iot-stats { gap: 8px; }
+  .stat-card { padding: 14px 16px; gap: 10px; }
+  .stat-card__value { font-size: 1.6rem; }
+  .iot-card { overflow-x: auto; }
+}
+
+// ── Filters ──────────────────────────────────────────────────────────────────
+.iot-filters {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.iot-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 0 12px;
+  flex: 1;
+  max-width: 1500px;
+}
+
+.iot-search__icon  { color: #aaa; font-size: 20px; }
+
+.iot-search__input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-size: 0.9rem;
+  padding: 10px 0;
+}
+
+.iot-filter-select {
+  min-width: 180px;
+
+  ::ng-deep {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing { border-color: #333 !important; }
+
+    &:hover .mdc-notched-outline__leading,
+    &:hover .mdc-notched-outline__notch,
+    &:hover .mdc-notched-outline__trailing { border-color: #f5bc36 !important; }
+
+    .mdc-floating-label  { color: #aaa; }
+    .mat-mdc-select-value { color: #fff; }
+    .mat-mdc-select-arrow { color: #aaa; }
+  }
+}
+
+// ── Sensor Table Card ────────────────────────────────────────────────────────
+.iot-card {
+  background: #1e1e1e;
+  border-radius: 12px;
+  border: 1px solid #2a2a2a;
+  overflow: hidden;
+  position: relative;
+}
+
+.iot-card__header {
+  padding: 16px 24px;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.iot-card__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.iot-loading {
+  display: flex;
+  justify-content: center;
+  padding: 48px;
+}
+
+.iot-table {
+  width: 100%;
+  background: transparent;
+}
+
+.iot-row:hover { background: rgba(255,255,255,0.03); }
+
+.cell-id {
+  font-weight: 600;
+  color: #4fc3f7;
+  font-family: monospace;
+}
+
+.cell-secondary {
+  color: #aaa;
+  mat-icon { font-size: 16px; width: 16px; height: 16px; vertical-align: middle; margin-right: 4px; }
+}
+
+// Status badges
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+
+  mat-icon { font-size: 14px; width: 14px; height: 14px; }
+}
+
+.badge--status-available      { background: rgba(102,187,106,.15); color: #66bb6a; }
+.badge--status-occupied       { background: rgba(20,184,166,.15);  color: #14b8a6; }
+.badge--status-active         { background: rgba(20,184,166,.15);  color: #14b8a6; }
+.badge--status-maintenance    { background: rgba(245,158,11,.15);  color: #f59e0b; }
+.badge--status-out_of_service { background: rgba(244,63,94,.15);   color: #f43f5e; }
+.badge--status-decommissioned { background: rgba(244,63,94,.15);   color: #f43f5e; }
+
+.badge--online  { background: rgba(102,187,106,.15); color: #66bb6a; }
+.badge--offline { background: rgba(244,63,94,.15);    color: #f43f5e; }
+
+.btn-simulate-motion {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  color: #4fc3f7;
+  border: 1px solid rgba(79, 195, 247, .4);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: .78rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color .15s, border-color .15s;
+
+  mat-icon { font-size: 15px; width: 15px; height: 15px; }
+
+  &:hover:not(:disabled) { background: rgba(79, 195, 247, .1); border-color: #4fc3f7; }
+  &:disabled { opacity: .4; cursor: not-allowed; }
+}
+
+.no-data-cell {
+  padding: 48px;
+  text-align: center;
+  color: #aaa;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+
+  mat-icon { font-size: 48px; width: 48px; height: 48px; }
+}
+
+// ── Session monitoring section (usage detection, inactivity, session time) ──
+
+$session-bg-card:  #1e1e1e;
+$session-border:   #333333;
+$session-text:     #e0e0e0;
+$session-muted:    #9ca3af;
+$session-accent:   #f5bc36;
+$session-red:      #fb2c36;
+$session-green:    #00c950;
+$session-blue:     #4fc3f7;
+
+.session-monitoring { display: flex; flex-direction: column; gap: 20px; margin-top: 24px; }
+
+.section-title { margin: 0; font-size: 1.4rem; font-weight: 700; color: #fff; }
+
+.section-card {
+  background: $session-bg-card;
+  border: 1px solid $session-border;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  h2 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  mat-icon { color: $session-muted; flex-shrink: 0; }
+}
+
+.count-badge {
+  margin-left: auto;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: .8rem;
+  font-weight: 700;
+  background: rgba(79, 195, 247, .12);
+  color: $session-blue;
+}
+
+.btn-refresh-inline {
+  background: none;
+  border: none;
+  color: $session-muted;
+  cursor: pointer;
+  display: inline-flex;
+  padding: 2px;
+  &:hover:not(:disabled) { color: #fff; }
+  &:disabled { opacity: .4; cursor: not-allowed; }
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+}
+
+.tag {
+  font-size: .78rem;
+  color: $session-muted;
+}
+
+.empty-msg { color: $session-muted; font-size: .9rem; }
+
+.tracked-list { display: flex; flex-direction: column; gap: 8px; }
+
+.tracked-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: #2a2a2a;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  width: 100%;
+  flex-wrap: wrap;
+
+  &:hover { border-color: #444; }
+  &--selected { border-color: $session-accent; background: rgba(245, 188, 54, .08); }
+}
+
+.tracked-row__main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.tracked-row__equipment {
+  font-weight: 600;
+  color: #fff;
+  font-size: .88rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tracked-row__id {
+  color: $session-muted;
+  font-size: .72rem;
+}
+
+.mono { font-family: 'Consolas', monospace; font-size: .85rem; }
+
+.status-badge {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: .75rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 6px;
+
+  mat-icon { font-size: 14px; width: 14px; height: 14px; }
+
+  &--active  { color: $session-green; background: rgba(0, 201, 80, .1); }
+  &--inactive{ color: $session-muted; background: rgba(156, 163, 175, .12); }
+  &--warning { color: $session-red;   background: rgba(251, 44, 54, .1); }
+  &--ok      { color: $session-green; background: rgba(0, 201, 80, .1); }
+}
+
+.status-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.status-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: #2a2a2a;
+  border-radius: 8px;
+  padding: 12px;
+  min-width: 0;
+
+  span:not(.status-cell__label) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__label { font-size: .75rem; color: $session-muted; }
+}
+
+.calculated-time-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 0 0;
+  font-size: .82rem;
+  color: $session-accent;
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+}
+
+.action-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.action-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  &__label { font-size: .8rem; color: $session-muted; font-weight: 600; }
+}
+
+.action-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  background: #2a2a2a;
+  border: 1px solid $session-border;
+  border-radius: 6px;
+  color: $session-text;
+  font-size: .8125rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+  &:hover:not(:disabled) { border-color: #555; }
+  &:disabled { opacity: .4; cursor: not-allowed; }
+
+  &--danger { color: $session-red; border-color: rgba(251, 44, 54, .4); }
+  &--accent { color: $session-accent; border-color: rgba(245, 188, 54, .4); }
+  &--ok     { color: $session-green; border-color: rgba(0, 201, 80, .4); }
+}
+
+@media (max-width: 900px) {
+  .layout-grid { grid-template-columns: 1fr; }
+  .status-strip { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 480px) {
+  .section-card { padding: 14px; gap: 12px; }
+  .status-strip { grid-template-columns: 1fr; }
+  .action-buttons { flex-direction: column; align-items: stretch; }
+  .btn-action { justify-content: center; }
+  .tracked-row { flex-direction: column; align-items: flex-start; }
+  .status-badge { margin-left: 0; }
+}

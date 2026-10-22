@@ -1,0 +1,53 @@
+@startuml BC-13_Map
+
+package "map.presentation.views" {
+  interface MachineMarker {
+    + id: string
+    + nameKey: string
+    + muscleGroupKey: string
+    + status: MachineStatus
+    + category: MachineCategory
+    + top: string
+    + left: string
+    + icon: string
+    + timerSeconds?: number
+  }
+
+  interface Gym {
+    + id: string
+  }
+
+  class MapComponent <<component>> {
+    - snackBar: MatSnackBar
+    - translate: TranslateService
+    + userName: string
+    + selectedGymId: string
+    + activeFilter: Signal<FilterTab>
+    + selectedMachineId: Signal<string | null>
+    + showAlternativesPanel: Signal<boolean>
+    + selectedMachine: Signal<MachineMarker | null>
+    + allMachines: Signal<MachineMarker[]>
+    + gyms: Gym[]
+    + filteredMachines: MachineMarker[]
+    + availableCount: number
+    + inUseCount: number
+    + reservedCount: number
+    + alternativeMachines: Signal<MachineMarker[]>
+    + ngOnInit(): void
+    + ngOnDestroy(): void
+    + setFilter(filter: FilterTab): void
+    + formatTimer(seconds: number): string
+    + openMachineDetail(machine: MachineMarker, event: Event): void
+    + closeMachineDetail(): void
+    + openAlternatives(): void
+    + notifyWhenFree(): void
+    + reportAsFree(): void
+    + reserveMachine(): void
+    + reportAsOccupied(): void
+  }
+}
+
+MapComponent --> MachineMarker : manages
+MapComponent --> Gym : references
+
+@enduml

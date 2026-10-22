@@ -1,0 +1,35 @@
+<div class="gym-create">
+  <div class="gym-create__header">
+    <mat-icon class="gym-create__icon">fitness_center</mat-icon>
+    <h1 class="gym-create__title">{{ 'gym.create.title' | translate }}</h1>
+    <p class="gym-create__subtitle">{{ 'gym.create.subtitle' | translate }}</p>
+  </div>
+
+  @if (store.createError()) {
+    <div class="gym-create__error">
+      <mat-icon>error_outline</mat-icon>
+      {{ store.createError()! | translate }}
+    </div>
+  }
+
+  <div class="gym-create__form">
+    <input
+      class="gym-create__input"
+      type="text"
+      [placeholder]="'gym.create.namePlaceholder' | translate"
+      [ngModel]="gymName()"
+      (ngModelChange)="gymName.set($event)"
+      (keydown.enter)="submit()" />
+
+    <button
+      class="gym-create__btn"
+      [disabled]="store.createLoading() || !gymName().trim()"
+      (click)="submit()">
+      @if (store.createLoading()) {
+        <mat-icon class="gym-create__spinner">autorenew</mat-icon>
+      } @else {
+        {{ 'gym.create.submitBtn' | translate }}
+      }
+    </button>
+  </div>
+</div>

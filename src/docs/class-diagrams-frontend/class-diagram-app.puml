@@ -1,0 +1,102 @@
+@startuml BC-00_Shared
+
+package "app" {
+  class App <<component>> {
+    + title: string
+  }
+}
+
+package "shared.application" {
+  abstract class BaseStore {
+  }
+
+  class SessionService {
+    - roleSignal: Signal<UserRole | null>
+    + role: Signal<UserRole | null>
+  }
+}
+
+package "shared.infrastructure" {
+  interface BaseEntity {
+    + id: number
+  }
+
+  interface BaseResource {
+    + id: number
+  }
+
+  interface BaseResponse {
+  }
+
+  interface BaseAssembler {
+    + toEntityFromResource(resource: TResource): TEntity
+    + toResourceFromEntity(entity: TEntity): TResource
+    + toEntitiesFromResponse(response: TResponse): TEntity[]
+  }
+
+  abstract class BaseApi {
+  }
+
+  abstract class BaseApiEndpoint {
+    # http: HttpClient
+    # endpointUrl: string
+    # assembler: TAssembler
+    + getAll(): Observable<TEntity[]>
+    + getById(id: number): Observable<TEntity>
+    + create(entity: TEntity): Observable<TEntity>
+    + update(entity: TEntity, id: number): Observable<TEntity>
+    + delete(id: number): Observable<void>
+    # handleError(operation: string): Function
+  }
+}
+
+package "shared.presentation.components" {
+  class Layout <<component>> {
+    - authStore: AuthStore
+    + sidebarOpen: boolean
+    + currentRole: "admin" | "client"
+    + toggleSidebar(): void
+    + closeSidebar(): void
+    + logout(): void
+  }
+
+  class Sidebar <<component>> {
+    - authStore: AuthStore
+    + navItems: NavItem[]
+    + open: boolean
+    + role: "admin" | "client"
+    + linkClicked: EventEmitter<void>
+  }
+
+  class BottomBar <<component>> {
+  }
+
+  class LanguageSwitcher <<component>> {
+  }
+
+  class UserProfile <<component>> {
+  }
+
+  interface NavItem {
+    + path: string
+    + icon: string
+    + labelKey: string
+  }
+}
+
+App *-- Layout : composes
+Layout *-- Sidebar : composes
+Layout *-- BottomBar : composes
+Layout *-- UserProfile : composes
+Layout *-- LanguageSwitcher : composes
+Layout --> AuthStore : uses
+Layout --> SessionService : reads
+Sidebar --> NavItem : uses
+BaseStore --> BaseApi : uses
+BaseApi --> BaseApiEndpoint : delegates
+BaseApiEndpoint --> BaseAssembler : uses
+BaseAssembler ..> BaseEntity : creates
+BaseAssembler ..> BaseResource : maps
+BaseAssembler ..> BaseResponse : parses
+
+@enduml

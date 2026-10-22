@@ -1,0 +1,96 @@
+<div class="scanner-overlay" (click)="close()">
+  <div class="scanner-modal" (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="scanner-header">
+      <div class="scanner-title-wrap">
+        <mat-icon class="scanner-icon">qr_code_scanner</mat-icon>
+        <div>
+          <h3 class="scanner-title">Escanear QR de la máquina</h3>
+          <p class="scanner-subtitle">Confirma tu presencia física</p>
+        </div>
+      </div>
+      <button class="scanner-close" (click)="close()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <!-- Mode tabs -->
+    <div class="scanner-tabs">
+      <button
+        class="tab-btn"
+        [class.tab-btn--active]="mode() === 'camera'"
+        (click)="switchMode('camera')"
+      >
+        <mat-icon>videocam</mat-icon>
+        Cámara
+      </button>
+      <button
+        class="tab-btn"
+        [class.tab-btn--active]="mode() === 'file'"
+        (click)="switchMode('file')"
+      >
+        <mat-icon>upload_file</mat-icon>
+        Archivo / Foto
+      </button>
+    </div>
+
+    <!-- Camera container: always in DOM so html5-qrcode can bind to it -->
+    <div
+      [id]="cameraId"
+      class="camera-container"
+      [class.camera-container--hidden]="mode() !== 'camera'"
+    ></div>
+
+    <!-- Camera controls -->
+    @if (mode() === 'camera') {
+      @if (!scanning()) {
+        <button class="btn-start" (click)="startCamera()">
+          <mat-icon>videocam</mat-icon>
+          Iniciar cámara
+        </button>
+      } @else {
+        <button class="btn-stop" (click)="stopCamera()">
+          <mat-icon>stop_circle</mat-icon>
+          Detener
+        </button>
+      }
+    }
+
+    <!-- File mode -->
+    @if (mode() === 'file') {
+      <div class="file-drop-zone">
+        <mat-icon class="file-icon">qr_code</mat-icon>
+        <p class="file-hint">Sube una imagen o toma una foto del código QR</p>
+        <label class="btn-file" [class.btn-file--scanning]="scanning()">
+          <mat-icon>{{ scanning() ? 'hourglass_top' : 'add_photo_alternate' }}</mat-icon>
+          {{ scanning() ? 'Procesando...' : 'Elegir imagen / Tomar foto' }}
+          <input
+            #fileInput
+            type="file"
+            accept="image/*"
+            (change)="onFileSelected($event, fileInput)"
+            hidden
+          />
+        </label>
+      </div>
+    }
+
+    <!-- Hidden container for file-mode scanning (html5-qrcode requirement) -->
+    <div [id]="fileId" class="file-scan-hidden"></div>
+
+    <!-- Error -->
+    @if (scanError()) {
+      <div class="scan-error">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ scanError() }}</span>
+      </div>
+    }
+
+    <!-- Footer hint -->
+    <p class="scanner-footer-hint">
+      Apunta la cámara al código QR pegado en la máquina para activar tu reserva
+    </p>
+
+  </div>
+</div>

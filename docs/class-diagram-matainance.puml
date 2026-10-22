@@ -1,0 +1,227 @@
+@startuml BC-05_Maintenance
+
+package "maintenance.domain.model" {
+  class MaintenanceTicket {
+    - _id: number
+    - _equipmentId: number
+    - _status: TicketStatus
+    - _priority: TicketPriority
+    - _type: TicketType
+    - _createdAt: string
+    - _description: string
+    - _assignee: string
+    - _completedBy: string
+    + id: number
+    + equipmentId: number
+    + status: TicketStatus
+    + priority: TicketPriority
+    + type: TicketType
+    + createdAt: string
+    + description: string
+    + assignee: string
+    + completedBy: string
+  }
+
+  class MaintenanceSchedule {
+    - _id: number
+    - _equipmentId: number
+    - _scheduledDate: string
+    - _scheduledTime: string
+    - _taskType: TaskType
+    - _notes: string
+    - _status: ScheduleStatus
+    + id: number
+    + equipmentId: number
+    + scheduledDate: string
+    + scheduledTime: string
+    + taskType: TaskType
+    + notes: string
+    + status: ScheduleStatus
+  }
+
+  enum TicketStatus {
+    OPEN
+    IN_PROGRESS
+    RESOLVED
+  }
+
+  enum TicketPriority {
+    LOW
+    MEDIUM
+    HIGH
+    URGENT
+  }
+
+  enum TicketType {
+    CORRECTIVE
+    PREVENTIVE
+  }
+
+  enum TaskType {
+    PREVENTIVE
+    LUBRICATION
+    INSPECTION
+    OVERHAUL
+  }
+
+  enum ScheduleStatus {
+    PENDING
+    CONFIRMED
+    CANCELLED
+  }
+}
+
+package "maintenance.application" {
+  class MaintenanceStore {
+    - ticketsSignal: Signal<MaintenanceTicket[]>
+    - schedulesSignal: Signal<MaintenanceSchedule[]>
+    - loadingSignal: Signal<boolean>
+    - errorSignal: Signal<string | null>
+    - lastScheduledSignal: Signal<MaintenanceSchedule | null>
+    + tickets: Signal<MaintenanceTicket[]>
+    + schedules: Signal<MaintenanceSchedule[]>
+    + loading: Signal<boolean>
+    + error: Signal<string | null>
+    + lastScheduled: Signal<MaintenanceSchedule | null>
+    + pendingTickets: Signal<MaintenanceTicket[]>
+    + inProgressTickets: Signal<MaintenanceTicket[]>
+    + resolvedTickets: Signal<MaintenanceTicket[]>
+    + totalTickets: Signal<number>
+    + scheduledCount: Signal<number>
+    + suggestedTimes: string[]
+    + isPeakHour(time: string): boolean
+    + startTicket(ticketId: number): void
+    + completeTicket(ticketId: number, completedBy?: string): void
+    + createTicket(equipmentId: number, description: string, priority: TicketPriority, type: TicketType): void
+    + scheduleBlock(equipmentId: number, date: string, time: string, taskType: TaskType, notes: string): void
+    + clearLastScheduled(): void
+    - loadAll(): void
+  }
+}
+
+package "maintenance.infrastructure" {
+  interface MaintenanceTicketResource {
+    + id: number
+    + equipment_id: number
+    + status: string
+    + priority: string
+    + type: string
+    + created_at: string
+    + description: string
+    + assignee: string | null
+    + completed_by: string | null
+  }
+
+  interface MaintenanceScheduleResource {
+    + id: number
+    + equipment_id: number
+    + scheduled_date: string
+    + scheduled_time: string
+    + task_type: string
+    + notes: string
+    + status: string
+  }
+
+  class MaintenanceTicketAssembler {
+    + toEntitiesFromResponse(response: MaintenanceTicketResponse): MaintenanceTicket[]
+    + toEntityFromResource(r: MaintenanceTicketResource): MaintenanceTicket
+    + toResourceFromEntity(e: MaintenanceTicket): MaintenanceTicketResource
+  }
+
+  class MaintenanceScheduleAssembler {
+    + toEntitiesFromResponse(response: MaintenanceScheduleResponse): MaintenanceSchedule[]
+    + toEntityFromResource(r: MaintenanceScheduleResource): MaintenanceSchedule
+    + toResourceFromEntity(e: MaintenanceSchedule): MaintenanceScheduleResource
+  }
+
+  class MaintenanceTicketApiEndpoint {
+    + constructor(http: HttpClient)
+  }
+
+  class MaintenanceScheduleApiEndpoint {
+    + constructor(http: HttpClient)
+  }
+
+  class MaintenanceApi {
+    - ticketEndpoint: MaintenanceTicketApiEndpoint
+    - scheduleEndpoint: MaintenanceScheduleApiEndpoint
+    + getTickets(): Observable<MaintenanceTicket[]>
+    + getTicketById(id: number): Observable<MaintenanceTicket>
+    + createTicket(ticket: MaintenanceTicket): Observable<MaintenanceTicket>
+    + updateTicket(ticket: MaintenanceTicket): Observable<MaintenanceTicket>
+    + deleteTicket(id: number): Observable<void>
+    + getSchedules(): Observable<MaintenanceSchedule[]>
+    + getScheduleById(id: number): Observable<MaintenanceSchedule>
+    + createSchedule(schedule: MaintenanceSchedule): Observable<MaintenanceSchedule>
+    + updateSchedule(schedule: MaintenanceSchedule): Observable<MaintenanceSchedule>
+    + deleteSchedule(id: number): Observable<void>
+  }
+
+  abstract class BaseApi {
+  }
+
+  abstract class BaseApiEndpoint {
+    + getAll(): Observable<TEntity[]>
+    + getById(id: number): Observable<TEntity>
+    + create(entity: TEntity): Observable<TEntity>
+    + update(entity: TEntity, id: number): Observable<TEntity>
+    + delete(id: number): Observable<void>
+  }
+}
+
+package "maintenance.presentation.views" {
+  class MaintenanceComponent <<component>> {
+    + store: MaintenanceStore
+    + equipmentStore: EquipmentStore
+    + searchQuery: Signal<string>
+    + statusFilter: Signal<TicketStatus | "">
+    + priorityFilter: Signal<TicketPriority | "">
+    + pendingFiltered: Signal<MaintenanceTicket[]>
+    + inProgressFiltered: Signal<MaintenanceTicket[]>
+    + resolvedFiltered: Signal<MaintenanceTicket[]>
+    + ticketId(t: MaintenanceTicket): string
+    + ticketAge(t: MaintenanceTicket): string
+    + equipmentName(id: number): string
+    + startTicket(id: number): void
+    + completeTicket(id: number): void
+  }
+
+  class NewTicketComponent <<component>> {
+    + store: MaintenanceStore
+    + equipmentStore: EquipmentStore
+    + priorities: TicketPriority[]
+    + types: TicketType[]
+    + today: string
+    + selectedTime: Signal<string>
+    + isPeak: Signal<boolean>
+    + isOffPeak: Signal<boolean>
+    + form: NewTicketForm
+    + selectedEquipmentId: Signal<string>
+    + onTimeChange(): void
+    + applySuggestion(t: string): void
+    + submit(): void
+    + cancel(): void
+  }
+}
+
+MaintenanceApi --|> BaseApi : extends
+MaintenanceTicketApiEndpoint --|> BaseApiEndpoint : extends
+MaintenanceScheduleApiEndpoint --|> BaseApiEndpoint : extends
+MaintenanceApi --> MaintenanceTicketApiEndpoint : uses
+MaintenanceApi --> MaintenanceScheduleApiEndpoint : uses
+MaintenanceTicketApiEndpoint --> MaintenanceTicketAssembler : uses
+MaintenanceScheduleApiEndpoint --> MaintenanceScheduleAssembler : uses
+MaintenanceStore --> MaintenanceApi : uses
+MaintenanceTicketAssembler ..> MaintenanceTicketResource : transforms
+MaintenanceTicketAssembler --> MaintenanceTicket : creates
+MaintenanceScheduleAssembler ..> MaintenanceScheduleResource : transforms
+MaintenanceScheduleAssembler --> MaintenanceSchedule : creates
+MaintenanceComponent --> MaintenanceStore : uses
+NewTicketComponent --> MaintenanceStore : uses
+MaintenanceTicket --> TicketStatus : has
+MaintenanceTicket --> TicketPriority : has
+MaintenanceTicket --> TicketType : has
+MaintenanceSchedule --> TaskType : has
+MaintenanceSchedule --> ScheduleStatus : has
+
+@enduml

@@ -1,0 +1,54 @@
+@startuml BC-01_IAM
+
+package "auth.domain.model" {
+  interface User {
+    + email: string
+    + name: string
+    + role: UserRole
+  }
+
+  enum UserRole {
+    ADMIN
+    CLIENT
+  }
+}
+
+package "auth.application" {
+  class AuthStore {
+    - userSignal: Signal<User | null>
+    - errorSignal: Signal<string | null>
+    + currentUser: Signal<User | null>
+    + loginError: Signal<string | null>
+    + isAuthenticated: Signal<boolean>
+    + isAdmin: Signal<boolean>
+    + isClient: Signal<boolean>
+    + login(email: string, password: string): void
+    + logout(): void
+    + clearError(): void
+    - loadFromStorage(): User | null
+  }
+}
+
+package "auth.guards" {
+  class AuthGuard {
+    + canActivate(): boolean | UrlTree
+    + canActivateAdmin(): boolean | UrlTree
+    + canActivateClient(): boolean | UrlTree
+  }
+}
+
+package "auth.presentation.views" {
+  class LoginComponent <<component>> {
+    - authStore: AuthStore
+    + email: string
+    + password: string
+    + onLogin(): void
+  }
+}
+
+AuthStore --> User : manages
+User --> UserRole : has
+LoginComponent --> AuthStore : uses
+AuthGuard --> AuthStore : uses
+
+@enduml

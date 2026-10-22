@@ -1,0 +1,25 @@
+@startuml BC-08_Alerts
+
+package "alerts.presentation.views" {
+  interface Alert {
+    + id: string
+    + title: string
+    + description: string
+    + type: "admin" | "client" | "system"
+    + icon: string
+    + date: Date
+    + targetRoute: string
+  }
+
+  class AlertsComponent <<component>> {
+    - router: Router
+    + alertsList: Alert[]
+    + navigateTo(route: string): void
+    + deleteAlert(event: Event, id: string): void
+    + getRelativeTime(date: Date): string
+  }
+}
+
+AlertsComponent --> Alert : manages
+
+@enduml

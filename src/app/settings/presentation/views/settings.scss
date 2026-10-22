@@ -1,0 +1,195 @@
+$bg-page:      #0f0f0f;
+$bg-card:      #1a1a1a;
+$bg-hover:     #252525;
+$border:       #2d2d2d;
+$text-primary: #f0f0f0;
+$text-muted:   #8a8a9a;
+$accent:       #f5bc36;
+$red:          #f43f5e;
+$green:        #22c55e;
+
+// ─── Page shell ──────────────────────────────────────────────────────────────
+.set-page {
+  background: $bg-page;
+  min-height: 100%;
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  color: $text-primary;
+}
+
+// ─── Header ──────────────────────────────────────────────────────────────────
+.set-header__title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+.set-header__subtitle {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: $text-muted;
+}
+
+// ─── Card ──────────────────────────────────────────────────────────────────
+.set-card {
+  background: $bg-card;
+  border: 1px solid $border;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 640px;
+}
+
+.set-card__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.set-card__subtitle {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: $text-muted;
+}
+
+// ─── Toggle row (checkbox preference) ────────────────────────────────────────
+.set-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: $text-primary;
+  cursor: pointer;
+
+  input[type="checkbox"] { accent-color: $accent; width: 16px; height: 16px; }
+}
+
+// ─── Add technician row ──────────────────────────────────────────────────────
+.set-add-row {
+  display: flex;
+  gap: 10px;
+}
+
+.set-add-input {
+  flex: 1;
+  background: $bg-page;
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 9px 14px;
+  font-size: 14px;
+  color: $text-primary;
+  outline: none;
+  transition: border-color 0.15s;
+
+  &::placeholder { color: $text-muted; }
+  &:focus        { border-color: $accent; }
+}
+
+.btn-add {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  background: $accent;
+  color: #000;
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.15s;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+  &:hover:not(:disabled) { opacity: 0.88; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+
+.set-field-error {
+  font-size: 12px;
+  color: $red;
+}
+
+.set-field-success {
+  font-size: 12px;
+  color: $green;
+}
+
+// ─── Loading ──────────────────────────────────────────────────────────────────
+.set-loading {
+  display: flex;
+  justify-content: center;
+  padding: 30px 0;
+}
+
+.set-spinner {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+  color: $accent;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+// ─── Empty state ──────────────────────────────────────────────────────────────
+.set-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 36px 0;
+  color: $text-muted;
+
+  mat-icon { font-size: 40px; width: 40px; height: 40px; opacity: 0.3; }
+  p { margin: 0; font-size: 14px; }
+}
+
+// ─── Technician list ──────────────────────────────────────────────────────────
+.set-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid $border;
+}
+
+.set-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 4px;
+  border-bottom: 1px solid $border;
+  transition: background 0.12s;
+
+  &:last-child { border-bottom: none; }
+  &:hover      { background: $bg-hover; }
+}
+
+.set-item__icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: $text-muted;
+}
+
+.set-item__name {
+  font-size: 14px;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+// ─── Responsive ──────────────────────────────────────────────────────────────
+@media (max-width: 700px) {
+  .set-page    { padding: 16px; gap: 16px; }
+  .set-add-row { flex-direction: column; }
+  .btn-add     { width: 100%; justify-content: center; }
+}

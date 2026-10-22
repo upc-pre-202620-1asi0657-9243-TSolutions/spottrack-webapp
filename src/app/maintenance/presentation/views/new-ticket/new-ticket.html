@@ -1,0 +1,119 @@
+<div class="overlay" (click)="cancel()">
+  <div class="modal" (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="modal__header">
+      <span class="modal__title">{{ 'maintenance.form.title' | translate }}</span>
+      <button class="modal__close" type="button" (click)="cancel()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <!-- Peak warning -->
+    @if (isPeak()) {
+      <div class="peak-banner">
+        <mat-icon>schedule</mat-icon>
+        <div class="peak-banner__text">
+          <strong>{{ 'maintenance.scheduler.peakWarning' | translate }}</strong>
+          <span>{{ 'maintenance.scheduler.peakWarningMsg' | translate }}</span>
+        </div>
+      </div>
+      <div class="suggestions">
+        <span class="suggestions__label">{{ 'maintenance.scheduler.suggestions' | translate }}</span>
+        <div class="suggestions__chips">
+          @for (t of store.suggestedTimes; track t) {
+            <button class="chip" type="button" (click)="applySuggestion(t)">{{ t }}</button>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Form -->
+    <form class="modal__form" (ngSubmit)="submit()">
+
+      <!-- Máquina -->
+      <div class="field">
+        <label class="field__label">{{ 'maintenance.form.equipment' | translate }} *</label>
+        <mat-form-field appearance="outline" class="field__mat">
+          <mat-select [(ngModel)]="form.equipmentId" name="eq" required>
+            @for (eq of equipmentStore.equipment(); track eq.uuid) {
+              <mat-option [value]="eq.uuid">{{ eq.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- ID de Máquina (auto-filled) -->
+      <div class="field">
+        <label class="field__label">ID de Máquina *</label>
+        <div class="field__static">{{ selectedEquipmentId || '—' }}</div>
+      </div>
+
+      <!-- Descripción -->
+      <div class="field field--full">
+        <label class="field__label">{{ 'maintenance.form.description' | translate }} *</label>
+        <mat-form-field appearance="outline" class="field__mat">
+          <textarea matInput [(ngModel)]="form.description" name="desc" rows="3" required
+                    [placeholder]="'maintenance.form.description' | translate"></textarea>
+        </mat-form-field>
+      </div>
+
+      <!-- Prioridad -->
+      <div class="field">
+        <label class="field__label">{{ 'maintenance.form.priority' | translate }}</label>
+        <mat-form-field appearance="outline" class="field__mat">
+          <mat-select [(ngModel)]="form.priority" name="pr">
+            @for (p of priorities; track p) {
+              <mat-option [value]="p">{{ 'maintenance.priority.' + p | translate }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Tipo -->
+      <div class="field">
+        <label class="field__label">{{ 'maintenance.form.type' | translate }}</label>
+        <mat-form-field appearance="outline" class="field__mat">
+          <mat-select [(ngModel)]="form.type" name="ty">
+            @for (t of types; track t) {
+              <mat-option [value]="t">{{ 'maintenance.type.' + t | translate }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Fecha y Hora (optional) -->
+      <div class="field">
+        <label class="field__label">{{ 'maintenance.form.date' | translate }}</label>
+        <mat-form-field appearance="outline" class="field__mat">
+          <input matInput type="date" [(ngModel)]="form.date" name="dt" [min]="today">
+        </mat-form-field>
+      </div>
+
+      <div class="field">
+        <label class="field__label">{{ 'maintenance.form.time' | translate }}</label>
+        <mat-form-field appearance="outline" class="field__mat">
+          <input matInput type="time" [(ngModel)]="form.time" name="tm" (ngModelChange)="onTimeChange()">
+          @if (isPeak()) {
+            <mat-hint class="hint-peak">{{ 'maintenance.scheduler.peakHint' | translate }}</mat-hint>
+          }
+          @if (isOffPeak()) {
+            <mat-hint class="hint-ok">{{ 'maintenance.scheduler.confirmedMsg' | translate }}</mat-hint>
+          }
+        </mat-form-field>
+      </div>
+
+      <!-- Footer buttons -->
+      <div class="modal__footer">
+        <button type="button" class="btn-cancel" (click)="cancel()">
+          {{ 'maintenance.form.cancel' | translate }}
+        </button>
+        <button type="submit" class="btn-submit"
+                [disabled]="!form.equipmentId || !form.description || !form.priority || !form.type">
+          {{ 'maintenance.form.submit' | translate }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

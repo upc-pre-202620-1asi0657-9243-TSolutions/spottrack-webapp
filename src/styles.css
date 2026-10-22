@@ -1,0 +1,133 @@
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #0d0d0d;
+  /* Prevent Material's light-theme typography from inheriting dark text into dark cards */
+  color: #e0e0e0;
+}
+
+app-root,
+app-layout {
+  display: block;
+  height: 100%;
+}
+
+/* CDK overlay must sit above all custom modals (modal-backdrop z-index: 2000) */
+.cdk-overlay-container {
+  z-index: 2001 !important;
+}
+
+/* Mat-select panel dark theme */
+.mat-mdc-select-panel {
+  background: #1e1e1e !important;
+}
+
+.mat-mdc-option {
+  color: #fff !important;
+}
+
+.mat-mdc-option:hover:not(.mdc-list-item--disabled) {
+  background: #2a2a2a !important;
+}
+
+/* Input text color for Material 3 (MDC) */
+.mdc-text-field__input {
+  color: #fff !important;
+  caret-color: #fff !important;
+}
+
+/* Mat-table dark theme — MDC resets cell color to near-black by default */
+.mat-mdc-header-cell,
+.mdc-data-table__header-cell {
+  color: #aaa !important;
+  border-bottom-color: #2a2a2a !important;
+}
+
+.mat-mdc-cell,
+.mdc-data-table__cell {
+  color: #e0e0e0 !important;
+  border-bottom-color: #2a2a2a !important;
+}
+
+.mat-mdc-no-data-row td {
+  color: #aaa !important;
+}
+
+/* mat-select trigger text — component CSS can't pierce mat-select's encapsulation */
+.booking-select .mat-mdc-select-trigger,
+.booking-select .mat-mdc-select-value,
+.form-select .mat-mdc-select-trigger,
+.form-select .mat-mdc-select-value {
+  color: #fff !important;
+}
+
+.booking-select .mat-mdc-select-placeholder,
+.form-select .mat-mdc-select-placeholder {
+  color: #6b7280 !important;
+}
+
+.booking-select .mat-mdc-select-arrow,
+.form-select .mat-mdc-select-arrow {
+  color: #9ca3af !important;
+}
+
+/* Booking modal select panel */
+.booking-select-panel {
+  background: #1a1a1a !important;
+}
+
+.booking-select-panel .mat-mdc-option {
+  color: #fff !important;
+}
+
+.booking-select-panel .mat-mdc-option:hover:not(.mdc-list-item--disabled) {
+  background: rgba(245, 197, 24, 0.12) !important;
+}
+
+.booking-select-panel .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+  background: #f5c518 !important;
+}
+
+.booking-select-panel .mat-mdc-option.mdc-list-item--selected .mdc-list-item__primary-text {
+  color: #000 !important;
+  font-weight: 600;
+}
+
+/* Routine modal select panel */
+.routine-select-panel {
+  background: #1a1a1a !important;
+}
+
+.routine-select-panel .mat-mdc-option {
+  color: #fff !important;
+}
+
+.routine-select-panel .mat-mdc-option:hover:not(.mdc-list-item--disabled) {
+  background: rgba(245, 197, 24, 0.12) !important;
+}
+
+.routine-select-panel .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+  background: #f5c518 !important;
+}
+
+.routine-select-panel .mat-mdc-option.mdc-list-item--selected .mdc-list-item__primary-text {
+  color: #000 !important;
+  font-weight: 600;
+}
+
+/* Routine creation snackbar */
+.routine-snackbar {
+  background-color: #1e1e1e !important;
+  color: #ffffff !important;
+  border: 1px solid #f5c518 !important;
+  border-radius: 10px !important;
+}
+
+.routine-snackbar .mat-mdc-snack-bar-label {
+  color: #ffffff !important;
+}
+
+.routine-snackbar .mat-mdc-button {
+  color: #f5c518 !important;
+  font-weight: 700;
+}

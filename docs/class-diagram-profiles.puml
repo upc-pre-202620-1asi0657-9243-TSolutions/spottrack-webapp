@@ -1,0 +1,24 @@
+@startuml BC-02_Profiles
+
+package "auth.application" {
+  class AuthStore {
+    + currentUser: Signal<User | null>
+    + isAdmin: Signal<boolean>
+    + logout(): void
+  }
+}
+
+package "profiles.presentation.views" {
+  class ProfileView <<component>> {
+    - authStore: AuthStore
+    - router: Router
+    + currentUser: Signal<User | null>
+    + isAdmin: Signal<boolean>
+    + gymData: object
+    + logout(): void
+  }
+}
+
+ProfileView --> AuthStore : uses
+
+@enduml

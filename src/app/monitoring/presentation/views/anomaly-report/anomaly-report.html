@@ -1,0 +1,86 @@
+<div class="monitoring-page">
+
+  <div class="page-header">
+    <div>
+      <button class="btn-back" type="button" (click)="back()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h1 class="page-title">{{ 'monitoring.anomalyReport.title' | translate }}</h1>
+      <p class="page-subtitle">{{ 'monitoring.anomalyReport.subtitle' | translate }}</p>
+    </div>
+  </div>
+
+  @if (error()) {
+    <div class="error-state">
+      <mat-icon>error_outline</mat-icon>
+      <p>{{ error() }}</p>
+    </div>
+  }
+
+  <div class="layout-grid">
+
+    <div class="section-card">
+      <div class="section-header">
+        <mat-icon class="icon-red">warning_amber</mat-icon>
+        <h2>{{ 'monitoring.anomalyReport.formTitle' | translate }}</h2>
+      </div>
+      <form class="reg-form" (ngSubmit)="submit()">
+        <div class="field">
+          <label class="field__label">{{ 'monitoring.anomalyReport.reservation' | translate }} *</label>
+          <mat-form-field appearance="outline" class="field__mat">
+            <mat-select [(ngModel)]="form.reservationId" name="reservationId" required [disabled]="reservationsLoading">
+              @for (r of reservations; track r.id) {
+                <mat-option [value]="r.id">{{ reservationLabel(r) }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          @if (!reservationsLoading && reservations.length === 0) {
+            <p class="field__hint">{{ 'monitoring.anomalyReport.noReservations' | translate }}</p>
+          }
+        </div>
+
+        <div class="field">
+          <label class="field__label">{{ 'monitoring.anomalyReport.description' | translate }} *</label>
+          <mat-form-field appearance="outline" class="field__mat">
+            <textarea matInput rows="3" [(ngModel)]="form.anomalyDescription" name="anomalyDescription"
+                      [placeholder]="'monitoring.anomalyReport.descriptionPlaceholder' | translate" required></textarea>
+          </mat-form-field>
+        </div>
+
+        <button type="submit" class="btn-submit" [disabled]="loading() || !isValid">
+          {{ 'monitoring.anomalyReport.submit' | translate }}
+        </button>
+      </form>
+    </div>
+
+    <div class="section-card">
+      <div class="section-header">
+        <mat-icon>list_alt</mat-icon>
+        <h2>{{ 'monitoring.anomalyReport.listTitle' | translate }}</h2>
+        <span class="count-badge count-badge--red">{{ anomalyReports().length }}</span>
+      </div>
+      @if (anomalyReports().length === 0) {
+        <p class="empty-msg">{{ 'monitoring.anomalyReport.noneReported' | translate }}</p>
+      } @else {
+        <div class="reports-list">
+          @for (a of anomalyReports(); track a.anomalyId) {
+            <div class="report-row">
+              <div class="report-row__head">
+                <mat-icon class="icon-red">warning_amber</mat-icon>
+                <span class="mono">{{ a.anomalyId }}</span>
+                <span class="tag">{{ a.emissionDate }}</span>
+              </div>
+              <p class="report-row__desc">{{ a.anomalyDescription }}</p>
+              <div class="report-row__meta">
+                <span>{{ equipmentName(a.equipmentId) }}</span>
+                <span>{{ 'monitoring.anomalyReport.zoneId' | translate }}: {{ a.zoneId }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+  </div>
+
+</div>

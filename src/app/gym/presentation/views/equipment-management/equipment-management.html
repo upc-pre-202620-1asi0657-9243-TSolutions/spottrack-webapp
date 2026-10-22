@@ -1,0 +1,223 @@
+<div class="eq-page">
+
+  <!-- Page Header -->
+  <div class="eq-header">
+    <div class="eq-header__text">
+      <h1 class="eq-header__title">{{ 'equipment.title' | translate }}</h1>
+      <p class="eq-header__subtitle">{{ 'equipment.subtitle' | translate }}</p>
+    </div>
+    <button class="btn-register" (click)="navigateToNew()">
+      <mat-icon>add</mat-icon>
+      {{ 'equipment.actions.register' | translate }}
+    </button>
+  </div>
+
+  <!-- Stats Row -->
+  <div class="eq-stats">
+    <div class="stat-card stat-card--total">
+      <span class="stat-card__value">{{ totalEquipment() }}</span>
+      <span class="stat-card__label">{{ 'equipment.stats.total' | translate }}</span>
+    </div>
+    <div class="stat-card stat-card--available">
+      <mat-icon>check_circle</mat-icon>
+      <span class="stat-card__value">{{ availableCount() }}</span>
+      <span class="stat-card__label">{{ 'equipment.stats.available' | translate }}</span>
+    </div>
+    <div class="stat-card stat-card--in-use">
+      <mat-icon>person</mat-icon>
+      <span class="stat-card__value">{{ occupiedCount() }}</span>
+      <span class="stat-card__label">{{ 'equipment.stats.inUse' | translate }}</span>
+    </div>
+    <div class="stat-card stat-card--maintenance">
+      <mat-icon>build</mat-icon>
+      <span class="stat-card__value">{{ maintenanceCount() }}</span>
+      <span class="stat-card__label">{{ 'equipment.stats.maintenance' | translate }}</span>
+    </div>
+    <div class="stat-card stat-card--out-of-service">
+      <mat-icon>cancel</mat-icon>
+      <span class="stat-card__value">{{ outOfServiceCount() }}</span>
+      <span class="stat-card__label">{{ 'equipment.stats.outOfService' | translate }}</span>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="eq-filters">
+    <div class="eq-search">
+      <mat-icon class="eq-search__icon">search</mat-icon>
+      <input
+        class="eq-search__input"
+        type="text"
+        [placeholder]="'equipment.search' | translate"
+        [ngModel]="searchQuery()"
+        (ngModelChange)="onSearchChange($event)"
+      />
+    </div>
+
+    <mat-form-field appearance="outline" class="filter-select">
+      <mat-label>{{ 'equipment.filter.status' | translate }}</mat-label>
+      <mat-select [ngModel]="selectedStatus()" (ngModelChange)="onStatusChange($event)">
+        <mat-option value="">{{ 'equipment.filter.allStatuses' | translate }}</mat-option>
+        @for (s of equipmentStatuses; track s) {
+          <mat-option [value]="s">{{ 'equipment.status.' + s | translate }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <!-- Table Card -->
+  <div class="eq-card">
+    @if (isLoading()) {
+      <div class="eq-loading">
+        <mat-spinner diameter="48"></mat-spinner>
+      </div>
+    }
+    <table mat-table [dataSource]="filteredEquipment()" class="eq-table">
+
+      <!-- ID -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>{{ 'equipment.table.id' | translate }}</th>
+        <td mat-cell *matCellDef="let row">
+          <span class="cell-id">{{ row.uuid.slice(0, 8) }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Name -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>{{ 'equipment.table.name' | translate }}</th>
+        <td mat-cell *matCellDef="let row"><strong>{{ row.name }}</strong></td>
+      </ng-container>
+
+      <!-- Brand -->
+      <ng-container matColumnDef="brand">
+        <th mat-header-cell *matHeaderCellDef>{{ 'equipment.table.brand' | translate }}</th>
+        <td mat-cell *matCellDef="let row">{{ row.brand }}</td>
+      </ng-container>
+
+      <!-- Model -->
+      <ng-container matColumnDef="model">
+        <th mat-header-cell *matHeaderCellDef>{{ 'equipment.table.model' | translate }}</th>
+        <td mat-cell *matCellDef="let row" class="cell-secondary">{{ row.model }}</td>
+      </ng-container>
+
+      <!-- Zone -->
+      <ng-container matColumnDef="zoneId">
+        <th mat-header-cell *matHeaderCellDef>{{ 'equipment.table.zoneId' | translate }}</th>
+        <td mat-cell *matCellDef="let row" class="cell-secondary">
+          <span class="zone-chip">{{ zoneName(row.zoneId) }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Purchase Amount -->
+      <ng-container matColumnDef="purchaseAmount">
+        <th mat-header-cell *matHeaderCellDef>{{ 'equipment.table.purchaseAmount' | translate }}</th>
+        <td mat-cell *matCellDef="let row">
+          <span class="cell-numeric">{{ row.purchaseCurrency }} {{ row.purchaseAmount | number:'1.0-0' }}</span>
+        </td>
+      </ng-container>
+
+      <!-- Status -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>{{ 'equipment.table.status' | translate }}</th>
+        <td mat-cell *matCellDef="let row">
+          <span class="badge badge--status" [ngClass]="'badge--status-' + row.status.toLowerCase()">
+            <mat-icon>{{ statusIcon(row.status) }}</mat-icon>
+            {{ 'equipment.status.' + row.status | translate }}
+          </span>
+        </td>
+      </ng-container>
+
+      <!-- Actions -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>{{ 'equipment.table.actions' | translate }}</th>
+        <td mat-cell *matCellDef="let row">
+          <div class="actions-cell">
+            <button
+              mat-icon-button
+              class="action-btn action-btn--qr"
+              matTooltip="Ver QR de check-in"
+              (click)="openQrModal(row)"
+            >
+              <mat-icon>qr_code</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              class="action-btn action-btn--edit"
+              [matTooltip]="'equipment.actions.editStatus' | translate"
+              (click)="navigateToEdit(row)"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              class="action-btn action-btn--delete"
+              [matTooltip]="'equipment.actions.decommission' | translate"
+              (click)="decommissionEquipment(row.uuid)"
+            >
+              <mat-icon>remove_circle_outline</mat-icon>
+            </button>
+          </div>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="eq-row"
+          [appContextMenu]="rowMenu(row)"></tr>
+
+      <tr class="mat-mdc-no-data-row" *matNoDataRow>
+        <td [colSpan]="displayedColumns.length" class="no-data-cell">
+          <mat-icon>fitness_center</mat-icon>
+          <span>{{ 'equipment.table.noData' | translate }}</span>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+</div>
+
+<!-- ── QR Code Modal ─────────────────────────────────────────────────────── -->
+@if (qrTarget()) {
+  <div class="qr-backdrop" (click)="closeQrModal()">
+    <div class="qr-modal" (click)="$event.stopPropagation()">
+
+      <div class="qr-modal__header">
+        <div class="qr-modal__title-wrap">
+          <mat-icon class="qr-modal__icon">qr_code</mat-icon>
+          <div>
+            <h3 class="qr-modal__title">QR de Check-in</h3>
+            <p class="qr-modal__subtitle">{{ qrTarget()!.name }}</p>
+          </div>
+        </div>
+        <button mat-icon-button class="qr-modal__close" (click)="closeQrModal()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <div class="qr-modal__body">
+        <div class="qr-image-wrap">
+          <img
+            class="qr-image"
+            [src]="qrUrl(qrTarget()!.uuid)"
+            alt="QR de check-in"
+          />
+        </div>
+        <p class="qr-uuid">{{ qrTarget()!.uuid }}</p>
+        <p class="qr-hint">Imprime o muestra este código en la máquina para que los clientes confirmen su presencia física.</p>
+      </div>
+
+      <div class="qr-modal__footer">
+        <button class="btn-test-qr" (click)="generateTestQr()">
+          <mat-icon>shuffle</mat-icon>
+          Generar QR de prueba
+        </button>
+        @if (testQrUuid()) {
+          <div class="test-qr-wrap">
+            <p class="test-qr-label">QR aleatorio para probar el escáner:</p>
+            <img class="test-qr-image" [src]="qrUrl(testQrUuid()!)" alt="Test QR" />
+            <p class="qr-uuid">{{ testQrUuid() }}</p>
+          </div>
+        }
+      </div>
+
+    </div>
+  </div>
+}

@@ -1,0 +1,94 @@
+<div class="monitoring-page">
+
+  <div class="page-header">
+    <div>
+      <button class="btn-back" type="button" (click)="back()">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <h1 class="page-title">{{ 'monitoring.sensors.title' | translate }}</h1>
+      <p class="page-subtitle">{{ 'monitoring.sensors.subtitle' | translate }}</p>
+    </div>
+  </div>
+
+  @if (error()) {
+    <div class="error-state">
+      <mat-icon>error_outline</mat-icon>
+      <p>{{ error() }}</p>
+    </div>
+  }
+
+  <div class="forms-grid">
+
+    <!-- Camera sensor registration -->
+    <div class="section-card">
+      <div class="section-header">
+        <mat-icon>videocam</mat-icon>
+        <h2>{{ 'monitoring.sensors.cameraTitle' | translate }}</h2>
+      </div>
+      <form class="reg-form" (ngSubmit)="submitCamera()">
+        <div class="field">
+          <label class="field__label">{{ 'monitoring.sensors.equipment' | translate }} *</label>
+          <mat-form-field appearance="outline" class="field__mat">
+            <mat-select [(ngModel)]="cameraEquipmentId" name="cameraEquipmentId" required>
+              @for (eq of equipment(); track eq.uuid) {
+                <mat-option [value]="eq.uuid">{{ eq.name }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <button type="submit" class="btn-submit" [disabled]="loading() || !cameraEquipmentId">
+          {{ 'monitoring.sensors.registerCamera' | translate }}
+        </button>
+      </form>
+
+      @if (cameraSensors().length > 0) {
+        <div class="registered-list">
+          @for (s of cameraSensors(); track s.cameraSensorId) {
+            <div class="registered-row">
+              <mat-icon>videocam</mat-icon>
+              <span class="mono">{{ s.cameraSensorId }}</span>
+              <span class="tag">{{ s.equipmentName ?? '—' }}</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Motion sensor registration -->
+    <div class="section-card">
+      <div class="section-header">
+        <mat-icon>sensors</mat-icon>
+        <h2>{{ 'monitoring.sensors.motionTitle' | translate }}</h2>
+      </div>
+      <form class="reg-form" (ngSubmit)="submitMotion()">
+        <div class="field">
+          <label class="field__label">{{ 'monitoring.sensors.equipment' | translate }} *</label>
+          <mat-form-field appearance="outline" class="field__mat">
+            <mat-select [(ngModel)]="motionEquipmentId" name="motionEquipmentId" required>
+              @for (eq of equipment(); track eq.uuid) {
+                <mat-option [value]="eq.uuid">{{ eq.name }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <button type="submit" class="btn-submit" [disabled]="loading() || !motionEquipmentId">
+          {{ 'monitoring.sensors.registerMotion' | translate }}
+        </button>
+      </form>
+
+      @if (motionSensors().length > 0) {
+        <div class="registered-list">
+          @for (s of motionSensors(); track s.motionSensorId) {
+            <div class="registered-row">
+              <mat-icon>sensors</mat-icon>
+              <span class="mono">{{ s.motionSensorId }}</span>
+              <span class="tag">{{ s.equipmentName ?? '—' }}</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+  </div>
+
+</div>

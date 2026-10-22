@@ -1,0 +1,429 @@
+$bg-page:      #0f0f0f;
+$bg-card:      #1a1a1a;
+$bg-hover:     #252525;
+$bg-zones:     #141414;
+$border:       #2d2d2d;
+$text-primary: #f0f0f0;
+$text-muted:   #8a8a9a;
+$accent:       #f5bc36;
+$red:          #f43f5e;
+$orange:       #f97316;
+$blue:         #4fc3f7;
+$green:        #34d399;
+
+// ─── Page shell ──────────────────────────────────────────────────────────────
+.br-page {
+  background: $bg-page;
+  min-height: 100%;
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  color: $text-primary;
+}
+
+// ─── Header ──────────────────────────────────────────────────────────────────
+.br-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.br-header__title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+.br-header__subtitle {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: $text-muted;
+}
+
+.br-gym-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: rgba($accent, 0.1);
+  border: 1px solid rgba($accent, 0.35);
+  border-radius: 20px;
+  color: $accent;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+}
+
+// ─── Error / info banners ─────────────────────────────────────────────────────
+.br-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; }
+
+  &--error { background: rgba($red, 0.1); color: $red; }
+}
+
+// ─── Add branch card ──────────────────────────────────────────────────────────
+.br-add-card {
+  background: $bg-card;
+  border: 1px solid $border;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.br-add-card__label {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.br-add-fields {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.br-add-input {
+  flex: 1;
+  min-width: 160px;
+  background: $bg-page;
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 9px 14px;
+  font-size: 14px;
+  color: $text-primary;
+  outline: none;
+  transition: border-color 0.15s;
+
+  &::placeholder { color: $text-muted; }
+  &:focus        { border-color: $accent; }
+
+  &--num {
+    flex: 0 0 160px;
+    min-width: 120px;
+  }
+}
+
+.btn-add {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  background: $accent;
+  color: #000;
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.15s;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+  &:hover    { opacity: 0.88; }
+  &:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  &--zone {
+    background: transparent;
+    color: $green;
+    border: 1px solid rgba($green, 0.4);
+
+    &:hover:not(:disabled) { background: rgba($green, 0.08); opacity: 1; }
+  }
+}
+
+// ─── Field-level errors ───────────────────────────────────────────────────────
+.br-field-error {
+  font-size: 12px;
+  color: $red;
+}
+
+.br-limit-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: rgba($orange, 0.1);
+  border: 1px solid rgba($orange, 0.25);
+  color: $orange;
+  font-size: 13px;
+  line-height: 1.4;
+  flex-wrap: wrap;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; }
+
+  span { flex: 1; min-width: 0; }
+
+  &__link {
+    display: inline-block;
+    color: $accent;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: opacity 0.15s;
+    &:hover { opacity: 0.8; }
+  }
+}
+
+// ─── Loading ──────────────────────────────────────────────────────────────────
+.br-loading {
+  display: flex;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+.br-spinner {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  color: $accent;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+// ─── Empty state ──────────────────────────────────────────────────────────────
+.br-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 60px 0;
+  color: $text-muted;
+
+  mat-icon { font-size: 48px; width: 48px; height: 48px; opacity: 0.3; }
+  p { margin: 0; font-size: 14px; }
+}
+
+// ─── Branch list card ─────────────────────────────────────────────────────────
+.br-card {
+  background: $bg-card;
+  border: 1px solid $border;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.br-card__header {
+  padding: 14px 20px;
+  border-bottom: 1px solid $border;
+  background: rgba(255,255,255,0.02);
+}
+
+.br-count {
+  font-size: 12px;
+  font-weight: 700;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+// ─── Branch list items ────────────────────────────────────────────────────────
+.br-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.br-item {
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid $border;
+
+  &:last-child { border-bottom: none; }
+
+  &--open .br-item__row { background: $bg-hover; }
+}
+
+.br-item__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  transition: background 0.12s;
+
+  &:hover { background: $bg-hover; }
+}
+
+.br-item__icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba($blue, 0.1);
+  flex-shrink: 0;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; color: $blue; }
+}
+
+.br-item__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.br-item__name {
+  font-size: 14px;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.br-item__address {
+  font-size: 12px;
+  color: $text-muted;
+}
+
+.br-item__zones-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid rgba($accent, 0.3);
+  border-radius: 8px;
+  color: $accent;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.12s, border-color 0.12s;
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+
+  .br-item__chevron { margin-left: 2px; }
+
+  &:hover { background: rgba($accent, 0.08); border-color: rgba($accent, 0.6); }
+}
+
+// ─── Zone panel ───────────────────────────────────────────────────────────────
+.br-zones {
+  background: $bg-zones;
+  border-top: 1px solid $border;
+  padding: 16px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.br-zones__add {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.br-zones__add-label {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+// ─── Zone empty state ─────────────────────────────────────────────────────────
+.br-zones__empty {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 0 4px;
+  color: $text-muted;
+  font-size: 13px;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; opacity: 0.4; }
+}
+
+// ─── Zone list ────────────────────────────────────────────────────────────────
+.br-zones__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.br-zone-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: $bg-card;
+  border: 1px solid $border;
+  border-radius: 8px;
+}
+
+.br-zone-item__icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  background: rgba($green, 0.1);
+  flex-shrink: 0;
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; color: $green; }
+}
+
+.br-zone-item__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.br-zone-item__name {
+  font-size: 13px;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.br-zone-item__occ {
+  font-size: 11px;
+  color: $text-muted;
+}
+
+.br-zones__count {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 700;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+// ─── Responsive ──────────────────────────────────────────────────────────────
+@media (max-width: 700px) {
+  .br-page           { padding: 16px; gap: 16px; }
+  .br-header         { flex-direction: column; align-items: flex-start; }
+  .br-add-fields     { flex-direction: column; }
+  .btn-add           { width: 100%; justify-content: center; }
+  .br-item__row      { flex-wrap: wrap; gap: 10px; }
+  .br-item__zones-btn { align-self: flex-end; }
+  .br-add-input--num { flex: 1 1 100%; }
+}

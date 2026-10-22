@@ -1,0 +1,39 @@
+<div class="form-container">
+
+  <div class="form-header">
+    <h2>{{ 'reservation.modal.title' | translate }}</h2>
+    <button class="close-btn" (click)="cancel()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <div class="form-body">
+
+    <div class="form-group">
+      <label>{{ 'reservation.modal.selectMachine' | translate }}</label>
+      <mat-select [(ngModel)]="selectedMachineId" class="form-select" placeholder="{{ 'reservation.modal.machinePlaceholder' | translate }}">
+        @for (eq of availableEquipment(); track eq.uuid) {
+          <mat-option [value]="eq.uuid">{{ eq.name }}</mat-option>
+        }
+      </mat-select>
+    </div>
+
+    <div class="form-group">
+      <label>{{ 'reservation.modal.duration' | translate }}</label>
+      <mat-select [(ngModel)]="selectedDurationSeconds" class="form-select">
+        @for (d of durations; track d.seconds) {
+          <mat-option [value]="d.seconds">{{ d.labelKey | translate }}</mat-option>
+        }
+      </mat-select>
+    </div>
+
+  </div>
+
+  <div class="form-actions">
+    <button class="btn-cancel" (click)="cancel()">{{ 'reservation.modal.cancel' | translate }}</button>
+    <button class="btn-confirm" [disabled]="!selectedMachineId" (click)="submit()">
+      {{ 'reservation.modal.confirm' | translate }}
+    </button>
+  </div>
+
+</div>

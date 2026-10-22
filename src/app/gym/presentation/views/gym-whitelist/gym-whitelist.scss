@@ -1,0 +1,260 @@
+$bg-page:      #0f0f0f;
+$bg-card:      #1a1a1a;
+$bg-hover:     #252525;
+$border:       #2d2d2d;
+$text-primary: #f0f0f0;
+$text-muted:   #8a8a9a;
+$accent:       #f5bc36;
+$red:          #f43f5e;
+$green:        #22c55e;
+
+// ─── Page shell ──────────────────────────────────────────────────────────────
+.wl-page {
+  background: $bg-page;
+  min-height: 100%;
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  color: $text-primary;
+}
+
+// ─── Header ──────────────────────────────────────────────────────────────────
+.wl-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.wl-header__title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+.wl-header__subtitle {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: $text-muted;
+}
+
+.wl-gym-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: rgba($accent, 0.1);
+  border: 1px solid rgba($accent, 0.35);
+  border-radius: 20px;
+  color: $accent;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+}
+
+// ─── Error / info banners ─────────────────────────────────────────────────────
+.wl-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; }
+
+  &--error { background: rgba($red, 0.1); color: $red; }
+}
+
+// ─── Add DNI card ─────────────────────────────────────────────────────────────
+.wl-add-card {
+  background: $bg-card;
+  border: 1px solid $border;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.wl-add-card__label {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.wl-add-row {
+  display: flex;
+  gap: 10px;
+}
+
+.wl-add-input {
+  flex: 1;
+  background: $bg-page;
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 9px 14px;
+  font-size: 14px;
+  color: $text-primary;
+  font-family: 'Roboto Mono', monospace;
+  outline: none;
+  transition: border-color 0.15s;
+
+  &::placeholder { color: $text-muted; }
+  &:focus        { border-color: $accent; }
+}
+
+.btn-add {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  background: $accent;
+  color: #000;
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.15s;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+  &:hover { opacity: 0.88; }
+}
+
+.wl-field-error {
+  font-size: 12px;
+  color: $red;
+}
+
+// ─── Loading ──────────────────────────────────────────────────────────────────
+.wl-loading {
+  display: flex;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+.wl-spinner {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  color: $accent;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+// ─── Empty state ──────────────────────────────────────────────────────────────
+.wl-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 60px 0;
+  color: $text-muted;
+
+  mat-icon { font-size: 48px; width: 48px; height: 48px; opacity: 0.3; }
+  p { margin: 0; font-size: 14px; }
+}
+
+// ─── Whitelist card ───────────────────────────────────────────────────────────
+.wl-card {
+  background: $bg-card;
+  border: 1px solid $border;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.wl-card__header {
+  padding: 14px 20px;
+  border-bottom: 1px solid $border;
+  background: rgba(255,255,255,0.02);
+}
+
+.wl-count {
+  font-size: 12px;
+  font-weight: 700;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+// ─── DNI list ─────────────────────────────────────────────────────────────────
+.wl-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.wl-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-bottom: 1px solid $border;
+  transition: background 0.12s;
+
+  &:last-child { border-bottom: none; }
+  &:hover      { background: $bg-hover; }
+}
+
+.wl-item__info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.wl-item__icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: $text-muted;
+}
+
+.wl-item__dni {
+  font-size: 14px;
+  font-family: 'Roboto Mono', monospace;
+  font-weight: 600;
+  color: $text-primary;
+  letter-spacing: 0.05em;
+}
+
+// ─── Remove button ────────────────────────────────────────────────────────────
+.btn-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: $text-muted;
+  cursor: pointer;
+  transition: color 0.12s, background 0.12s;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+  &:hover { color: $red; background: rgba($red, 0.1); }
+}
+
+// ─── Responsive ──────────────────────────────────────────────────────────────
+@media (max-width: 700px) {
+  .wl-page   { padding: 16px; gap: 16px; }
+  .wl-header { flex-direction: column; align-items: flex-start; }
+  .wl-add-row { flex-direction: column; }
+  .btn-add    { width: 100%; justify-content: center; }
+}

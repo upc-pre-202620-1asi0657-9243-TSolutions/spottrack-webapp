@@ -1,0 +1,151 @@
+@startuml BC-03_Equipment
+
+package "equipment.domain.model" {
+  class Equipment {
+    - _id: number
+    - _zoneId: number
+    - _name: string
+    - _brand: string
+    - _model: string
+    - _purchasePrice: number
+    - _status: EquipmentStatus
+    + id: number
+    + zoneId: number
+    + name: string
+    + brand: string
+    + model: string
+    + purchasePrice: number
+    + status: EquipmentStatus
+  }
+
+  enum EquipmentStatus {
+    OPERATIONAL
+    MAINTENANCE
+    OUT_OF_ORDER
+  }
+}
+
+package "equipment.application" {
+  class EquipmentStore {
+    - equipmentSignal: Signal<Equipment[]>
+    - loadingSignal: Signal<boolean>
+    - errorSignal: Signal<string | null>
+    + equipment: Signal<Equipment[]>
+    + loading: Signal<boolean>
+    + error: Signal<string | null>
+    + equipmentCount: Signal<number>
+    + operationalCount: Signal<number>
+    + maintenanceCount: Signal<number>
+    + outOfOrderCount: Signal<number>
+    + getEquipmentById(id: number): Signal<Equipment | undefined>
+    + addEquipment(entity: Equipment): void
+    + updateEquipment(entity: Equipment): void
+    + deleteEquipment(id: number): void
+    - loadEquipment(): void
+  }
+}
+
+package "equipment.infrastructure" {
+  interface EquipmentResource {
+    + id: number
+    + zone_id: number
+    + name: string
+    + brand: string
+    + model: string
+    + purchase_price: number
+    + status: string
+  }
+
+  class EquipmentAssembler {
+    + toEntitiesFromResponse(response: EquipmentResponse): Equipment[]
+    + toEntityFromResource(resource: EquipmentResource): Equipment
+    + toResourceFromEntity(entity: Equipment): EquipmentResource
+  }
+
+  class EquipmentApiEndpoint {
+    + constructor(http: HttpClient)
+  }
+
+  class EquipmentApi {
+    - endpoint: EquipmentApiEndpoint
+    + getEquipment(): Observable<Equipment[]>
+    + getEquipmentById(id: number): Observable<Equipment>
+    + registerEquipment(entity: Equipment): Observable<Equipment>
+    + updateEquipment(entity: Equipment): Observable<Equipment>
+    + deleteEquipment(id: number): Observable<void>
+  }
+
+  abstract class BaseApi {
+  }
+
+  abstract class BaseApiEndpoint {
+    + getAll(): Observable<TEntity[]>
+    + getById(id: number): Observable<TEntity>
+    + create(entity: TEntity): Observable<TEntity>
+    + update(entity: TEntity, id: number): Observable<TEntity>
+    + delete(id: number): Observable<void>
+  }
+}
+
+package "equipment.presentation.views" {
+  interface EquipmentRow {
+    + id: number
+    + zoneId: number
+    + name: string
+    + brand: string
+    + model: string
+    + purchasePrice: number
+    + status: EquipmentStatus
+  }
+
+  interface EquipmentFormData {
+    + id?: number
+    + name: string
+    + brand: string
+    + model: string
+    + zoneId: number
+    + purchasePrice: number
+    + status: EquipmentStatus
+  }
+
+  class EquipmentManagementComponent <<component>> {
+    - store: EquipmentStore
+    + searchQuery: Signal<string>
+    + selectedStatus: Signal<EquipmentStatus | "">
+    + isLoading: Signal<boolean>
+    + totalEquipment: Signal<number>
+    + operationalCount: Signal<number>
+    + maintenanceCount: Signal<number>
+    + outOfOrderCount: Signal<number>
+    + filteredEquipment: Signal<EquipmentRow[]>
+    + navigateToNew(): void
+    + navigateToEdit(row: EquipmentRow): void
+    + deleteEquipment(id: number): void
+    + onSearchChange(value: string): void
+    + onStatusChange(value: EquipmentStatus | ""): void
+  }
+
+  class AddEquipmentDialogComponent <<component>> {
+    - store: EquipmentStore
+    + isEditMode: boolean
+    + equipmentStatuses: EquipmentStatus[]
+    + form: FormGroup
+    + submit(): void
+    + cancel(): void
+  }
+}
+
+EquipmentApi --|> BaseApi : extends
+EquipmentApiEndpoint --|> BaseApiEndpoint : extends
+EquipmentApi --> EquipmentApiEndpoint : uses
+EquipmentApiEndpoint --> EquipmentAssembler : uses
+EquipmentStore --> EquipmentApi : uses
+EquipmentAssembler ..> EquipmentResource : transforms
+EquipmentAssembler --> Equipment : creates
+EquipmentManagementComponent --> EquipmentStore : uses
+EquipmentManagementComponent --> EquipmentRow : displays
+AddEquipmentDialogComponent --> EquipmentStore : uses
+AddEquipmentDialogComponent --> EquipmentFormData : uses
+Equipment --> EquipmentStatus : has
+
+@enduml

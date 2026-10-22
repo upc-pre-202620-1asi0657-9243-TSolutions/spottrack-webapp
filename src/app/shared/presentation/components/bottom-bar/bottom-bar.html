@@ -1,0 +1,12 @@
+<nav class="bottom-bar">
+  @for (item of navItems; track item.path) {
+    <a
+      class="bottom-bar__item"
+      [routerLink]="item.path"
+      routerLinkActive="bottom-bar__item--active"
+    >
+      <mat-icon>{{ item.icon }}</mat-icon>
+      <span>{{ item.labelKey | translate }}</span>
+    </a>
+  }
+</nav>

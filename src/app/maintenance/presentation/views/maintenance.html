@@ -1,0 +1,289 @@
+<div class="maint-page">
+
+  <!-- ── Header ─────────────────────────────────────────────────────── -->
+  <div class="maint-header">
+    <div>
+      <h1 class="maint-title">{{ 'maintenance.title' | translate }}</h1>
+      <p class="maint-subtitle">{{ 'maintenance.subtitle' | translate }}</p>
+    </div>
+    <button class="btn-new" [routerLink]="['/maintenance/new-ticket']">
+      <mat-icon>add</mat-icon>
+      {{ 'maintenance.newTicket' | translate }}
+    </button>
+  </div>
+
+  <!-- ── Stats ──────────────────────────────────────────────────────── -->
+  <div class="maint-stats">
+    <div class="stat-card">
+      <div>
+        <p class="stat-label">{{ 'maintenance.stats.pending' | translate }}</p>
+        <p class="stat-value">{{ store.pendingTickets().length }}</p>
+      </div>
+      <mat-icon class="stat-icon stat-icon--red">schedule</mat-icon>
+    </div>
+    <div class="stat-card">
+      <div>
+        <p class="stat-label">{{ 'maintenance.stats.inProgress' | translate }}</p>
+        <p class="stat-value stat-value--amber">{{ store.inProgressTickets().length }}</p>
+      </div>
+      <mat-icon class="stat-icon stat-icon--amber">pending_actions</mat-icon>
+    </div>
+    <div class="stat-card">
+      <div>
+        <p class="stat-label">{{ 'maintenance.stats.completed' | translate }}</p>
+        <p class="stat-value stat-value--green">{{ store.resolvedTickets().length }}</p>
+      </div>
+      <mat-icon class="stat-icon stat-icon--green">task_alt</mat-icon>
+    </div>
+    <div class="stat-card">
+      <div>
+        <p class="stat-label">{{ 'maintenance.stats.totalTickets' | translate }}</p>
+        <p class="stat-value">{{ store.totalTickets() }}</p>
+      </div>
+      <mat-icon class="stat-icon stat-icon--blue">build</mat-icon>
+    </div>
+  </div>
+
+  <!-- ── Filters bar ────────────────────────────────────────────────── -->
+  <div class="filters-bar">
+    <div class="search-wrap">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input
+        class="search-input"
+        [placeholder]="'maintenance.search' | translate"
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+        name="search"
+      >
+    </div>
+
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-select [ngModel]="statusFilter()" (ngModelChange)="statusFilter.set($event)" name="sf">
+        <mat-option value="">{{ 'maintenance.filter.allStatuses' | translate }}</mat-option>
+        <mat-option value="OPEN">{{ 'maintenance.status.OPEN' | translate }}</mat-option>
+        <mat-option value="IN_PROGRESS">{{ 'maintenance.status.IN_PROGRESS' | translate }}</mat-option>
+        <mat-option value="RESOLVED">{{ 'maintenance.status.RESOLVED' | translate }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-select [ngModel]="priorityFilter()" (ngModelChange)="priorityFilter.set($event)" name="pf">
+        <mat-option value="">{{ 'maintenance.filter.allPriorities' | translate }}</mat-option>
+        <mat-option value="HIGH">{{ 'maintenance.priority.HIGH' | translate }}</mat-option>
+        <mat-option value="MEDIUM">{{ 'maintenance.priority.MEDIUM' | translate }}</mat-option>
+        <mat-option value="LOW">{{ 'maintenance.priority.LOW' | translate }}</mat-option>
+        <mat-option value="URGENT">{{ 'maintenance.priority.URGENT' | translate }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <!-- ── Kanban board ───────────────────────────────────────────────── -->
+  <div class="kanban">
+
+    <!-- Pendiente column -->
+    <div class="kanban-col">
+      <div class="kanban-col__header">
+        <div class="col-title">
+          <mat-icon class="col-dot col-dot--red">radio_button_checked</mat-icon>
+          <span>{{ 'maintenance.col.pending' | translate }} ({{ pendingFiltered().length }})</span>
+        </div>
+      </div>
+
+      <div class="ticket-list">
+        @for (t of pendingFiltered(); track t.id) {
+          <div class="ticket-card" [appContextMenu]="pendingMenu(t)">
+            <div class="ticket-top">
+              <div class="ticket-meta">
+                <span class="ticket-id">{{ ticketId(t) }}</span>
+                <span class="ticket-name">{{ equipmentName(t.equipmentId) }}</span>
+                <p class="ticket-desc">{{ t.description }}</p>
+              </div>
+              <span class="status-dot status-dot--red"></span>
+            </div>
+            <div class="ticket-row">
+              <span class="priority-badge" [class]="'priority-badge--' + t.priority.toLowerCase()">
+                {{ 'maintenance.priority.' + t.priority | translate }}
+              </span>
+              <span class="ticket-age">{{ ticketAge(t) }}</span>
+            </div>
+            <button class="btn-start" (click)="openStartModal(t)">
+              {{ 'maintenance.action.start' | translate }}
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        }
+        @empty {
+          <p class="col-empty">{{ 'maintenance.col.empty' | translate }}</p>
+        }
+      </div>
+    </div>
+
+    <!-- En Progreso column -->
+    <div class="kanban-col">
+      <div class="kanban-col__header">
+        <div class="col-title">
+          <mat-icon class="col-dot col-dot--amber">radio_button_checked</mat-icon>
+          <span>{{ 'maintenance.col.inProgress' | translate }} ({{ inProgressFiltered().length }})</span>
+        </div>
+      </div>
+
+      <div class="ticket-list">
+        @for (t of inProgressFiltered(); track t.id) {
+          <div class="ticket-card ticket-card--in-progress" [appContextMenu]="inProgressMenu(t)">
+            <div class="ticket-top">
+              <div class="ticket-meta">
+                <span class="ticket-id">{{ ticketId(t) }}</span>
+                <span class="ticket-name">{{ equipmentName(t.equipmentId) }}</span>
+                <p class="ticket-desc">{{ t.description }}</p>
+                @if (t.assignee) {
+                  <p class="ticket-assignee">{{ 'maintenance.assignedTo' | translate }}: {{ t.assignee }}</p>
+                }
+              </div>
+              <span class="status-dot status-dot--amber"></span>
+            </div>
+            <button class="btn-complete" (click)="openCompleteModal(t)">
+              {{ 'maintenance.action.complete' | translate }}
+              <mat-icon>check_circle</mat-icon>
+            </button>
+          </div>
+        }
+        @empty {
+          <p class="col-empty">{{ 'maintenance.col.empty' | translate }}</p>
+        }
+      </div>
+    </div>
+
+    <!-- Completado column -->
+    <div class="kanban-col">
+      <div class="kanban-col__header">
+        <div class="col-title">
+          <mat-icon class="col-dot col-dot--green">radio_button_checked</mat-icon>
+          <span>{{ 'maintenance.col.completed' | translate }} ({{ resolvedFiltered().length }})</span>
+        </div>
+      </div>
+
+      <div class="ticket-list">
+        @for (t of resolvedFiltered(); track t.id) {
+          <div class="ticket-card ticket-card--completed" [appContextMenu]="resolvedMenu(t)">
+            <div class="ticket-top">
+              <div class="ticket-meta">
+                <span class="ticket-id">{{ ticketId(t) }}</span>
+                <span class="ticket-name ticket-name--done">{{ equipmentName(t.equipmentId) }}</span>
+                <p class="ticket-desc">{{ t.description }}</p>
+                @if (t.completedBy) {
+                  <p class="ticket-assignee">{{ 'maintenance.completedBy' | translate }}: {{ t.completedBy }}</p>
+                }
+              </div>
+              <mat-icon class="done-check">check_circle</mat-icon>
+            </div>
+          </div>
+        }
+        @empty {
+          <p class="col-empty">{{ 'maintenance.col.empty' | translate }}</p>
+        }
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Control-point modal ────────────────────────────────────────── -->
+  @if (modalMode() === 'start' && modalTicket(); as t) {
+    <div class="modal-overlay" (click)="closeModal()">
+      <div class="modal" (click)="$event.stopPropagation()">
+        <button class="modal__close" (click)="closeModal()"><mat-icon>close</mat-icon></button>
+        <h2 class="modal__title">{{ 'maintenance.controlPoint.startTitle' | translate }}</h2>
+        <p class="modal__subtitle">{{ ticketId(t) }} · {{ equipmentName(t.equipmentId) }}</p>
+        <p class="modal__hint">{{ 'maintenance.controlPoint.startHint' | translate }}</p>
+        <label class="modal__label">{{ 'maintenance.controlPoint.technician' | translate }} *</label>
+        <select
+          class="modal__input"
+          [ngModel]="technicianInput()"
+          (ngModelChange)="technicianInput.set($event)"
+          name="technicianId"
+        >
+          <option value="" disabled>{{ 'maintenance.controlPoint.technicianPlaceholder' | translate }}</option>
+          @for (technician of technicianStore.technicians(); track technician.id) {
+            <option [value]="technician.id">{{ technician.name }}</option>
+          }
+        </select>
+        @if (actionError()) {
+          <p class="modal__error">{{ actionError() }}</p>
+        }
+        <div class="modal__actions">
+          <button class="modal__btn modal__btn--secondary" (click)="closeModal()">{{ 'maintenance.controlPoint.cancel' | translate }}</button>
+          <button class="modal__btn modal__btn--primary" [disabled]="!technicianInput().trim() || actionLoading()" (click)="confirmStart()">
+            {{ 'maintenance.controlPoint.confirmStart' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (modalMode() === 'complete' && modalTicket(); as t) {
+    <div class="modal-overlay" (click)="closeModal()">
+      <div class="modal" (click)="$event.stopPropagation()">
+        <button class="modal__close" (click)="closeModal()"><mat-icon>close</mat-icon></button>
+        <h2 class="modal__title">{{ 'maintenance.controlPoint.completeTitle' | translate }}</h2>
+        <p class="modal__subtitle">{{ ticketId(t) }} · {{ equipmentName(t.equipmentId) }}</p>
+        <p class="modal__hint">{{ 'maintenance.controlPoint.completeHint' | translate }}</p>
+        <label class="modal__label">{{ 'maintenance.controlPoint.notes' | translate }} *</label>
+        <textarea
+          class="modal__textarea"
+          [ngModel]="notesInput()"
+          (ngModelChange)="notesInput.set($event)"
+          name="notes"
+          rows="4"
+          [placeholder]="'maintenance.controlPoint.notesPlaceholder' | translate"
+        ></textarea>
+        <label class="modal__label">{{ 'maintenance.controlPoint.cost' | translate }} *</label>
+        <input
+          class="modal__input"
+          type="number"
+          min="0"
+          step="0.01"
+          [ngModel]="costInput()"
+          (ngModelChange)="costInput.set($event)"
+          name="cost"
+          [placeholder]="'maintenance.controlPoint.costPlaceholder' | translate"
+        >
+        @if (actionError()) {
+          <p class="modal__error">{{ actionError() }}</p>
+        }
+        <div class="modal__actions">
+          <button class="modal__btn modal__btn--secondary" (click)="closeModal()">{{ 'maintenance.controlPoint.cancel' | translate }}</button>
+          <button class="modal__btn modal__btn--primary" [disabled]="!notesInput().trim() || !isCostValid() || actionLoading()" (click)="confirmComplete()">
+            {{ 'maintenance.controlPoint.confirmComplete' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (modalMode() === 'log' && modalTicket(); as t) {
+    <div class="modal-overlay" (click)="closeModal()">
+      <div class="modal modal--log" (click)="$event.stopPropagation()">
+        <button class="modal__close" (click)="closeModal()"><mat-icon>close</mat-icon></button>
+        <h2 class="modal__title">{{ 'maintenance.controlPoint.logTitle' | translate }}</h2>
+        <p class="modal__subtitle">{{ ticketId(t) }} · {{ equipmentName(t.equipmentId) }}</p>
+        @if (logLoading()) {
+          <p class="modal__hint">{{ 'maintenance.controlPoint.logLoading' | translate }}</p>
+        } @else if (logEntries().length === 0) {
+          <p class="modal__hint">{{ 'maintenance.controlPoint.logEmpty' | translate }}</p>
+        } @else {
+          <div class="log-list">
+            @for (entry of logEntries(); track entry.id) {
+              <div class="log-entry">
+                <p class="log-entry__notes">{{ entry.notes }}</p>
+                <p class="log-entry__date">{{ entry.completedAt | date:'medium' }}</p>
+              </div>
+            }
+          </div>
+        }
+        <div class="modal__actions">
+          <button class="modal__btn modal__btn--secondary" (click)="closeModal()">{{ 'maintenance.controlPoint.close' | translate }}</button>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>

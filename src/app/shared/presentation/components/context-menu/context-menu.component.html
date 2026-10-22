@@ -1,0 +1,19 @@
+@if (svc.state(); as menu) {
+  <ul
+    class="ctx-menu"
+    [style.left.px]="menu.x"
+    [style.top.px]="menu.y"
+    (contextmenu)="$event.preventDefault(); $event.stopPropagation()"
+  >
+    @for (item of menu.items; track $index) {
+      @if (item.separator) {
+        <li class="ctx-sep"></li>
+      } @else {
+        <li class="ctx-item" (click)="run(item.action, $event)">
+          <mat-icon class="ctx-item__icon">{{ item.icon }}</mat-icon>
+          <span class="ctx-item__label">{{ item.label }}</span>
+        </li>
+      }
+    }
+  </ul>
+}

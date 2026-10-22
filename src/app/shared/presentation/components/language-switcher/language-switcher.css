@@ -1,0 +1,100 @@
+/* =========================================================
+   Estilos del Contenedor y Botón (Trigger)
+========================================================= */
+.lang-selector {
+  width: 100%;
+}
+
+.lang-btn {
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 14px;
+  height: 40px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-width: unset;
+  box-sizing: border-box;
+}
+
+::ng-deep .lang-btn .mdc-button__label {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+}
+
+.lang-btn .btn-content {
+  display: flex;
+  gap: 6px;
+}
+
+.lang-btn .chevron {
+  color: #888;
+  display: flex;
+  align-items: center;
+}
+
+.lang-btn:hover {
+  border-color: #555;
+}
+
+::ng-deep .custom-lang-menu {
+  background-color: #1a1a1a !important;
+  border: 1px solid #333 !important;
+  border-radius: 6px !important;
+  margin-top: 4px;
+}
+
+::ng-deep .custom-lang-menu .mat-mdc-menu-content {
+  padding: 4px !important;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+
+::ng-deep .custom-lang-menu .lang-item {
+  color: #ffffff !important;
+  font-size: 14px !important;
+  min-height: 38px !important;
+  line-height: 38px !important;
+  border-radius: 4px !important;
+  padding: 0 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  box-sizing: border-box;
+  transition: background-color 0.1s ease !important;
+}
+
+::ng-deep .custom-lang-menu .lang-item .item-text {
+  display: flex;
+  gap: 6px;
+}
+
+::ng-deep .custom-lang-menu .lang-item:hover:not(.active-item) {
+  background-color: #2a2a2a !important;
+}
+
+::ng-deep .custom-lang-menu .active-item {
+  background-color: #f7b924 !important;
+  color: #000000 !important;
+  width: 100%;
+}
+
+::ng-deep .custom-lang-menu .active-item .check-icon {
+  color: #8a6a12;
+  margin-left: 8px;
+}
+
+
+::ng-deep .custom-lang-menu .mat-mdc-focus-indicator,
+::ng-deep .custom-lang-menu .mat-ripple {
+  display: none !important;
+}

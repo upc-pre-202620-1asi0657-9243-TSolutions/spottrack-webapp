@@ -1,0 +1,93 @@
+<section class="gym-switcher">
+
+  <div class="gym-switcher__header">
+    <mat-icon class="gym-switcher__header-icon">fitness_center</mat-icon>
+    <h3 class="gym-switcher__title">{{ 'gym.switcher.title' | translate }}</h3>
+  </div>
+
+  <!-- General switch error (403 revoked, network, etc.) -->
+  @if (activeGymStore.error()) {
+    <div class="gym-switcher__error">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ activeGymStore.error()! | translate }}</span>
+    </div>
+  }
+
+  <!-- Association list -->
+  <ul class="gym-switcher__list">
+    @for (assoc of activeGymStore.associations(); track assoc.gymId) {
+      <li class="gym-switcher__item" [class.gym-switcher__item--active]="assoc.active">
+        <div class="gym-switcher__item-info">
+          <mat-icon class="gym-switcher__item-icon">storefront</mat-icon>
+          <span class="gym-switcher__item-name">{{ gymName(assoc.gymId) }}</span>
+        </div>
+        @if (assoc.active) {
+          <span class="gym-switcher__badge">{{ 'gym.switcher.active' | translate }}</span>
+        } @else {
+          <button
+            class="gym-switcher__btn-switch"
+            (click)="switchGym(assoc.gymId)"
+            [title]="'gym.switcher.switchBtn' | translate">
+            <mat-icon>swap_horiz</mat-icon>
+          </button>
+        }
+      </li>
+    }
+  </ul>
+
+  <!-- Add new gym panel toggle -->
+  @if (!showAddPanel()) {
+    <button class="gym-switcher__btn-add" (click)="openAddPanel()">
+      <mat-icon>add_circle_outline</mat-icon>
+      {{ 'gym.switcher.addGymBtn' | translate }}
+    </button>
+  } @else {
+    <div class="gym-switcher__add-panel">
+
+      <div class="gym-switcher__add-header">
+        <span class="gym-switcher__add-title">{{ 'gym.switcher.addGymTitle' | translate }}</span>
+        <button class="gym-switcher__btn-close" (click)="closeAddPanel()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <!-- Associate error (403 not-whitelisted, 409 already exists) -->
+      @if (activeGymStore.associateError()) {
+        <div class="gym-switcher__error">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ activeGymStore.associateError()! | translate }}</span>
+        </div>
+      }
+
+      @if (gymListStore.loading()) {
+        <div class="gym-switcher__loading">
+          <mat-icon class="gym-switcher__spinner">autorenew</mat-icon>
+        </div>
+      } @else if (joinableGyms().length === 0) {
+        <p class="gym-switcher__empty">{{ 'gym.switcher.addGymEmpty' | translate }}</p>
+      } @else {
+        <ul class="gym-switcher__list">
+          @for (gym of joinableGyms(); track gym.gymId) {
+            <li class="gym-switcher__item">
+              <div class="gym-switcher__item-info">
+                <mat-icon class="gym-switcher__item-icon">storefront</mat-icon>
+                <span class="gym-switcher__item-name">{{ gym.name }}</span>
+              </div>
+              <button
+                class="gym-switcher__btn-join"
+                [disabled]="joiningGymId() === gym.gymId"
+                (click)="joinGym(gym.gymId)">
+                @if (joiningGymId() === gym.gymId) {
+                  <mat-icon class="gym-switcher__spinner">autorenew</mat-icon>
+                } @else {
+                  {{ 'gym.switcher.joinBtn' | translate }}
+                }
+              </button>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+  }
+
+</section>

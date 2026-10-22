@@ -1,0 +1,182 @@
+<div class="form-page">
+
+  <div class="form-page__header">
+    <button mat-icon-button class="back-btn" (click)="cancel()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <div>
+      <h1 class="form-page__title">
+        {{ (isEditMode ? 'equipment.dialog.editTitle' : 'equipment.dialog.addTitle') | translate }}
+      </h1>
+      @if (isEditMode) {
+        <p class="form-page__subtitle">{{ 'equipment.dialog.editHint' | translate }}</p>
+      }
+    </div>
+  </div>
+
+  <div class="form-page__card">
+
+    <div class="form-intro">
+      <div class="form-intro__icon-wrap">
+        <mat-icon class="form-intro__icon">fitness_center</mat-icon>
+      </div>
+      <div class="form-intro__text">
+        <p class="form-intro__label">{{ (isEditMode ? 'equipment.dialog.editTitle' : 'equipment.dialog.addTitle') | translate }}</p>
+        <p class="form-intro__hint">{{ 'equipment.dialog.subtitle' | translate }}</p>
+      </div>
+      <div class="form-intro__badge" [class.form-intro__badge--edit]="isEditMode">
+        <mat-icon>{{ isEditMode ? 'edit' : 'add_circle' }}</mat-icon>
+        <span>{{ isEditMode ? ('equipment.dialog.editMode' | translate) : ('equipment.dialog.newMode' | translate) }}</span>
+      </div>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="eq-form">
+
+      <!-- Section: Identification (read-only in edit mode) -->
+      <div class="form-section">
+        <div class="form-section__header">
+          <mat-icon>badge</mat-icon>
+          <span>{{ 'equipment.dialog.sections.identification' | translate }}</span>
+        </div>
+
+        <mat-form-field appearance="outline" class="form-field form-field--full">
+          <mat-label>{{ 'equipment.dialog.fields.name' | translate }}</mat-label>
+          <mat-icon matPrefix>label</mat-icon>
+          <input matInput formControlName="name" />
+          @if (form.controls.name.hasError('required')) {
+            <mat-error>{{ 'equipment.dialog.validation.required' | translate }}</mat-error>
+          }
+        </mat-form-field>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>{{ 'equipment.dialog.fields.brand' | translate }}</mat-label>
+            <mat-icon matPrefix>business</mat-icon>
+            <input matInput formControlName="brand" />
+            @if (form.controls.brand.hasError('required')) {
+              <mat-error>{{ 'equipment.dialog.validation.required' | translate }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>{{ 'equipment.dialog.fields.model' | translate }}</mat-label>
+            <mat-icon matPrefix>category</mat-icon>
+            <input matInput formControlName="model" />
+            @if (form.controls.model.hasError('required')) {
+              <mat-error>{{ 'equipment.dialog.validation.required' | translate }}</mat-error>
+            }
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Section: Pricing & Location (read-only in edit mode) -->
+      <div class="form-section">
+        <div class="form-section__header">
+          <mat-icon>tune</mat-icon>
+          <span>{{ 'equipment.dialog.sections.configuration' | translate }}</span>
+        </div>
+
+        <!-- Zone: select in create mode, disabled text in edit mode -->
+        @if (isEditMode) {
+          <mat-form-field appearance="outline" class="form-field form-field--full">
+            <mat-label>{{ 'equipment.dialog.fields.zoneId' | translate }}</mat-label>
+            <mat-icon matPrefix>location_on</mat-icon>
+            <input matInput formControlName="zoneId" />
+          </mat-form-field>
+        } @else {
+          <mat-form-field appearance="outline" class="form-field form-field--full">
+            <mat-label>{{ 'equipment.dialog.fields.zoneId' | translate }}</mat-label>
+            <mat-icon matPrefix>location_on</mat-icon>
+            <mat-select formControlName="zoneId">
+              @if (zoneStore.loading()) {
+                <mat-option disabled>{{ 'equipment.dialog.zonesLoading' | translate }}</mat-option>
+              } @else if (groupedZones().length === 0) {
+                <mat-option disabled>{{ 'equipment.dialog.noZones' | translate }}</mat-option>
+              } @else {
+                @for (group of groupedZones(); track group.branch.branchId) {
+                  <mat-optgroup [label]="group.branch.name">
+                    @for (zone of group.zones; track zone.zoneId) {
+                      <mat-option [value]="zone.zoneId">{{ zone.zoneName }}</mat-option>
+                    }
+                  </mat-optgroup>
+                }
+              }
+            </mat-select>
+            @if (form.controls.zoneId.hasError('required')) {
+              <mat-error>{{ 'equipment.dialog.validation.required' | translate }}</mat-error>
+            }
+          </mat-form-field>
+        }
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="form-field form-field--currency">
+            <mat-label>{{ 'equipment.dialog.fields.purchaseCurrency' | translate }}</mat-label>
+            <mat-icon matPrefix>language</mat-icon>
+            <mat-select formControlName="purchaseCurrency">
+              @for (c of currencies; track c) {
+                <mat-option [value]="c">{{ c }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>{{ 'equipment.dialog.fields.purchaseAmount' | translate }}</mat-label>
+            <mat-icon matPrefix>attach_money</mat-icon>
+            <input matInput type="number" formControlName="purchaseAmount" min="0" />
+            @if (form.controls.purchaseAmount.hasError('required') || form.controls.purchaseAmount.hasError('min')) {
+              <mat-error>{{ 'equipment.dialog.validation.min' | translate }}</mat-error>
+            }
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Section: Status (always editable) -->
+      <div class="form-section">
+        <div class="form-section__header">
+          <mat-icon>toggle_on</mat-icon>
+          <span>{{ 'equipment.dialog.sections.status' | translate }}</span>
+        </div>
+
+        @if (isEditMode) {
+          <div class="edit-hint">
+            <mat-icon>info</mat-icon>
+            <span>{{ 'equipment.dialog.editHint' | translate }}</span>
+          </div>
+        }
+
+        <mat-form-field appearance="outline" class="form-field form-field--full">
+          <mat-label>{{ 'equipment.dialog.fields.status' | translate }}</mat-label>
+          <mat-icon matPrefix>circle</mat-icon>
+          <mat-select formControlName="status">
+            @for (s of equipmentStatuses; track s) {
+              <mat-option [value]="s">{{ 'equipment.status.' + s | translate }}</mat-option>
+            }
+          </mat-select>
+          @if (form.controls.status.hasError('required')) {
+            <mat-error>{{ 'equipment.dialog.validation.required' | translate }}</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="form-field form-field--full">
+          <mat-label>{{ 'equipment.dialog.fields.maintenanceThreshold' | translate }}</mat-label>
+          <mat-icon matPrefix>event</mat-icon>
+          <input matInput type="date" formControlName="maintenanceThreshold" />
+          <mat-hint>{{ (isEditMode ? 'equipment.dialog.hints.maintenanceThresholdEdit' : 'equipment.dialog.hints.maintenanceThresholdNew') | translate }}</mat-hint>
+        </mat-form-field>
+      </div>
+
+      <div class="form-actions">
+        <button mat-stroked-button type="button" class="btn-cancel" (click)="cancel()">
+          <mat-icon>close</mat-icon>
+          {{ 'equipment.actions.cancel' | translate }}
+        </button>
+        <button mat-flat-button type="submit" class="btn-save" [disabled]="form.invalid">
+          <mat-icon>{{ isEditMode ? 'sync' : 'add' }}</mat-icon>
+          {{ isEditMode ? ('equipment.actions.updateStatus' | translate) : ('equipment.actions.save' | translate) }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+</div>

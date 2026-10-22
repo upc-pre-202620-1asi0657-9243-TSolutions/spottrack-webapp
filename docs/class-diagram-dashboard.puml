@@ -1,0 +1,124 @@
+@startuml BC-12_Dashboard
+
+package "dashboard.domain.model" {
+  class EquipmentUsageStat {
+    - _id: number
+    - _equipmentId: number
+    - _totalUsageHours: number
+    - _usageCountDaily: number
+    - _estimatedWearLevel: number
+    + id: number
+    + equipmentId: number
+    + totalUsageHours: number
+    + usageCountDaily: number
+    + estimatedWearLevel: number
+  }
+}
+
+package "dashboard.application" {
+  interface HourlyCapacityPoint {
+    + hour: string
+    + value: number
+  }
+
+  class DashboardStore {
+    - usageStatsSignal: Signal<EquipmentUsageStat[]>
+    - sessionsSignal: Signal<UsageSessionResource[]>
+    - loadingSignal: Signal<boolean>
+    - errorSignal: Signal<string | null>
+    + usageStats: Signal<EquipmentUsageStat[]>
+    + loading: Signal<boolean>
+    + error: Signal<string | null>
+    + operationalCount: Signal<number>
+    + maintenanceCount: Signal<number>
+    + outOfOrderCount: Signal<number>
+    + totalTickets: Signal<number>
+    + hourlyCapacityData: Signal<HourlyCapacityPoint[]>
+    + linePoints: Signal<object[]>
+    + polylinePoints: Signal<string>
+    + areaPath: Signal<string>
+    + machineUsageBars: Signal<object[]>
+    + maxBarHours: Signal<number>
+    + underutilizedEquipment: Signal<object[]>
+    + pendingTickets: Signal<MaintenanceTicket[]>
+    + inProgressTickets: Signal<MaintenanceTicket[]>
+    + resolvedTickets: Signal<MaintenanceTicket[]>
+    + ticketLabel(id: number): string
+    + equipmentName(equipmentId: number): string
+    - load(): void
+  }
+}
+
+package "dashboard.infrastructure" {
+  interface EquipmentUsageStatResource {
+    + id: number
+    + equipment_id: number
+    + total_usage_hours: number
+    + usage_count_daily: number
+    + estimated_wear_level: number
+  }
+
+  interface UsageSessionResource {
+    + id: number
+    + equipment_id: number
+    + start_time: string
+    + end_time: string
+    + calories_burned_est: number
+  }
+
+  class EquipmentUsageStatAssembler {
+    + toEntitiesFromResponse(response: EquipmentUsageStatResponse): EquipmentUsageStat[]
+    + toEntityFromResource(r: EquipmentUsageStatResource): EquipmentUsageStat
+    + toResourceFromEntity(e: EquipmentUsageStat): EquipmentUsageStatResource
+  }
+
+  class EquipmentUsageStatApiEndpoint {
+    + constructor(http: HttpClient)
+  }
+
+  class DashboardApi {
+    - usageStatsEndpoint: EquipmentUsageStatApiEndpoint
+    - sessionsUrl: string
+    + getEquipmentUsageStats(): Observable<EquipmentUsageStat[]>
+    + getUsageSessions(): Observable<UsageSessionResource[]>
+  }
+
+  abstract class BaseApi {
+  }
+
+  abstract class BaseApiEndpoint {
+    + getAll(): Observable<TEntity[]>
+    + getById(id: number): Observable<TEntity>
+    + create(entity: TEntity): Observable<TEntity>
+    + update(entity: TEntity, id: number): Observable<TEntity>
+    + delete(id: number): Observable<void>
+  }
+}
+
+package "dashboard.presentation.views" {
+  class DashboardComponent <<component>> {
+    + store: DashboardStore
+    + SVG_W: number
+    + SVG_H: number
+    + yTicks: object[]
+    + barYTicks: number[]
+    + barShortName(name: string): string
+    + roiClass(roi: "Bajo" | "Medio" | "Alto"): string
+    + ticketDesc(type: TicketType): string
+  }
+}
+
+DashboardApi --|> BaseApi : extends
+EquipmentUsageStatApiEndpoint --|> BaseApiEndpoint : extends
+DashboardApi --> EquipmentUsageStatApiEndpoint : uses
+DashboardApi --> UsageSessionResource : fetches
+EquipmentUsageStatApiEndpoint --> EquipmentUsageStatAssembler : uses
+DashboardStore --> DashboardApi : uses
+DashboardStore --> HourlyCapacityPoint : computes
+EquipmentUsageStatAssembler ..> EquipmentUsageStatResource : transforms
+EquipmentUsageStatAssembler --> EquipmentUsageStat : creates
+DashboardStore --> EquipmentStore : uses
+DashboardStore --> MaintenanceStore : uses
+DashboardComponent --> DashboardStore : uses
+
+@enduml

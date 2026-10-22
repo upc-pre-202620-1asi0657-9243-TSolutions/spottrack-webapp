@@ -1,0 +1,305 @@
+<div class="analytics-page">
+
+  <!-- ── Header ─────────────────────────────────────────────────────────── -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">{{ 'analytics.title' | translate }}</h1>
+      <p class="page-subtitle">{{ 'analytics.subtitle' | translate }}</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-outline" (click)="exportCsv()">
+        <mat-icon>download</mat-icon>
+        {{ 'analytics.exportCsv' | translate }}
+      </button>
+      <button class="btn-accent" (click)="generatePdf()">
+        <mat-icon>picture_as_pdf</mat-icon>
+        {{ 'analytics.generatePdf' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Filters ────────────────────────────────────────────────────────── -->
+  <div class="filters-bar">
+
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>{{ 'analytics.filters.period.label' | translate }}</mat-label>
+      <mat-select [value]="selectedPeriod()" (valueChange)="selectedPeriod.set($event)">
+        <mat-option value="month">{{ 'analytics.filters.period.month' | translate }}</mat-option>
+        <mat-option value="quarter">{{ 'analytics.filters.period.quarter' | translate }}</mat-option>
+        <mat-option value="year">{{ 'analytics.filters.period.year' | translate }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>{{ 'analytics.filters.branch.label' | translate }}</mat-label>
+      <mat-select [value]="selectedBranch()" (valueChange)="selectedBranch.set($event)">
+        <mat-option value="all">{{ 'analytics.filters.branch.all' | translate }}</mat-option>
+        <mat-option value="main">{{ 'analytics.filters.branch.main' | translate }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="filter-field filter-field--date">
+      <mat-label>{{ 'analytics.filters.customRange' | translate }}</mat-label>
+      <mat-date-range-input [formGroup]="dateRange" [rangePicker]="picker" separator="→">
+        <input matStartDate formControlName="start" [placeholder]="'analytics.filters.dateStart' | translate">
+        <input matEndDate   formControlName="end"   [placeholder]="'analytics.filters.dateEnd'   | translate">
+      </mat-date-range-input>
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-date-range-picker #picker></mat-date-range-picker>
+    </mat-form-field>
+
+  </div>
+
+  <!-- ── Stat cards ─────────────────────────────────────────────────────── -->
+  <div class="stat-grid">
+
+    <div class="stat-card" [appContextMenu]="chartMenu">
+      <div class="stat-card__info">
+        <p class="stat-card__label">{{ 'analytics.stats.totalHours' | translate }}</p>
+        <p class="stat-card__value">{{ stats().totalHours | number:'1.0-0' }}h</p>
+        <p class="stat-card__change stat-card__change--green">
+          +{{ stats().hoursChange }}% {{ 'analytics.stats.vsLastMonth' | translate }}
+        </p>
+      </div>
+      <mat-icon class="stat-card__icon stat-card__icon--blue">schedule</mat-icon>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-card__info">
+        <p class="stat-card__label">{{ 'analytics.stats.occupancyRate' | translate }}</p>
+        <p class="stat-card__value">{{ stats().occupancy }}%</p>
+        <p class="stat-card__change stat-card__change--green">
+          +{{ stats().occupancyChange }}% {{ 'analytics.stats.vsLastMonth' | translate }}
+        </p>
+      </div>
+      <mat-icon class="stat-card__icon stat-card__icon--green">people</mat-icon>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-card__info">
+        <p class="stat-card__label">{{ 'analytics.stats.peakUsage' | translate }}</p>
+        <p class="stat-card__value">{{ stats().peak }}%</p>
+        <p class="stat-card__change stat-card__change--muted">{{ stats().peakTime }}</p>
+      </div>
+      <mat-icon class="stat-card__icon stat-card__icon--amber">trending_up</mat-icon>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-card__info">
+        <p class="stat-card__label">{{ 'analytics.stats.inactiveTime' | translate }}</p>
+        <p class="stat-card__value">{{ stats().inactive }}h</p>
+        <p class="stat-card__change stat-card__change--amber">
+          {{ stats().inactiveChange }}% {{ 'analytics.stats.vsLastMonth' | translate }}
+        </p>
+      </div>
+      <div class="stat-card__dot"></div>
+    </div>
+
+  </div>
+
+  <!-- ── Charts row ─────────────────────────────────────────────────────── -->
+  <div class="charts-row">
+
+    <!-- Bar chart -->
+    <div class="chart-card">
+      <div class="chart-card__header">
+        <span class="chart-card__title">{{ 'analytics.charts.weeklyUsage' | translate }}</span>
+        <button class="btn-outline btn-outline--sm" (click)="showComparison.set(!showComparison())">
+          {{ (showComparison() ? 'analytics.charts.hideComparison' : 'analytics.charts.showComparison') | translate }}
+        </button>
+      </div>
+
+      <div class="bar-chart">
+        <div class="bar-chart__y-axis">
+          <span>600</span><span>450</span><span>300</span><span>150</span><span>0</span>
+        </div>
+        <div class="bar-chart__plot">
+          <div class="bar-chart__grid">
+            <div class="grid-line"></div>
+            <div class="grid-line"></div>
+            <div class="grid-line"></div>
+            <div class="grid-line"></div>
+            <div class="grid-line"></div>
+          </div>
+          <div class="capacity-line" [style.bottom]="capacityPct()"></div>
+          <div class="bar-chart__bars">
+            @for (d of weeklyData; track d.day) {
+              <div class="bar-group">
+                <div class="bar-group__bars">
+                  @if (showComparison()) {
+                    <div class="bar bar--prev" [style.height]="barPct(d.prevUsage)" [title]="d.prevUsage + 'h'"></div>
+                  }
+                  <div class="bar bar--current" [style.height]="barPct(d.usage)" [title]="d.usage + 'h'"></div>
+                </div>
+                <span class="bar-label">{{ d.day }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      @if (showComparison()) {
+        <div class="bar-legend">
+          <span class="legend-item"><span class="legend-dot legend-dot--prev"></span>{{ 'analytics.charts.prevMonth' | translate }}</span>
+          <span class="legend-item"><span class="legend-dot legend-dot--current"></span>{{ 'analytics.charts.usage' | translate }}</span>
+          <span class="legend-item"><span class="legend-line"></span>{{ 'analytics.charts.capacity' | translate }}</span>
+        </div>
+      }
+    </div>
+
+    <!-- Pie chart -->
+    <div class="chart-card">
+      <div class="chart-card__header">
+        <span class="chart-card__title">{{ 'analytics.charts.machineTypes' | translate }}</span>
+      </div>
+      <div class="pie-container">
+        <div class="pie-donut" [style.background]="'conic-gradient(' + pieGradient() + ')'">
+          <div class="pie-donut__hole"></div>
+        </div>
+        <div class="pie-legend">
+          @for (t of machineTypes; track t.label) {
+            <div class="pie-legend__item">
+              <span class="pie-legend__dot" [style.background]="t.color"></span>
+              <span class="pie-legend__label">{{ t.label }}: <strong>{{ t.pct }}%</strong></span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Line chart ─────────────────────────────────────────────────────── -->
+  <div class="chart-card chart-card--full">
+    <div class="chart-card__header">
+      <span class="chart-card__title">{{ 'analytics.charts.stressPeaks' | translate }}</span>
+    </div>
+
+    <div class="line-chart-wrap">
+      <div class="line-chart__y-axis">
+        <span>100</span><span>75</span><span>50</span><span>25</span><span>0</span>
+      </div>
+      <div class="line-chart__plot">
+        <svg viewBox="0 0 1160 200" preserveAspectRatio="none" class="line-svg">
+          <defs>
+            <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"   stop-color="#fb2c36" stop-opacity="0.25"/>
+              <stop offset="100%" stop-color="#fb2c36" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          @for (y of [0, 50, 100, 150, 200]; track y) {
+            <line [attr.x1]="0" [attr.x2]="1160" [attr.y1]="y" [attr.y2]="y" stroke="#333" stroke-width="1"/>
+          }
+          <line x1="0" x2="1160" [attr.y1]="threshold90Y" [attr.y2]="threshold90Y"
+                stroke="#fb2c36" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.7"/>
+          <text x="4" [attr.y]="threshold90Y - 4" fill="#fb2c36" font-size="10" opacity="0.8">90%</text>
+          <path [attr.d]="areaPath()" fill="url(#areaGrad)"/>
+          <polyline [attr.points]="polylinePoints()" fill="none" stroke="#fb2c36" stroke-width="2.5"
+                    stroke-linejoin="round" stroke-linecap="round"/>
+          @for (p of linePoints(); track p.hour) {
+            <circle [attr.cx]="p.x" [attr.cy]="p.y" r="4" fill="#fb2c36" stroke="#121212" stroke-width="2"/>
+          }
+        </svg>
+        <div class="line-chart__x-axis">
+          @for (p of hourlyData; track p.hour) {
+            <span>{{ p.hour }}</span>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Relocation recommendations (US-27) ─────────────────────────────── -->
+  <div class="chart-card chart-card--full">
+    <div class="chart-card__header">
+      <div>
+        <span class="chart-card__title">{{ 'analytics.relocation.title' | translate }}</span>
+        <p class="chart-card__subtitle">{{ 'analytics.relocation.subtitle' | translate }}</p>
+      </div>
+      <span class="badge-count">{{ relocationData.length }} {{ 'analytics.relocation.opportunities' | translate }}</span>
+    </div>
+
+    <div class="reloc-list">
+      @for (r of relocationData; track r.machine) {
+        <div class="reloc-row" [appContextMenu]="relocationMenu(r.machine)">
+
+          <span class="priority-badge" [class]="'priority-badge--' + r.priority.toLowerCase()">
+            {{ r.priority }}
+          </span>
+
+          <div class="reloc-machine">
+            <mat-icon class="reloc-machine__icon">fitness_center</mat-icon>
+            <span>{{ r.machine }}</span>
+          </div>
+
+          <div class="reloc-branch">
+            <p class="reloc-branch__name">{{ r.fromBranch }}</p>
+            <div class="occ-bar">
+              <div class="occ-bar__fill occ-bar__fill--low" [style.width.%]="r.fromOccupancy"></div>
+            </div>
+            <span class="occ-value occ-value--low">{{ r.fromOccupancy }}% ocupación</span>
+          </div>
+
+          <div class="reloc-arrow">
+            <mat-icon>east</mat-icon>
+          </div>
+
+          <div class="reloc-branch">
+            <p class="reloc-branch__name">{{ r.toBranch }}</p>
+            <div class="occ-bar">
+              <div class="occ-bar__fill occ-bar__fill--high" [style.width.%]="r.toOccupancy"></div>
+            </div>
+            <span class="occ-value occ-value--high">{{ r.toOccupancy }}% ocupación</span>
+          </div>
+
+          <div class="reloc-savings">
+            <mat-icon>savings</mat-icon>
+            <span>+${{ r.savingsPerMonth }}/mes</span>
+          </div>
+
+          <button class="btn-relocate">
+            {{ 'analytics.relocation.action' | translate }}
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- ── Resumen Ejecutivo ───────────────────────────────────────────────── -->
+  <div class="chart-card chart-card--full">
+    <div class="chart-card__header">
+      <span class="chart-card__title">{{ 'analytics.executive.title' | translate }}</span>
+    </div>
+
+    <div class="executive-list">
+
+      <div class="insight insight--green">
+        <mat-icon class="insight__icon">check_circle</mat-icon>
+        <div class="insight__body">
+          <p class="insight__title insight__title--green">{{ 'analytics.executive.positive.title' | translate }}</p>
+          <p class="insight__desc">{{ 'analytics.executive.positive.description' | translate }}</p>
+        </div>
+      </div>
+
+      <div class="insight insight--red">
+        <mat-icon class="insight__icon">warning</mat-icon>
+        <div class="insight__body">
+          <p class="insight__title insight__title--red">{{ 'analytics.executive.bottleneck.title' | translate }}</p>
+          <p class="insight__desc">{{ 'analytics.executive.bottleneck.description' | translate }}</p>
+        </div>
+      </div>
+
+      <div class="insight insight--amber">
+        <mat-icon class="insight__icon">info</mat-icon>
+        <div class="insight__body">
+          <p class="insight__title insight__title--amber">{{ 'analytics.executive.optimization.title' | translate }}</p>
+          <p class="insight__desc">{{ 'analytics.executive.optimization.description' | translate }}</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
