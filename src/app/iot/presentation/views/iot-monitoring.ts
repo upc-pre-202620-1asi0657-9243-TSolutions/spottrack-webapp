@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -21,6 +21,7 @@ interface SensorRow {
   equipmentStatus: string | null;
   registeredAt: string;
   online?: boolean; // only populated for motion sensors — camera sensors don't track connectivity yet
+  lastSeenAt?: string | null;
 }
 
 @Component({
@@ -43,8 +44,16 @@ interface SensorRow {
 export class IotMonitoringComponent {
   readonly sessionStore = inject(MonitoringStore);
 
+  /** Sensor connectivity changes on its own (heartbeat timeout), so keep the table live. */
+  private static readonly AUTO_REFRESH_MS = 10000;
+
   constructor() {
     this.refreshAll();
+    const timer = setInterval(() => {
+      this.sessionStore.refreshMotionSensors();
+      this.sessionStore.loadNetworkHealth();
+    }, IotMonitoringComponent.AUTO_REFRESH_MS);
+    inject(DestroyRef).onDestroy(() => clearInterval(timer));
   }
 
   readonly displayedColumns = ['sensorId', 'type', 'equipment', 'status', 'connectivity', 'registeredAt', 'actions'];
@@ -68,12 +77,30 @@ export class IotMonitoringComponent {
       equipmentStatus: s.equipmentStatus,
       registeredAt: s.registeredAt,
       online: s.online,
+      lastSeenAt: s.lastSeenAt,
     })),
   ]);
 
   readonly cameraSensorCount = computed(() => this.sessionStore.cameraSensors().length);
   readonly motionSensorCount = computed(() => this.sessionStore.motionSensors().length);
   readonly totalSensorCount  = computed(() => this.cameraSensorCount() + this.motionSensorCount());
+  readonly networkHealth = this.sessionStore.networkHealth;
+  readonly connectedBrokerCount = computed(() =>
+    this.networkHealth()?.brokers.filter(b => b.connected).length ?? 0
+  );
+  readonly brokerCardClass = computed(() => {
+    switch (this.networkHealth()?.status) {
+      case 'UP':       return 'stat-card--online';
+      case 'DEGRADED': return 'stat-card--battery';
+      default:         return 'stat-card--offline';
+    }
+  });
+  readonly brokerTooltip = computed(() =>
+    (this.networkHealth()?.brokers ?? [])
+      .map(b => `${b.brokerUrl}: ${b.connected ? 'OK' : (b.lastError ?? 'down')}`)
+      .join('\n')
+  );
+
   readonly activeSessionCount = computed(() =>
     this.sessionStore.trackedSessions().filter(s => s.sessionIsActive).length
   );
@@ -118,6 +145,7 @@ export class IotMonitoringComponent {
     this.sessionStore.loadCameraSensors();
     this.sessionStore.loadMotionSensors();
     this.sessionStore.loadSessionTrackers();
+    this.sessionStore.loadNetworkHealth();
   }
 
   // ── Session monitoring (usage detection, inactivity, session time) ─────────

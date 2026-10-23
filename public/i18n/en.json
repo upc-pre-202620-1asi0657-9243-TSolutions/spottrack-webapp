@@ -431,7 +431,8 @@
       "totalSensors": "Total Sensors",
       "cameraSensors": "Camera Sensors",
       "motionSensors": "Motion Sensors",
-      "activeSessions": "Active Sessions"
+      "activeSessions": "Active Sessions",
+      "brokers": "MQTT Brokers"
     },
     "table": {
       "title": "Sensor Status",
@@ -442,6 +443,8 @@
       "connectivity": "Connectivity",
       "online": "Online",
       "offline": "Offline",
+      "lastSeen": "Last seen",
+      "never": "never",
       "registeredAt": "Registered At",
       "actions": "Actions",
       "simulateMotion": "Simulate Motion",

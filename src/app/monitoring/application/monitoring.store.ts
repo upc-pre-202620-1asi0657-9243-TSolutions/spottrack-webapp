@@ -6,6 +6,7 @@ import {
   MotionSensorResource,
   AnomalyResource,
   SessionTrackerResource,
+  MonitoringHealthResource,
 } from '../infrastructure/monitoring-response';
 import {
   ReportAnomalyRequest,
@@ -28,6 +29,7 @@ export class MonitoringStore {
   private readonly _anomalyReports = signal<AnomalyResource[]>([]);
   private readonly _trackedSessions = signal<SessionTrackerResource[]>([]);
   private readonly _lastCalculatedTime = signal<string | null>(null);
+  private readonly _networkHealth = signal<MonitoringHealthResource | null>(null);
 
   readonly cameraSensors   = this._cameraSensors.asReadonly();
   readonly motionSensors   = this._motionSensors.asReadonly();
@@ -35,6 +37,8 @@ export class MonitoringStore {
   readonly trackedSessions = this._trackedSessions.asReadonly();
   /** Result of the last "calculate time" peek — read-only, doesn't affect the tracker. */
   readonly lastCalculatedTime = this._lastCalculatedTime.asReadonly();
+  /** MQTT broker connectivity as seen by the backend; null until loaded or if unreachable. */
+  readonly networkHealth = this._networkHealth.asReadonly();
 
   private static readonly POLL_INTERVAL_MS = 15000;
 
@@ -249,6 +253,21 @@ export class MonitoringStore {
    * (SessionTrackerScheduler, every 60s) without the user having to click
    * "Verify" or "Refresh" themselves.
    */
+  /** Silent reload (no spinner) used by the IoT page's auto-refresh. */
+  refreshMotionSensors(): void {
+    this.api.getAllMotionSensors().subscribe({
+      next: sensors => this._motionSensors.set(sensors),
+      error: () => {},
+    });
+  }
+
+  loadNetworkHealth(): void {
+    this.api.getNetworkHealth().subscribe({
+      next: health => this._networkHealth.set(health),
+      error: () => this._networkHealth.set(null),
+    });
+  }
+
   private refreshSessionTrackers(): void {
     this.api.getAllSessionTrackers().subscribe({
       next: sessions => this._trackedSessions.set(sessions),

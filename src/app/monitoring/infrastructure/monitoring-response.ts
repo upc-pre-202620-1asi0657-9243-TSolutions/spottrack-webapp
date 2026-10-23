@@ -20,6 +20,21 @@ export interface MotionSensorResource extends BaseResource {
   registeredAt:       string;
   online:             boolean;
   lastStatusChangeAt: string;
+  lastSeenAt:         string | null;
+}
+
+export interface BrokerHealthResource {
+  brokerUrl:          string;
+  connected:          boolean;
+  lastConnectedAt:    string | null;
+  lastDisconnectedAt: string | null;
+  lastError:          string | null;
+}
+
+export interface MonitoringHealthResource {
+  status:                  'UP' | 'DEGRADED' | 'DOWN';
+  heartbeatTimeoutSeconds: number;
+  brokers:                 BrokerHealthResource[];
 }
 
 export interface AnomalyResource extends BaseResource {
