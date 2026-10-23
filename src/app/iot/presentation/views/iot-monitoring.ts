@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -21,6 +21,7 @@ interface SensorRow {
   equipmentStatus: string | null;
   registeredAt: string;
   online?: boolean; // only populated for motion sensors — camera sensors don't track connectivity yet
+  lastSeenAt?: string | null;
 }
 
 @Component({
@@ -43,8 +44,16 @@ interface SensorRow {
 export class IotMonitoringComponent {
   readonly sessionStore = inject(MonitoringStore);
 
+  /** Sensor connectivity changes on its own (heartbeat timeout), so keep the table live. */
+  private static readonly AUTO_REFRESH_MS = 10000;
+
   constructor() {
     this.refreshAll();
+    const timer = setInterval(() => {
+      this.sessionStore.refreshMotionSensors();
+      this.sessionStore.loadNetworkHealth();
+    }, IotMonitoringComponent.AUTO_REFRESH_MS);
+    inject(DestroyRef).onDestroy(() => clearInterval(timer));
   }
 
   readonly displayedColumns = ['sensorId', 'type', 'equipment', 'status', 'connectivity', 'registeredAt', 'actions'];
@@ -68,12 +77,29 @@ export class IotMonitoringComponent {
       equipmentStatus: s.equipmentStatus,
       registeredAt: s.registeredAt,
       online: s.online,
+      lastSeenAt: s.lastSeenAt,
     })),
   ]);
 
   readonly cameraSensorCount = computed(() => this.sessionStore.cameraSensors().length);
   readonly motionSensorCount = computed(() => this.sessionStore.motionSensors().length);
   readonly totalSensorCount  = computed(() => this.cameraSensorCount() + this.motionSensorCount());
+  readonly onlineSensorCount = computed(() =>
+    this.sessionStore.motionSensors().filter(s => s.online).length
+  );
+  readonly connectedSensorsCardClass = computed(() => {
+    const total = this.motionSensorCount();
+    const online = this.onlineSensorCount();
+    if (total === 0 || online === total) return 'stat-card--online';
+    return online > 0 ? 'stat-card--battery' : 'stat-card--offline';
+  });
+
+  /**
+   * The admin doesn't need to know about MQTT brokers: only warn when the backend
+   * can't reach any of them, since then no sensor data is arriving at all.
+   */
+  readonly sensorNetworkDown = computed(() => this.sessionStore.networkHealth()?.status === 'DOWN');
+
   readonly activeSessionCount = computed(() =>
     this.sessionStore.trackedSessions().filter(s => s.sessionIsActive).length
   );
@@ -118,6 +144,7 @@ export class IotMonitoringComponent {
     this.sessionStore.loadCameraSensors();
     this.sessionStore.loadMotionSensors();
     this.sessionStore.loadSessionTrackers();
+    this.sessionStore.loadNetworkHealth();
   }
 
   // ── Session monitoring (usage detection, inactivity, session time) ─────────

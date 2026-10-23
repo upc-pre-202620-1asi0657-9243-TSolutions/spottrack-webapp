@@ -26,6 +26,13 @@
     </a>
   </div>
 
+  @if (sensorNetworkDown()) {
+    <div class="iot-alert">
+      <mat-icon>cloud_off</mat-icon>
+      <span>{{ 'iot.network.down' | translate }}</span>
+    </div>
+  }
+
   <!-- KPI Cards -->
   <div class="iot-stats">
     <div class="stat-card stat-card--online">
@@ -35,18 +42,18 @@
         <span class="stat-card__label">{{ 'iot.stats.totalSensors' | translate }}</span>
       </div>
     </div>
-    <div class="stat-card stat-card--battery">
-      <mat-icon>videocam</mat-icon>
-      <div class="stat-card__info">
-        <span class="stat-card__value">{{ cameraSensorCount() }}</span>
-        <span class="stat-card__label">{{ 'iot.stats.cameraSensors' | translate }}</span>
-      </div>
-    </div>
     <div class="stat-card stat-card--offline">
       <mat-icon>sensors</mat-icon>
       <div class="stat-card__info">
         <span class="stat-card__value">{{ motionSensorCount() }}</span>
         <span class="stat-card__label">{{ 'iot.stats.motionSensors' | translate }}</span>
+      </div>
+    </div>
+    <div class="stat-card" [ngClass]="connectedSensorsCardClass()">
+      <mat-icon>wifi</mat-icon>
+      <div class="stat-card__info">
+        <span class="stat-card__value">{{ onlineSensorCount() }}/{{ motionSensorCount() }}</span>
+        <span class="stat-card__label">{{ 'iot.stats.connectedSensors' | translate }}</span>
       </div>
     </div>
     <div class="stat-card stat-card--no-alerts">
@@ -130,6 +137,10 @@
             <span class="badge" [ngClass]="row.online ? 'badge--online' : 'badge--offline'">
               <mat-icon>{{ row.online ? 'wifi' : 'wifi_off' }}</mat-icon>
               {{ (row.online ? 'iot.table.online' : 'iot.table.offline') | translate }}
+            </span>
+            <span class="cell-last-seen">
+              {{ 'iot.table.lastSeen' | translate }}:
+              {{ row.lastSeenAt ? (row.lastSeenAt | date:'HH:mm:ss') : ('iot.table.never' | translate) }}
             </span>
           }
         </td>

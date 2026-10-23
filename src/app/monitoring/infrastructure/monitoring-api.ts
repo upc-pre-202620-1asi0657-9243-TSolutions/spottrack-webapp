@@ -7,6 +7,7 @@ import {
   MotionSensorResource,
   AnomalyResource,
   SessionTrackerResource,
+  MonitoringHealthResource,
 } from './monitoring-response';
 import {
   RegisterCameraSensorRequest,
@@ -22,6 +23,7 @@ export class MonitoringApi {
   private readonly motionSensorsUrl  = `${environment.apiBase}/monitoring/motion-sensors`;
   private readonly anomaliesUrl      = `${environment.apiBase}/anomalies`;
   private readonly sessionTrackerUrl = `${environment.apiBase}/monitoring/session-trackers`;
+  private readonly healthUrl         = `${environment.apiBase}/monitoring/health`;
 
   constructor(private readonly http: HttpClient) {}
 
@@ -31,6 +33,10 @@ export class MonitoringApi {
 
   getAllMotionSensors(): Observable<MotionSensorResource[]> {
     return this.http.get<MotionSensorResource[]>(`${this.motionSensorsUrl}/me`);
+  }
+
+  getNetworkHealth(): Observable<MonitoringHealthResource> {
+    return this.http.get<MonitoringHealthResource>(this.healthUrl);
   }
 
   registerCameraSensor(body: RegisterCameraSensorRequest): Observable<CameraSensorResource> {

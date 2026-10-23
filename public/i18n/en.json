@@ -413,6 +413,9 @@
   "iot": {
     "title": "IoT Monitoring",
     "subtitle": "Real-time status of Edge IoT sensors installed on equipment",
+    "network": {
+      "down": "We're not receiving data from your sensors. Check the gym's internet connection or contact support."
+    },
     "search": "Search by sensor ID or equipment...",
     "actions": {
       "refresh": "Refresh"
@@ -431,7 +434,8 @@
       "totalSensors": "Total Sensors",
       "cameraSensors": "Camera Sensors",
       "motionSensors": "Motion Sensors",
-      "activeSessions": "Active Sessions"
+      "activeSessions": "Active Sessions",
+      "connectedSensors": "Connected Sensors"
     },
     "table": {
       "title": "Sensor Status",
@@ -442,6 +446,8 @@
       "connectivity": "Connectivity",
       "online": "Online",
       "offline": "Offline",
+      "lastSeen": "Last seen",
+      "never": "never",
       "registeredAt": "Registered At",
       "actions": "Actions",
       "simulateMotion": "Simulate Motion",
