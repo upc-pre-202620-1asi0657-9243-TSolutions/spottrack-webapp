@@ -26,6 +26,13 @@
     </a>
   </div>
 
+  @if (sensorNetworkDown()) {
+    <div class="iot-alert">
+      <mat-icon>cloud_off</mat-icon>
+      <span>{{ 'iot.network.down' | translate }}</span>
+    </div>
+  }
+
   <!-- KPI Cards -->
   <div class="iot-stats">
     <div class="stat-card stat-card--online">
@@ -42,17 +49,11 @@
         <span class="stat-card__label">{{ 'iot.stats.motionSensors' | translate }}</span>
       </div>
     </div>
-    <div class="stat-card" [ngClass]="brokerCardClass()" [title]="brokerTooltip()">
-      <mat-icon>hub</mat-icon>
+    <div class="stat-card" [ngClass]="connectedSensorsCardClass()">
+      <mat-icon>wifi</mat-icon>
       <div class="stat-card__info">
-        <span class="stat-card__value">
-          @if (networkHealth(); as health) {
-            {{ connectedBrokerCount() }}/{{ health.brokers.length }}
-          } @else {
-            —
-          }
-        </span>
-        <span class="stat-card__label">{{ 'iot.stats.brokers' | translate }}</span>
+        <span class="stat-card__value">{{ onlineSensorCount() }}/{{ motionSensorCount() }}</span>
+        <span class="stat-card__label">{{ 'iot.stats.connectedSensors' | translate }}</span>
       </div>
     </div>
     <div class="stat-card stat-card--no-alerts">

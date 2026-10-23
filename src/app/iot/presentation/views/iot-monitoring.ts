@@ -84,22 +84,21 @@ export class IotMonitoringComponent {
   readonly cameraSensorCount = computed(() => this.sessionStore.cameraSensors().length);
   readonly motionSensorCount = computed(() => this.sessionStore.motionSensors().length);
   readonly totalSensorCount  = computed(() => this.cameraSensorCount() + this.motionSensorCount());
-  readonly networkHealth = this.sessionStore.networkHealth;
-  readonly connectedBrokerCount = computed(() =>
-    this.networkHealth()?.brokers.filter(b => b.connected).length ?? 0
+  readonly onlineSensorCount = computed(() =>
+    this.sessionStore.motionSensors().filter(s => s.online).length
   );
-  readonly brokerCardClass = computed(() => {
-    switch (this.networkHealth()?.status) {
-      case 'UP':       return 'stat-card--online';
-      case 'DEGRADED': return 'stat-card--battery';
-      default:         return 'stat-card--offline';
-    }
+  readonly connectedSensorsCardClass = computed(() => {
+    const total = this.motionSensorCount();
+    const online = this.onlineSensorCount();
+    if (total === 0 || online === total) return 'stat-card--online';
+    return online > 0 ? 'stat-card--battery' : 'stat-card--offline';
   });
-  readonly brokerTooltip = computed(() =>
-    (this.networkHealth()?.brokers ?? [])
-      .map(b => `${b.brokerUrl}: ${b.connected ? 'OK' : (b.lastError ?? 'down')}`)
-      .join('\n')
-  );
+
+  /**
+   * The admin doesn't need to know about MQTT brokers: only warn when the backend
+   * can't reach any of them, since then no sensor data is arriving at all.
+   */
+  readonly sensorNetworkDown = computed(() => this.sessionStore.networkHealth()?.status === 'DOWN');
 
   readonly activeSessionCount = computed(() =>
     this.sessionStore.trackedSessions().filter(s => s.sessionIsActive).length
