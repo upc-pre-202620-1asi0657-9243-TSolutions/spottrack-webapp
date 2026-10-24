@@ -814,6 +814,22 @@
     }
   },
   "profile": {
+    "sections": {
+      "back": "Back",
+      "personalDesc": "Your name and phone appear to your gym staff. Email and DNI are tied to your account and cannot be changed here.",
+      "gymDesc": "A snapshot of your gym. Open any card to manage it.",
+      "gymsDesc": "Gyms you belong to. Switch the active one or join another gym that whitelisted your DNI.",
+      "notificationsDesc": "Choose what SpotTrack tells you about.",
+      "preferencesTitle": "Preferences",
+      "theme": "Appearance",
+      "themeDesc": "Saved on this browser.",
+      "theme_light": "Light",
+      "theme_dark": "Dark",
+      "securityDesc": "Keep your account safe.",
+      "passwordTitle": "Password",
+      "passwordDesc": "Use at least 8 characters you do not use elsewhere.",
+      "logoutDesc": "End your session on this device."
+    },
     "admin": {
       "title": "Admin Panel",
       "roleBadge": "Administrator",
@@ -943,6 +959,28 @@
     }
   },
   "membership": {
+    "current": {
+      "label": "Current plan",
+      "endsOn": "Ends on",
+      "periodStart": "Period started"
+    },
+    "usage": {
+      "branches": "Branches",
+      "equipment": "Machines",
+      "unlimited": "Unlimited"
+    },
+    "plans": {
+      "title": "Plans",
+      "subtitle": "Upgrades apply right away; downgrades take effect at the end of the billing period.",
+      "current": "Current",
+      "scheduled": "Scheduled",
+      "yourPlan": "Your plan",
+      "resumeToChange": "Resume your subscription to change plans."
+    },
+    "danger": {
+      "title": "Cancel membership",
+      "desc": "Your plan stays active until the end of the current billing period, then access ends. You can resume any time before that."
+    },
     "page": {
       "title":    "Membership Plans",
       "subtitle": "Manage your plans and venue access",
@@ -953,6 +991,7 @@
       "cancelAtPeriodEndNotice": "Cancels at end of current period ({{date}}). No further charges.",
       "pendingDowngradeNotice": "Plan will downgrade to {{tier}} at end of current period.",
       "cancelBtn": "Cancel Membership",
+      "cancelConfirm": "Cancel your membership? It stays active until the end of the current billing period.",
       "undoCancelBtn": "Resume subscription",
       "payDebtBtn": "Pay Debt",
       "resubscribeBtn": "Resubscribe",
@@ -1041,6 +1080,31 @@
     }
   },
   "whitelist": {
+    "addHint": "Clients can only sign up to your gym with a DNI on this list.",
+    "searchPlaceholder": "Search by name, DNI or email",
+    "notSignedUp": "Not signed up yet",
+    "noMatches": "No DNIs match these filters.",
+    "stats": {
+      "total": "Whitelisted DNIs",
+      "members": "Joined members",
+      "waiting": "Waiting to join"
+    },
+    "filter": {
+      "all": "All",
+      "member": "Members",
+      "registered": "Registered",
+      "pending": "Not signed up"
+    },
+    "status": {
+      "member": "Member",
+      "registered": "Registered, not joined",
+      "pending": "Not signed up"
+    },
+    "col": {
+      "member": "Member",
+      "dni": "DNI",
+      "status": "Status"
+    },
     "title": "Whitelist Management",
     "subtitle": "Manage which clients can access your gym by DNI",
     "addDni": "Add DNI",

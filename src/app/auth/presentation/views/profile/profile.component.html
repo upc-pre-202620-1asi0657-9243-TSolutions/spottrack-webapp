@@ -1,445 +1,264 @@
-<div class="profile-container" [appContextMenu]="pageMenu">
+<div class="pf-page" [appContextMenu]="pageMenu">
 
-  <!-- ═══════════════════════════════════════════════════════════
-       ADMIN PROFILE
-  ═══════════════════════════════════════════════════════════ -->
-  @if (isAdmin()) {
-
-    <header class="profile-header">
-      <h1>{{ 'profile.admin.title' | translate }}</h1>
-    </header>
-
-    <main class="profile-content">
-
-      <!-- Identity card -->
-      <section class="card admin-identity-card">
-        <div class="admin-avatar">
-          <mat-icon>admin_panel_settings</mat-icon>
-        </div>
-        <div class="admin-identity-info">
-          <h2 class="admin-name">{{ profile()?.fullName }}</h2>
-          <p class="admin-email">{{ profile()?.email }}</p>
-          <span class="role-badge role-badge--admin">{{ 'profile.admin.roleBadge' | translate }}</span>
-        </div>
-      </section>
-
-      <!-- Gym overview heading -->
-      <div class="section-heading">
-        <mat-icon class="section-heading__icon">store</mat-icon>
-        <h2 class="section-heading__title">{{ adminGymStore.primaryGym()?.name ?? '—' }}</h2>
-      </div>
-
-      <!-- Gym stat cards -->
-      <div class="gym-stats">
-        <a class="gym-stat-card gym-stat-card--blue gym-stat-card--link" routerLink="/gym/branches">
-          <div class="gym-stat-card__icon">
-            <mat-icon>location_on</mat-icon>
-          </div>
-          <div class="gym-stat-card__body">
-            <span class="gym-stat-card__value">{{ branchCount() ?? '—' }}</span>
-            <span class="gym-stat-card__label">{{ 'profile.admin.stats.locations' | translate }}</span>
-          </div>
-        </a>
-
-        <a class="gym-stat-card gym-stat-card--yellow gym-stat-card--link" routerLink="/equipments">
-          <div class="gym-stat-card__icon">
-            <mat-icon>fitness_center</mat-icon>
-          </div>
-          <div class="gym-stat-card__body">
-            <span class="gym-stat-card__value">{{ equipmentCount() ?? '—' }}</span>
-            <span class="gym-stat-card__label">{{ 'profile.admin.stats.equipment' | translate }}</span>
-          </div>
-        </a>
-
-        <a class="gym-stat-card gym-stat-card--green gym-stat-card--link" routerLink="/iot">
-          <div class="gym-stat-card__icon">
-            <mat-icon>sensors</mat-icon>
-          </div>
-          <div class="gym-stat-card__body">
-            <span class="gym-stat-card__value">{{ sensorCount() ?? '—' }}</span>
-            <span class="gym-stat-card__label">{{ 'profile.admin.stats.sensors' | translate }}</span>
-          </div>
-        </a>
-
-        <a class="gym-stat-card gym-stat-card--teal gym-stat-card--link" routerLink="/gym/whitelist">
-          <div class="gym-stat-card__icon">
-            <mat-icon>group</mat-icon>
-          </div>
-          <div class="gym-stat-card__body">
-            <span class="gym-stat-card__value">{{ memberCount() ?? '—' }}</span>
-            <span class="gym-stat-card__label">{{ 'profile.admin.stats.members' | translate }}</span>
-          </div>
-        </a>
-      </div>
-
-      <!-- SpotTrack subscription -->
-      <section class="card admin-plan-card">
-        <div class="admin-plan-card__header">
-          <div class="admin-plan-card__title-group">
-            <div class="admin-plan-card__icon">
-              <mat-icon>workspace_premium</mat-icon>
-            </div>
-            @if (membershipStore.membershipLoading()) {
-              <div class="plan-loading">
-                <div class="plan-loading__line plan-loading__line--wide"></div>
-                <div class="plan-loading__line plan-loading__line--short"></div>
-              </div>
-            } @else if (membershipStore.myMembership(); as m) {
-              <div>
-                <h3 class="admin-plan-card__name">{{ m.membershipTier }}</h3>
-                <p class="text-muted">{{ m.priceCurrency }} {{ m.priceAmount }}/mes</p>
-              </div>
-            }
-          </div>
-          @if (membershipStore.myMembership(); as m) {
-            <span class="plan-badge"
-                  [class.plan-badge--suspended]="m.status === 'SUSPENDED'"
-                  [class.plan-badge--cancelled]="m.status === 'CANCELLED' || m.status === 'EXPIRED'">
-              {{ 'membership.lifecycle.status.' + m.status | translate }}
-            </span>
-          }
-        </div>
-
-        @if (membershipStore.myMembership(); as m) {
-          @if (m.cancelAtPeriodEnd) {
-            <div class="plan-notice plan-notice--warn">
-              <mat-icon>event_busy</mat-icon>
-              <span>{{ 'membership.lifecycle.cancelAtPeriodEndNotice' | translate: { date: m.endDate } }}</span>
-            </div>
-          }
-          @if (m.pendingDowngradeTier) {
-            <div class="plan-notice plan-notice--info">
-              <mat-icon>arrow_downward</mat-icon>
-              <span>{{ 'membership.lifecycle.pendingDowngradeNotice' | translate: { tier: m.pendingDowngradeTier } }}</span>
-            </div>
-          }
-          @if (m.endDate) {
-            <div class="admin-plan-renewal">
-              <mat-icon class="admin-plan-renewal__icon">event</mat-icon>
-              <div>
-                <p class="admin-plan-renewal__label">{{ 'profile.admin.plan.renewal' | translate }}</p>
-                <p class="text-muted">{{ m.endDate }}</p>
-              </div>
-            </div>
-          }
-        }
-
-        <button class="membership-manage-btn" routerLink="/membership">
-          <mat-icon>open_in_new</mat-icon>
-          {{ 'profile.admin.plan.manage' | translate }}
-        </button>
-      </section>
-
-      <!-- Account info -->
-      <section class="card form-card">
-        <div class="card-header">
-          <mat-icon>manage_accounts</mat-icon>
-          <h3>{{ 'profile.account.title' | translate }}</h3>
-        </div>
-        <div class="form-group">
-          <label for="admin-email">{{ 'profile.account.email' | translate }}</label>
-          <input type="email" id="admin-email" [value]="currentUser()?.email ?? ''" class="form-control" disabled>
-        </div>
-        <div class="form-group">
-          <label for="admin-firstName">{{ 'profile.account.firstName' | translate }}</label>
-          <input type="text" id="admin-firstName" [(ngModel)]="accountFirstName" class="form-control">
-        </div>
-        <div class="form-group">
-          <label for="admin-lastName">{{ 'profile.account.lastName' | translate }}</label>
-          <input type="text" id="admin-lastName" [(ngModel)]="accountLastName" class="form-control">
-        </div>
-        <div class="form-group">
-          <label for="admin-phone">{{ 'profile.account.phone' | translate }}</label>
-          <input type="tel" id="admin-phone" [(ngModel)]="accountPhoneNumber" class="form-control">
-        </div>
-        <div class="form-group">
-          <label for="admin-dni">{{ 'profile.account.dni' | translate }}</label>
-          <input type="text" id="admin-dni" [value]="accountDni" class="form-control" disabled>
-        </div>
-        <div class="form-group">
-          <label for="admin-gym">{{ 'profile.account.gymName' | translate }}</label>
-          <input type="text" id="admin-gym" [value]="adminGymStore.primaryGym()?.name ?? ''" class="form-control" disabled>
-        </div>
-
-        @if (saveSuccess()) {
-          <div class="cpwd-success">
-            <mat-icon>check_circle</mat-icon>
-            {{ 'profile.account.saveSuccess' | translate }}
-          </div>
-        }
-        @if (saveError()) {
-          <div class="cpwd-error">
-            <mat-icon>error_outline</mat-icon>
-            {{ saveError() }}
-          </div>
-        }
-      </section>
-
-      <!-- Language -->
-      <section class="card settings-card">
-        <div class="card-header">
-          <mat-icon>language</mat-icon>
-          <h3>{{ 'profile.language.title' | translate }}</h3>
-        </div>
-        <div class="form-group">
-          <label>{{ 'profile.language.label' | translate }}</label>
-          <app-language-switcher></app-language-switcher>
-          <p class="help-text">{{ 'profile.language.hint' | translate }}</p>
-        </div>
-      </section>
-
-      <!-- Security -->
-      <section class="card settings-card">
-        <div class="card-header">
-          <mat-icon>shield</mat-icon>
-          <h3>{{ 'profile.security.title' | translate }}</h3>
-        </div>
-        <div class="security-actions">
-          <button class="btn-outline" (click)="toggleChangePwd()">{{ 'profile.security.changePassword' | translate }}</button>
-          <button class="btn-outline btn-danger" (click)="logout()">{{ 'profile.security.logout' | translate }}</button>
-        </div>
-
-        @if (showChangePwd()) {
-          <div class="change-pwd-form">
-
-            @if (pwdStore.changePwdSuccess()) {
-              <div class="cpwd-success">
-                <mat-icon>check_circle</mat-icon>
-                {{ 'auth.changePassword.success' | translate }}
-              </div>
-            } @else {
-              <div class="form-group">
-                <label>{{ 'auth.changePassword.currentLabel' | translate }}</label>
-                <input type="password" class="form-control" [(ngModel)]="currentPassword" autocomplete="current-password" />
-              </div>
-              <div class="form-group">
-                <label>{{ 'auth.changePassword.newLabel' | translate }}</label>
-                <input type="password" class="form-control" [(ngModel)]="newPassword" autocomplete="new-password" />
-              </div>
-              <div class="form-group">
-                <label>{{ 'auth.changePassword.confirmLabel' | translate }}</label>
-                <input type="password" class="form-control" [(ngModel)]="confirmPassword" autocomplete="new-password" />
-              </div>
-
-              @if (pwdMatchError) {
-                <div class="cpwd-error">
-                  <mat-icon>error_outline</mat-icon>
-                  {{ 'auth.changePassword.error.noMatch' | translate }}
-                </div>
-              }
-              @if (pwdStore.changePwdError()) {
-                <div class="cpwd-error">
-                  <mat-icon>error_outline</mat-icon>
-                  {{ pwdStore.changePwdError()! | translate }}
-                </div>
-              }
-
-              <div class="cpwd-actions">
-                <button class="btn-outline" (click)="toggleChangePwd()">{{ 'auth.changePassword.cancelBtn' | translate }}</button>
-                <button class="btn-primary" [disabled]="pwdStore.changePwdLoading()" (click)="submitChangePassword()">
-                  {{ 'auth.changePassword.submitBtn' | translate }}
-                </button>
-              </div>
-            }
-
-          </div>
-        }
-      </section>
-
-      <button class="btn-primary" [disabled]="saving()" (click)="saveAccountInfo()">{{ 'profile.saveChanges' | translate }}</button>
-    </main>
-
-  } @else {
-
-  <!-- ═══════════════════════════════════════════════════════════
-       CLIENT PROFILE
-  ═══════════════════════════════════════════════════════════ -->
-
-    <header class="profile-header">
-      <button class="back-btn" aria-label="Volver" (click)="goBack()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="19" y1="12" x2="5" y2="12"></line>
-          <polyline points="12 19 5 12 12 5"></polyline>
-        </svg>
+  <!-- ── Header ─────────────────────────────────────────────────────────── -->
+  <header class="pf-header">
+    @if (!isAdmin()) {
+      <button class="pf-back" [attr.aria-label]="'profile.sections.back' | translate" (click)="goBack()">
+        <mat-icon>arrow_back</mat-icon>
       </button>
-      <h1>{{ 'profile.client.title' | translate }}</h1>
-    </header>
+    }
+    <h1 class="pf-header__title">{{ (isAdmin() ? 'profile.admin.title' : 'profile.client.title') | translate }}</h1>
+  </header>
 
-    <main class="profile-content">
+  <section class="pf-card pf-identity">
+    <span class="pf-avatar">{{ initials() }}</span>
+    <div class="pf-identity__text">
+      <h2 class="pf-identity__name">{{ profile()?.fullName || currentUser()?.email }}</h2>
+      <p class="pf-identity__email">{{ profile()?.email ?? currentUser()?.email }}</p>
+    </div>
+    <span class="pf-role" [class.pf-role--admin]="isAdmin()">
+      <mat-icon>{{ isAdmin() ? 'admin_panel_settings' : 'person' }}</mat-icon>
+      {{ (isAdmin() ? 'profile.admin.roleBadge' : 'profile.client.roleBadge') | translate }}
+    </span>
+  </section>
 
-      <section class="card user-card">
-        <div class="user-info">
-          <div class="avatar">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-          </div>
-          <div class="user-details">
-            <h2>{{ profile()?.fullName }}</h2>
-            <p class="text-muted">{{ profile()?.email }}</p>
-            <span class="badge badge-outline">{{ 'profile.client.roleBadge' | translate }}</span>
+  <!-- ── Personal information (both roles) ──────────────────────────────── -->
+  <section class="pf-section">
+    <div class="pf-section__intro">
+      <h3>{{ 'profile.account.title' | translate }}</h3>
+      <p>{{ 'profile.sections.personalDesc' | translate }}</p>
+    </div>
+    <div class="pf-card pf-section__body">
+      <div class="pf-form">
+        <div class="pf-field pf-field--full">
+          <label for="pf-email">{{ 'profile.account.email' | translate }}</label>
+          <div class="pf-input-wrap">
+            <input type="email" id="pf-email" class="pf-input" [value]="currentUser()?.email ?? ''" disabled>
+            <mat-icon class="pf-input-lock">lock</mat-icon>
           </div>
         </div>
-      </section>
+        <div class="pf-field">
+          <label for="pf-first">{{ 'profile.account.firstName' | translate }}</label>
+          <input type="text" id="pf-first" class="pf-input" [(ngModel)]="accountFirstName" autocomplete="given-name">
+        </div>
+        <div class="pf-field">
+          <label for="pf-last">{{ 'profile.account.lastName' | translate }}</label>
+          <input type="text" id="pf-last" class="pf-input" [(ngModel)]="accountLastName" autocomplete="family-name">
+        </div>
+        <div class="pf-field">
+          <label for="pf-phone">{{ 'profile.account.phone' | translate }}</label>
+          <input type="tel" id="pf-phone" class="pf-input" [(ngModel)]="accountPhoneNumber" autocomplete="tel">
+        </div>
+        <div class="pf-field">
+          <label for="pf-dni">{{ 'profile.account.dni' | translate }}</label>
+          <div class="pf-input-wrap">
+            <input type="text" id="pf-dni" class="pf-input pf-input--mono" [value]="accountDni" disabled>
+            <mat-icon class="pf-input-lock">lock</mat-icon>
+          </div>
+        </div>
+      </div>
 
-      <section class="card">
+      <footer class="pf-card__footer">
+        <div class="pf-feedback">
+          @if (saveSuccess()) {
+            <span class="pf-feedback--ok"><mat-icon>check_circle</mat-icon>{{ 'profile.account.saveSuccess' | translate }}</span>
+          }
+          @if (saveError()) {
+            <span class="pf-feedback--error"><mat-icon>error_outline</mat-icon>{{ saveError() }}</span>
+          }
+        </div>
+        <button class="btn btn--primary" [disabled]="saving() || !canSave()" (click)="saveAccountInfo()">
+          {{ 'profile.saveChanges' | translate }}
+        </button>
+      </footer>
+    </div>
+  </section>
+
+  @if (isAdmin()) {
+    <!-- ── Gym & plan (admin) ───────────────────────────────────────────── -->
+    <section class="pf-section">
+      <div class="pf-section__intro">
+        <h3>{{ adminGymStore.primaryGym()?.name ?? ('profile.account.gymName' | translate) }}</h3>
+        <p>{{ 'profile.sections.gymDesc' | translate }}</p>
+      </div>
+      <div class="pf-section__body pf-stack">
+        <div class="pf-stats">
+          <a class="pf-card pf-stat" routerLink="/gym/branches">
+            <mat-icon>account_tree</mat-icon>
+            <span class="pf-stat__value">{{ branchCount() ?? '—' }}</span>
+            <span class="pf-stat__label">{{ 'profile.admin.stats.locations' | translate }}</span>
+          </a>
+          <a class="pf-card pf-stat" routerLink="/equipments">
+            <mat-icon>fitness_center</mat-icon>
+            <span class="pf-stat__value">{{ equipmentCount() ?? '—' }}</span>
+            <span class="pf-stat__label">{{ 'profile.admin.stats.equipment' | translate }}</span>
+          </a>
+          <a class="pf-card pf-stat" routerLink="/iot">
+            <mat-icon>sensors</mat-icon>
+            <span class="pf-stat__value">{{ sensorCount() ?? '—' }}</span>
+            <span class="pf-stat__label">{{ 'profile.admin.stats.sensors' | translate }}</span>
+          </a>
+          <a class="pf-card pf-stat" routerLink="/gym/whitelist">
+            <mat-icon>group</mat-icon>
+            <span class="pf-stat__value">{{ memberCount() ?? '—' }}</span>
+            <span class="pf-stat__label">{{ 'profile.admin.stats.members' | translate }}</span>
+          </a>
+        </div>
+
+        <a class="pf-card pf-plan" routerLink="/membership">
+          <span class="pf-plan__icon"><mat-icon>workspace_premium</mat-icon></span>
+          @if (membershipStore.myMembership(); as m) {
+            <div class="pf-plan__text">
+              <span class="pf-plan__name">
+                {{ ('auth.plans.tier.' + m.membershipTier.toLowerCase()) | translate }}
+                <span class="pf-plan__status pf-plan__status--{{ m.status.toLowerCase() }}">
+                  {{ 'membership.lifecycle.status.' + m.status | translate }}
+                </span>
+              </span>
+              <span class="pf-plan__meta">
+                {{ m.priceCurrency }} {{ m.priceAmount }}{{ 'auth.plans.perMonth' | translate }}
+                @if (m.endDate) { · {{ (m.cancelAtPeriodEnd ? 'membership.current.endsOn' : 'profile.admin.plan.renewal') | translate }} {{ m.endDate }} }
+              </span>
+            </div>
+          } @else {
+            <div class="pf-plan__text"><span class="pf-plan__meta">{{ 'membership.page.loading' | translate }}</span></div>
+          }
+          <span class="pf-plan__link">{{ 'profile.admin.plan.manage' | translate }}<mat-icon>chevron_right</mat-icon></span>
+        </a>
+      </div>
+    </section>
+  } @else {
+    <!-- ── Gyms (client) ────────────────────────────────────────────────── -->
+    <section class="pf-section">
+      <div class="pf-section__intro">
+        <h3>{{ 'gym.switcher.title' | translate }}</h3>
+        <p>{{ 'profile.sections.gymsDesc' | translate }}</p>
+      </div>
+      <div class="pf-card pf-section__body pf-section__body--padded">
         <app-gym-switcher></app-gym-switcher>
-      </section>
+      </div>
+    </section>
 
-      <section class="card form-card">
-        <div class="card-header">
-          <mat-icon>manage_accounts</mat-icon>
-          <h3>{{ 'profile.account.title' | translate }}</h3>
-        </div>
-        <div class="form-group">
-          <label for="email">{{ 'profile.account.email' | translate }}</label>
-          <input type="email" id="email" [value]="currentUser()?.email ?? ''" class="form-control" disabled>
-        </div>
-        <div class="form-group">
-          <label for="firstName">{{ 'profile.account.firstName' | translate }}</label>
-          <input type="text" id="firstName" [(ngModel)]="accountFirstName" class="form-control">
-        </div>
-        <div class="form-group">
-          <label for="lastName">{{ 'profile.account.lastName' | translate }}</label>
-          <input type="text" id="lastName" [(ngModel)]="accountLastName" class="form-control">
-        </div>
-        <div class="form-group">
-          <label for="phone">{{ 'profile.account.phone' | translate }}</label>
-          <input type="tel" id="phone" [(ngModel)]="accountPhoneNumber" class="form-control">
-        </div>
-        <div class="form-group">
-          <label for="dni">{{ 'profile.account.dni' | translate }}</label>
-          <input type="text" id="dni" [value]="accountDni" class="form-control" disabled>
-        </div>
-
-        @if (saveSuccess()) {
-          <div class="cpwd-success">
-            <mat-icon>check_circle</mat-icon>
-            {{ 'profile.account.saveSuccess' | translate }}
-          </div>
-        }
-        @if (saveError()) {
-          <div class="cpwd-error">
-            <mat-icon>error_outline</mat-icon>
-            {{ saveError() }}
-          </div>
-        }
-      </section>
-
-      <section class="card settings-card">
-        <div class="card-header">
-          <mat-icon>language</mat-icon>
-          <h3>{{ 'profile.language.title' | translate }}</h3>
-        </div>
-        <div class="form-group">
-          <label>{{ 'profile.language.label' | translate }}</label>
-          <div class="select-wrapper">
-            <app-language-switcher></app-language-switcher>
-          </div>
-          <p class="help-text">{{ 'profile.language.hint' | translate }}</p>
-        </div>
-      </section>
-
-      <section class="card settings-card">
-        <div class="card-header">
-          <mat-icon>notifications</mat-icon>
-          <h3>{{ 'profile.client.notifications.title' | translate }}</h3>
-        </div>
-        <div class="notification-list">
-          <div class="notification-item">
-            <div class="notification-text">
-              <h4>{{ 'profile.client.notifications.availability.title' | translate }}</h4>
-              <p>{{ 'profile.client.notifications.availability.desc' | translate }}</p>
-            </div>
-            <label class="custom-checkbox">
+    <!-- ── Notifications (client) ───────────────────────────────────────── -->
+    <section class="pf-section">
+      <div class="pf-section__intro">
+        <h3>{{ 'profile.client.notifications.title' | translate }}</h3>
+        <p>{{ 'profile.sections.notificationsDesc' | translate }}</p>
+      </div>
+      <div class="pf-card pf-section__body">
+        @for (n of ['availability', 'maintenance', 'rewards']; track n) {
+          <label class="pf-row">
+            <span class="pf-row__text">
+              <span class="pf-row__title">{{ 'profile.client.notifications.' + n + '.title' | translate }}</span>
+              <span class="pf-row__desc">{{ 'profile.client.notifications.' + n + '.desc' | translate }}</span>
+            </span>
+            <span class="pf-switch">
               <input type="checkbox" checked>
-              <span class="checkmark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
-            </label>
-          </div>
-          <div class="notification-item">
-            <div class="notification-text">
-              <h4>{{ 'profile.client.notifications.maintenance.title' | translate }}</h4>
-              <p>{{ 'profile.client.notifications.maintenance.desc' | translate }}</p>
-            </div>
-            <label class="custom-checkbox">
-              <input type="checkbox" checked>
-              <span class="checkmark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
-            </label>
-          </div>
-          <div class="notification-item">
-            <div class="notification-text">
-              <h4>{{ 'profile.client.notifications.rewards.title' | translate }}</h4>
-              <p>{{ 'profile.client.notifications.rewards.desc' | translate }}</p>
-            </div>
-            <label class="custom-checkbox">
-              <input type="checkbox" checked>
-              <span class="checkmark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>
-            </label>
-          </div>
-        </div>
-      </section>
-
-      <section class="card settings-card">
-        <div class="card-header">
-          <mat-icon>shield</mat-icon>
-          <h3>{{ 'profile.security.title' | translate }}</h3>
-        </div>
-        <div class="security-actions">
-          <button class="btn-outline" (click)="toggleChangePwd()">{{ 'profile.security.changePassword' | translate }}</button>
-          <button class="btn-outline btn-danger" (click)="logout()">{{ 'profile.security.logout' | translate }}</button>
-        </div>
-
-        @if (showChangePwd()) {
-          <div class="change-pwd-form">
-
-            @if (pwdStore.changePwdSuccess()) {
-              <div class="cpwd-success">
-                <mat-icon>check_circle</mat-icon>
-                {{ 'auth.changePassword.success' | translate }}
-              </div>
-            } @else {
-              <div class="form-group">
-                <label>{{ 'auth.changePassword.currentLabel' | translate }}</label>
-                <input type="password" class="form-control" [(ngModel)]="currentPassword" autocomplete="current-password" />
-              </div>
-              <div class="form-group">
-                <label>{{ 'auth.changePassword.newLabel' | translate }}</label>
-                <input type="password" class="form-control" [(ngModel)]="newPassword" autocomplete="new-password" />
-              </div>
-              <div class="form-group">
-                <label>{{ 'auth.changePassword.confirmLabel' | translate }}</label>
-                <input type="password" class="form-control" [(ngModel)]="confirmPassword" autocomplete="new-password" />
-              </div>
-
-              @if (pwdMatchError) {
-                <div class="cpwd-error">
-                  <mat-icon>error_outline</mat-icon>
-                  {{ 'auth.changePassword.error.noMatch' | translate }}
-                </div>
-              }
-              @if (pwdStore.changePwdError()) {
-                <div class="cpwd-error">
-                  <mat-icon>error_outline</mat-icon>
-                  {{ pwdStore.changePwdError()! | translate }}
-                </div>
-              }
-
-              <div class="cpwd-actions">
-                <button class="btn-outline" (click)="toggleChangePwd()">{{ 'auth.changePassword.cancelBtn' | translate }}</button>
-                <button class="btn-primary" [disabled]="pwdStore.changePwdLoading()" (click)="submitChangePassword()">
-                  {{ 'auth.changePassword.submitBtn' | translate }}
-                </button>
-              </div>
-            }
-
-          </div>
+              <span class="pf-switch__track"><span class="pf-switch__thumb"></span></span>
+            </span>
+          </label>
         }
-      </section>
-
-      <button class="btn-primary" [disabled]="saving()" (click)="saveAccountInfo()">{{ 'profile.saveChanges' | translate }}</button>
-    </main>
-
+      </div>
+    </section>
   }
+
+  <!-- ── Preferences (both roles) ───────────────────────────────────────── -->
+  <section class="pf-section">
+    <div class="pf-section__intro">
+      <h3>{{ 'profile.sections.preferencesTitle' | translate }}</h3>
+      <p>{{ 'profile.language.hint' | translate }}</p>
+    </div>
+    <div class="pf-card pf-section__body">
+      <div class="pf-row">
+        <span class="pf-row__text">
+          <span class="pf-row__title">{{ 'profile.language.label' | translate }}</span>
+        </span>
+        <div class="pf-row__control pf-lang"><app-language-switcher></app-language-switcher></div>
+      </div>
+      <div class="pf-row">
+        <span class="pf-row__text">
+          <span class="pf-row__title">{{ 'profile.sections.theme' | translate }}</span>
+          <span class="pf-row__desc">{{ 'profile.sections.themeDesc' | translate }}</span>
+        </span>
+        <div class="pf-segmented" role="radiogroup">
+          @for (t of themes; track t) {
+            <button type="button" role="radio" class="pf-segmented__btn"
+                    [class.pf-segmented__btn--active]="themeService.theme() === t"
+                    [attr.aria-checked]="themeService.theme() === t"
+                    (click)="themeService.set(t)">
+              <mat-icon>{{ t === 'dark' ? 'dark_mode' : 'light_mode' }}</mat-icon>
+              {{ 'profile.sections.theme_' + t | translate }}
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Security (both roles) ──────────────────────────────────────────── -->
+  <section class="pf-section">
+    <div class="pf-section__intro">
+      <h3>{{ 'profile.security.title' | translate }}</h3>
+      <p>{{ 'profile.sections.securityDesc' | translate }}</p>
+    </div>
+    <div class="pf-card pf-section__body">
+      <div class="pf-row">
+        <span class="pf-row__text">
+          <span class="pf-row__title">{{ 'profile.sections.passwordTitle' | translate }}</span>
+          <span class="pf-row__desc">{{ 'profile.sections.passwordDesc' | translate }}</span>
+        </span>
+        <button class="btn btn--secondary" (click)="toggleChangePwd()">
+          {{ (showChangePwd() ? 'auth.changePassword.cancelBtn' : 'profile.security.changePassword') | translate }}
+        </button>
+      </div>
+
+      @if (showChangePwd()) {
+        <div class="pf-password">
+          @if (pwdStore.changePwdSuccess()) {
+            <span class="pf-feedback--ok"><mat-icon>check_circle</mat-icon>{{ 'auth.changePassword.success' | translate }}</span>
+          } @else {
+            <div class="pf-form">
+              <div class="pf-field pf-field--full">
+                <label for="pf-pwd-current">{{ 'auth.changePassword.currentLabel' | translate }}</label>
+                <input type="password" id="pf-pwd-current" class="pf-input" [(ngModel)]="currentPassword" autocomplete="current-password" />
+              </div>
+              <div class="pf-field">
+                <label for="pf-pwd-new">{{ 'auth.changePassword.newLabel' | translate }}</label>
+                <input type="password" id="pf-pwd-new" class="pf-input" [(ngModel)]="newPassword" autocomplete="new-password" />
+              </div>
+              <div class="pf-field">
+                <label for="pf-pwd-confirm">{{ 'auth.changePassword.confirmLabel' | translate }}</label>
+                <input type="password" id="pf-pwd-confirm" class="pf-input" [(ngModel)]="confirmPassword" autocomplete="new-password" />
+              </div>
+            </div>
+            <div class="pf-password__footer">
+              <div class="pf-feedback">
+                @if (pwdMatchError) {
+                  <span class="pf-feedback--error"><mat-icon>error_outline</mat-icon>{{ 'auth.changePassword.error.noMatch' | translate }}</span>
+                }
+                @if (pwdStore.changePwdError()) {
+                  <span class="pf-feedback--error"><mat-icon>error_outline</mat-icon>{{ pwdStore.changePwdError()! | translate }}</span>
+                }
+              </div>
+              <button class="btn btn--primary" [disabled]="pwdStore.changePwdLoading()" (click)="submitChangePassword()">
+                {{ 'auth.changePassword.submitBtn' | translate }}
+              </button>
+            </div>
+          }
+        </div>
+      }
+
+      <div class="pf-row">
+        <span class="pf-row__text">
+          <span class="pf-row__title">{{ 'profile.security.logout' | translate }}</span>
+          <span class="pf-row__desc">{{ 'profile.sections.logoutDesc' | translate }}</span>
+        </span>
+        <button class="btn btn--danger-outline" (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          {{ 'profile.security.logout' | translate }}
+        </button>
+      </div>
+    </div>
+  </section>
 
 </div>

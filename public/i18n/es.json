@@ -814,6 +814,22 @@
     }
   },
   "profile": {
+    "sections": {
+      "back": "Volver",
+      "personalDesc": "Tu nombre y teléfono los ve el personal de tu gimnasio. El correo y el DNI están ligados a tu cuenta y no se cambian aquí.",
+      "gymDesc": "Un resumen de tu gimnasio. Abre cualquier tarjeta para gestionarlo.",
+      "gymsDesc": "Gimnasios a los que perteneces. Cambia el activo o únete a otro que tenga tu DNI habilitado.",
+      "notificationsDesc": "Elige sobre qué te avisa SpotTrack.",
+      "preferencesTitle": "Preferencias",
+      "theme": "Apariencia",
+      "themeDesc": "Se guarda en este navegador.",
+      "theme_light": "Claro",
+      "theme_dark": "Oscuro",
+      "securityDesc": "Mantén tu cuenta segura.",
+      "passwordTitle": "Contraseña",
+      "passwordDesc": "Usa al menos 8 caracteres que no uses en otro sitio.",
+      "logoutDesc": "Cierra tu sesión en este dispositivo."
+    },
     "admin": {
       "title": "Panel del Administrador",
       "roleBadge": "Administrador",
@@ -943,6 +959,28 @@
     }
   },
   "membership": {
+    "current": {
+      "label": "Plan actual",
+      "endsOn": "Termina el",
+      "periodStart": "Inicio del período"
+    },
+    "usage": {
+      "branches": "Sedes",
+      "equipment": "Máquinas",
+      "unlimited": "Ilimitado"
+    },
+    "plans": {
+      "title": "Planes",
+      "subtitle": "Las mejoras se aplican al instante; las bajadas de plan rigen al final del período de facturación.",
+      "current": "Actual",
+      "scheduled": "Programado",
+      "yourPlan": "Tu plan",
+      "resumeToChange": "Reanuda tu suscripción para cambiar de plan."
+    },
+    "danger": {
+      "title": "Cancelar membresía",
+      "desc": "Tu plan sigue activo hasta el fin del período de facturación y luego se corta el acceso. Puedes reanudarla antes de esa fecha."
+    },
     "page": {
       "title":    "Planes de Membresía",
       "subtitle": "Administra los planes y accesos a sedes",
@@ -953,6 +991,7 @@
       "cancelAtPeriodEndNotice": "Se cancela al fin del período actual ({{date}}). No se generarán más cobros.",
       "pendingDowngradeNotice": "El plan bajará a {{tier}} al fin del período actual.",
       "cancelBtn": "Cancelar Membresía",
+      "cancelConfirm": "¿Cancelar la membresía? Seguirá activa hasta el fin del período de facturación.",
       "undoCancelBtn": "Retomar suscripción",
       "payDebtBtn": "Pagar Deuda",
       "resubscribeBtn": "Resubscribirse",
@@ -1041,6 +1080,31 @@
     }
   },
   "whitelist": {
+    "addHint": "Los clientes solo pueden unirse a tu gimnasio con un DNI de esta lista.",
+    "searchPlaceholder": "Buscar por nombre, DNI o correo",
+    "notSignedUp": "Aún no registrado",
+    "noMatches": "Ningún DNI coincide con estos filtros.",
+    "stats": {
+      "total": "DNIs habilitados",
+      "members": "Socios unidos",
+      "waiting": "Por unirse"
+    },
+    "filter": {
+      "all": "Todos",
+      "member": "Socios",
+      "registered": "Registrados",
+      "pending": "Sin registrar"
+    },
+    "status": {
+      "member": "Socio",
+      "registered": "Registrado, sin unirse",
+      "pending": "Sin registrar"
+    },
+    "col": {
+      "member": "Socio",
+      "dni": "DNI",
+      "status": "Estado"
+    },
     "title": "Gestión de Whitelist",
     "subtitle": "Administra qué clientes pueden acceder a tu gimnasio por DNI",
     "addDni": "Agregar DNI",

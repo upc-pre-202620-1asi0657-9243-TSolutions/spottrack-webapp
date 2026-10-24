@@ -8,7 +8,7 @@
     </div>
     @if (adminGymStore.primaryGym()) {
       <span class="wl-gym-badge">
-        <mat-icon>fitness_center</mat-icon>
+        <mat-icon>storefront</mat-icon>
         {{ adminGymStore.primaryGym()!.name }}
       </span>
     }
@@ -24,13 +24,42 @@
 
   @if (adminGymStore.primaryGym()) {
 
+    <!-- Summary -->
+    <div class="wl-stats">
+      <div class="wl-stat">
+        <span class="wl-stat__icon"><mat-icon>badge</mat-icon></span>
+        <div>
+          <p class="wl-stat__value">{{ counts().total }}</p>
+          <p class="wl-stat__label">{{ 'whitelist.stats.total' | translate }}</p>
+        </div>
+      </div>
+      <div class="wl-stat">
+        <span class="wl-stat__icon wl-stat__icon--member"><mat-icon>how_to_reg</mat-icon></span>
+        <div>
+          <p class="wl-stat__value">{{ counts().member }}</p>
+          <p class="wl-stat__label">{{ 'whitelist.stats.members' | translate }}</p>
+        </div>
+      </div>
+      <div class="wl-stat">
+        <span class="wl-stat__icon wl-stat__icon--pending"><mat-icon>hourglass_empty</mat-icon></span>
+        <div>
+          <p class="wl-stat__value">{{ counts().pending + counts().registered }}</p>
+          <p class="wl-stat__label">{{ 'whitelist.stats.waiting' | translate }}</p>
+        </div>
+      </div>
+    </div>
+
     <!-- Add DNI form -->
     <div class="wl-add-card">
-      <p class="wl-add-card__label">{{ 'whitelist.addDni' | translate }}</p>
+      <div class="wl-add-card__text">
+        <p class="wl-add-card__title">{{ 'whitelist.addDni' | translate }}</p>
+        <p class="wl-add-card__hint">{{ 'whitelist.addHint' | translate }}</p>
+      </div>
       <div class="wl-add-row">
         <input
-          class="wl-add-input"
+          class="wl-input wl-input--dni"
           type="text"
+          inputmode="numeric"
           maxlength="8"
           [placeholder]="'whitelist.dniPlaceholder' | translate"
           [(ngModel)]="dniInput"
@@ -64,34 +93,102 @@
         <mat-icon class="wl-spinner">autorenew</mat-icon>
       </div>
     } @else if (!whitelistStore.error()) {
-      @if (whitelistStore.whitelist().length === 0) {
+      @if (rows().length === 0) {
         <div class="wl-empty">
           <mat-icon>group_off</mat-icon>
           <p>{{ 'whitelist.empty' | translate }}</p>
         </div>
       } @else {
         <div class="wl-card">
-          <div class="wl-card__header">
-            <span class="wl-count">
-              {{ 'whitelist.dniCount' | translate: { count: whitelistStore.whitelist().length } }}
-            </span>
-          </div>
-          <ul class="wl-list">
-            @for (entry of whitelistStore.whitelist(); track entry.dni) {
-              <li class="wl-item">
-                <div class="wl-item__info">
-                  <mat-icon class="wl-item__icon">person</mat-icon>
-                  <span class="wl-item__dni">{{ entry.dni }}</span>
-                </div>
+          <div class="wl-toolbar">
+            <div class="wl-search">
+              <mat-icon>search</mat-icon>
+              <input
+                class="wl-input"
+                type="search"
+                [placeholder]="'whitelist.searchPlaceholder' | translate"
+                [ngModel]="search()"
+                (ngModelChange)="setSearch($event)"
+              />
+            </div>
+            <div class="wl-segmented" role="tablist">
+              @for (f of ['all', 'member', 'registered', 'pending']; track f) {
                 <button
-                  class="btn-remove"
-                  [attr.aria-label]="'whitelist.removeDni' | translate"
-                  (click)="removeDni(entry.dni)">
-                  <mat-icon>remove_circle_outline</mat-icon>
+                  type="button"
+                  role="tab"
+                  class="wl-segmented__btn"
+                  [class.wl-segmented__btn--active]="statusFilter() === f"
+                  [attr.aria-selected]="statusFilter() === f"
+                  (click)="setStatusFilter($any(f))">
+                  {{ 'whitelist.filter.' + f | translate }}
+                  <span class="wl-segmented__count">{{ f === 'all' ? counts().total : $any(counts())[f] }}</span>
                 </button>
-              </li>
-            }
-          </ul>
+              }
+            </div>
+          </div>
+
+          <div class="wl-table-wrap">
+            <table class="wl-table">
+              <thead>
+                <tr>
+                  <th>{{ 'whitelist.col.member' | translate }}</th>
+                  <th>{{ 'whitelist.col.dni' | translate }}</th>
+                  <th>{{ 'whitelist.col.status' | translate }}</th>
+                  <th class="wl-table__actions"><span class="sr-only">{{ 'whitelist.removeDni' | translate }}</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of pagedRows(); track row.dni) {
+                  <tr>
+                    <td>
+                      <div class="wl-member">
+                        @if (row.fullName) {
+                          <span class="wl-avatar">{{ row.initials }}</span>
+                          <div class="wl-member__text">
+                            <span class="wl-member__name">{{ row.fullName }}</span>
+                            @if (row.email) { <span class="wl-member__email">{{ row.email }}</span> }
+                          </div>
+                        } @else {
+                          <span class="wl-avatar wl-avatar--empty"><mat-icon>person_outline</mat-icon></span>
+                          <span class="wl-member__unclaimed">{{ 'whitelist.notSignedUp' | translate }}</span>
+                        }
+                      </div>
+                    </td>
+                    <td><span class="wl-dni">{{ row.dni }}</span></td>
+                    <td>
+                      <span class="wl-status wl-status--{{ row.status }}">
+                        <span class="wl-status__dot"></span>
+                        {{ 'whitelist.status.' + row.status | translate }}
+                      </span>
+                    </td>
+                    <td class="wl-table__actions">
+                      <button
+                        class="btn-remove"
+                        [title]="'whitelist.removeDni' | translate"
+                        [attr.aria-label]="'whitelist.removeDni' | translate"
+                        (click)="removeDni(row.dni)">
+                        <mat-icon>person_remove</mat-icon>
+                      </button>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="4" class="wl-table__empty">{{ 'whitelist.noMatches' | translate }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+
+          @if (filteredRows().length > 0) {
+            <div class="wl-card__footer">
+              <app-paginator
+                [total]="filteredRows().length"
+                [pageSizeOptions]="[10, 25, 50]"
+                [(page)]="page"
+                [(pageSize)]="pageSize" />
+            </div>
+          }
         </div>
       }
     }

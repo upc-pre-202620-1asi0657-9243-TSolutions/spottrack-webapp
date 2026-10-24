@@ -57,7 +57,7 @@
       >
     </div>
 
-    <mat-form-field appearance="outline" class="filter-field">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-field">
       <mat-select [ngModel]="statusFilter()" (ngModelChange)="statusFilter.set($event)" name="sf">
         <mat-option value="">{{ 'maintenance.filter.allStatuses' | translate }}</mat-option>
         <mat-option value="OPEN">{{ 'maintenance.status.OPEN' | translate }}</mat-option>
@@ -66,7 +66,7 @@
       </mat-select>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="filter-field">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-field">
       <mat-select [ngModel]="priorityFilter()" (ngModelChange)="priorityFilter.set($event)" name="pf">
         <mat-option value="">{{ 'maintenance.filter.allPriorities' | translate }}</mat-option>
         <mat-option value="HIGH">{{ 'maintenance.priority.HIGH' | translate }}</mat-option>

@@ -1,198 +1,188 @@
-<div class="membership-page">
+<div class="mb-page">
 
-  <div class="page-header">
-    <div>
-      <h1 class="page-title">{{ 'membership.page.title' | translate }}</h1>
-      <p class="page-subtitle">{{ 'membership.page.subtitle' | translate }}</p>
-    </div>
-  </div>
+  <header class="mb-header">
+    <h1 class="mb-header__title">{{ 'membership.page.title' | translate }}</h1>
+    <p class="mb-header__subtitle">{{ 'membership.page.subtitle' | translate }}</p>
+  </header>
 
-  <!-- ── My Membership ────────────────────────────────────────────────────── -->
-  @if (membershipLoading()) {
-    <div class="loading-state">
-      <mat-icon class="spin">refresh</mat-icon>
+  @if (membershipLoading() && !membership()) {
+    <div class="mb-loading">
+      <mat-icon class="spin">autorenew</mat-icon>
       <p>{{ 'membership.page.loading' | translate }}</p>
     </div>
   }
 
-  @if (store.myMembership()) {
-    <div class="my-membership">
+  @if (membership(); as m) {
 
-      <!-- SUSPENDED banner -->
-      @if (store.myMembership()!.status === 'SUSPENDED') {
-        <div class="lc-banner lc-banner--suspended">
-          <div class="lc-banner__left">
-            <mat-icon>warning</mat-icon>
-            <div>
-              <strong>{{ 'membership.lifecycle.suspended.title' | translate }}</strong>
-              <p>{{ 'membership.lifecycle.suspended.desc' | translate }}</p>
+    <!-- ── Account state banners ─────────────────────────────────────────── -->
+    @if (m.status === 'SUSPENDED') {
+      <div class="mb-banner mb-banner--danger">
+        <mat-icon>warning</mat-icon>
+        <div class="mb-banner__text">
+          <strong>{{ 'membership.lifecycle.suspended.title' | translate }}</strong>
+          <p>{{ 'membership.lifecycle.suspended.desc' | translate }}</p>
+        </div>
+        <button class="btn btn--danger" [disabled]="lifecycleLoading()" (click)="payDebt()">
+          <mat-icon>credit_card</mat-icon>
+          {{ 'membership.lifecycle.payDebtBtn' | translate }}
+        </button>
+      </div>
+    }
+
+    @if (m.status === 'CANCELLED' || m.status === 'EXPIRED') {
+      <div class="mb-banner mb-banner--neutral">
+        <mat-icon>block</mat-icon>
+        <div class="mb-banner__text">
+          <strong>
+            {{ (m.status === 'CANCELLED' ? 'membership.lifecycle.cancelled.title' : 'membership.lifecycle.expired.title') | translate }}
+          </strong>
+          <p>{{ (m.status === 'CANCELLED' ? 'membership.lifecycle.cancelled.desc' : 'membership.lifecycle.expired.desc') | translate }}</p>
+        </div>
+      </div>
+    }
+
+    <!-- ── Current plan ──────────────────────────────────────────────────── -->
+    <section class="mb-card mb-current">
+      <div class="mb-current__main">
+        <div class="mb-current__plan">
+          <span class="mb-current__icon"><mat-icon>workspace_premium</mat-icon></span>
+          <div>
+            <p class="mb-eyebrow">{{ 'membership.current.label' | translate }}</p>
+            <div class="mb-current__title-row">
+              <h2 class="mb-current__tier">{{ tierLabel(m.membershipTier) }}</h2>
+              <span class="mb-badge mb-badge--{{ m.status.toLowerCase() }}">
+                {{ 'membership.lifecycle.status.' + m.status | translate }}
+              </span>
             </div>
           </div>
-          <button class="btn-lc btn-lc--pay" [disabled]="lifecycleLoading()" (click)="payDebt()">
-            <mat-icon>credit_card</mat-icon>
-            {{ 'membership.lifecycle.payDebtBtn' | translate }}
+        </div>
+
+        <div class="mb-current__price">
+          <span class="mb-current__amount">{{ m.priceCurrency }} {{ m.priceAmount }}</span>
+          <span class="mb-current__period">{{ 'auth.plans.perMonth' | translate }}</span>
+        </div>
+      </div>
+
+      <dl class="mb-facts">
+        <div class="mb-fact">
+          <dt>{{ (m.cancelAtPeriodEnd ? 'membership.current.endsOn' : 'membership.lifecycle.renewsOn') | translate }}</dt>
+          <dd>{{ m.endDate ? (m.endDate | date: 'longDate') : '—' }}</dd>
+        </div>
+        <div class="mb-fact">
+          <dt>{{ 'membership.current.periodStart' | translate }}</dt>
+          <dd>{{ m.startDate | date: 'longDate' }}</dd>
+        </div>
+        @for (u of usage(); track u.labelKey) {
+          <div class="mb-fact mb-fact--usage">
+            <dt>{{ u.labelKey | translate }}</dt>
+            <dd>
+              <span>{{ u.used }} / {{ u.limit ?? ('membership.usage.unlimited' | translate) }}</span>
+              @if (u.limit) {
+                <span class="mb-meter"><span class="mb-meter__fill" [class.mb-meter__fill--warn]="u.nearLimit" [style.width.%]="u.pct"></span></span>
+              }
+            </dd>
+          </div>
+        }
+      </dl>
+
+      @if (m.cancelAtPeriodEnd) {
+        <div class="mb-notice mb-notice--warning">
+          <mat-icon>event_busy</mat-icon>
+          <span>{{ 'membership.lifecycle.cancelAtPeriodEndNotice' | translate: { date: (m.endDate | date: 'longDate') } }}</span>
+          <button class="btn btn--secondary btn--sm" [disabled]="lifecycleLoading()" (click)="undoCancel()">
+            <mat-icon>undo</mat-icon>
+            {{ 'membership.lifecycle.undoCancelBtn' | translate }}
           </button>
         </div>
       }
 
-      <!-- CANCELLED / EXPIRED banner -->
-      @if (store.myMembership()!.status === 'CANCELLED' || store.myMembership()!.status === 'EXPIRED') {
-        <div class="lc-banner lc-banner--inactive">
-          <div class="lc-banner__left">
-            <mat-icon>block</mat-icon>
-            <div>
-              <strong>
-                @if (store.myMembership()!.status === 'CANCELLED') {
-                  {{ 'membership.lifecycle.cancelled.title' | translate }}
-                } @else {
-                  {{ 'membership.lifecycle.expired.title' | translate }}
-                }
-              </strong>
-              <p>{{ 'membership.lifecycle.cancelled.desc' | translate }}</p>
-            </div>
-          </div>
-          <div class="lc-banner__actions">
-            <select class="lc-select" [(ngModel)]="resubscribeTierTarget">
-              @for (t of tiers; track t) {
-                <option [value]="t">{{ t }}</option>
+      @if (m.pendingDowngradeTier) {
+        <div class="mb-notice mb-notice--info">
+          <mat-icon>south</mat-icon>
+          <span>{{ 'membership.lifecycle.pendingDowngradeNotice' | translate: { tier: tierLabel(m.pendingDowngradeTier) } }}</span>
+        </div>
+      }
+
+      @if (lifecycleError()) {
+        <div class="mb-notice mb-notice--danger">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ lifecycleError()! | translate }}</span>
+        </div>
+      }
+    </section>
+
+    <!-- ── Plans ─────────────────────────────────────────────────────────── -->
+    <section>
+      <div class="mb-section-head">
+        <h2 class="mb-section-title">{{ 'membership.plans.title' | translate }}</h2>
+        <p class="mb-section-subtitle">{{ 'membership.plans.subtitle' | translate }}</p>
+      </div>
+
+      <div class="mb-plans">
+        @for (plan of plans(); track plan.tier) {
+          <article class="mb-card mb-plan" [class.mb-plan--current]="plan.relation === 'current'">
+            <div class="mb-plan__head">
+              <h3 class="mb-plan__name">{{ tierLabel(plan.tier) }}</h3>
+              @if (plan.relation === 'current') {
+                <span class="mb-chip mb-chip--accent">{{ 'membership.plans.current' | translate }}</span>
+              } @else if (m.pendingDowngradeTier === plan.tier) {
+                <span class="mb-chip">{{ 'membership.plans.scheduled' | translate }}</span>
               }
-            </select>
-            <button class="btn-lc btn-lc--resubscribe" [disabled]="lifecycleLoading()" (click)="resubscribe()">
-              <mat-icon>replay</mat-icon>
-              {{ 'membership.lifecycle.resubscribeBtn' | translate }}
-            </button>
-          </div>
-          <!-- Features preview for selected resubscribe tier -->
-          @if (resubscribeTierTarget()) {
-            <ul class="plan-features-preview">
-              @for (f of featuresFor(resubscribeTierTarget()); track f) {
-                <li><mat-icon class="check-icon">check_circle</mat-icon>{{ ('auth.plans.feature.' + f) | translate }}</li>
+            </div>
+
+            <p class="mb-plan__price">
+              <span class="mb-plan__amount">USD {{ plan.price }}</span>
+              <span class="mb-plan__period">{{ 'auth.plans.perMonth' | translate }}</span>
+            </p>
+
+            <ul class="mb-plan__features">
+              @for (f of plan.features; track f) {
+                <li><mat-icon>check</mat-icon>{{ ('auth.plans.feature.' + f) | translate }}</li>
               }
             </ul>
-          }
-        </div>
-      }
 
-      <!-- ACTIVE card -->
-      @if (store.myMembership()!.status === 'ACTIVE') {
-        <div class="my-membership__card">
-
-          <div class="my-membership__meta">
-            <div class="my-membership__tier">
-              <mat-icon>workspace_premium</mat-icon>
-              <span class="tier-label">{{ store.myMembership()!.membershipTier }}</span>
-            </div>
-            <span class="my-membership__status-badge">
-              {{ 'membership.lifecycle.status.ACTIVE' | translate }}
-            </span>
-          </div>
-
-          <div class="my-membership__dates">
-            <span>{{ 'membership.lifecycle.renewsOn' | translate }} {{ store.myMembership()!.endDate }}</span>
-            <span class="my-membership__price">
-              {{ store.myMembership()!.priceCurrency }} {{ store.myMembership()!.priceAmount }}/mo
-            </span>
-          </div>
-
-          <!-- Features of current active tier -->
-          <ul class="plan-features-preview">
-            @for (f of featuresFor(store.myMembership()!.membershipTier); track f) {
-              <li><mat-icon class="check-icon">check_circle</mat-icon>{{ ('auth.plans.feature.' + f) | translate }}</li>
-            }
-          </ul>
-
-          <!-- Cancel-at-period-end notice + undo -->
-          @if (store.myMembership()!.cancelAtPeriodEnd) {
-            <div class="lc-notice lc-notice--cancel">
-              <mat-icon>event_busy</mat-icon>
-              {{ 'membership.lifecycle.cancelAtPeriodEndNotice' | translate: { date: store.myMembership()!.endDate } }}
-            </div>
-            <button class="btn-lc btn-lc--undo-cancel" [disabled]="lifecycleLoading()" (click)="undoCancel()">
-              <mat-icon>undo</mat-icon>
-              {{ 'membership.lifecycle.undoCancelBtn' | translate }}
-            </button>
-          }
-
-          <!-- Pending downgrade notice -->
-          @if (store.myMembership()!.pendingDowngradeTier) {
-            <div class="lc-notice lc-notice--downgrade">
-              <mat-icon>arrow_downward</mat-icon>
-              {{ 'membership.lifecycle.pendingDowngradeNotice' | translate: { tier: store.myMembership()!.pendingDowngradeTier } }}
-            </div>
-          }
-
-          <!-- Lifecycle action buttons (hidden once cancel is already scheduled) -->
-          @if (!store.myMembership()!.cancelAtPeriodEnd) {
-            <div class="my-membership__actions">
-
-              <!-- Upgrade -->
-              @if (upgradeOptions().length > 0) {
-                <div class="lc-action-group">
-                  <select class="lc-select" [(ngModel)]="upgradeTierTarget">
-                    @for (t of upgradeOptions(); track t) {
-                      <option [value]="t">{{ t }}</option>
-                    }
-                  </select>
-                  <button class="btn-lc btn-lc--upgrade" [disabled]="lifecycleLoading()" (click)="upgradePlan()">
-                    <mat-icon>arrow_upward</mat-icon>
-                    {{ 'membership.lifecycle.upgradeBtn' | translate }}
-                  </button>
-                  <!-- Features preview for selected upgrade tier -->
-                  @if (upgradeTierTarget()) {
-                    <ul class="plan-features-preview">
-                      @for (f of featuresFor(upgradeTierTarget()); track f) {
-                        <li><mat-icon class="check-icon">check_circle</mat-icon>{{ ('auth.plans.feature.' + f) | translate }}</li>
-                      }
-                    </ul>
-                  }
-                </div>
+            <div class="mb-plan__action">
+              @if (plan.relation === 'current') {
+                <button class="btn btn--ghost btn--block" disabled>{{ 'membership.plans.yourPlan' | translate }}</button>
+              } @else if (!isActive()) {
+                <button class="btn btn--primary btn--block" [disabled]="lifecycleLoading()" (click)="choosePlan(plan)">
+                  {{ 'membership.lifecycle.resubscribeBtn' | translate }}
+                </button>
+              } @else if (plan.relation === 'upgrade') {
+                <button class="btn btn--primary btn--block"
+                        [disabled]="lifecycleLoading() || m.cancelAtPeriodEnd" (click)="choosePlan(plan)">
+                  <mat-icon>north</mat-icon>
+                  {{ 'membership.lifecycle.upgradeBtn' | translate }}
+                </button>
+              } @else {
+                <button class="btn btn--secondary btn--block"
+                        [disabled]="lifecycleLoading() || m.cancelAtPeriodEnd || m.pendingDowngradeTier === plan.tier"
+                        (click)="choosePlan(plan)">
+                  <mat-icon>south</mat-icon>
+                  {{ 'membership.lifecycle.downgradeBtn' | translate }}
+                </button>
               }
-
-              <!-- Downgrade -->
-              @if (downgradeOptions().length > 0) {
-                <div class="lc-action-group">
-                  <select class="lc-select" [(ngModel)]="downgradeTierTarget">
-                    @for (t of downgradeOptions(); track t) {
-                      <option [value]="t">{{ t }}</option>
-                    }
-                  </select>
-                  <button class="btn-lc btn-lc--downgrade" [disabled]="lifecycleLoading()" (click)="downgradePlan()">
-                    <mat-icon>arrow_downward</mat-icon>
-                    {{ 'membership.lifecycle.downgradeBtn' | translate }}
-                  </button>
-                  <!-- Features preview for selected downgrade tier -->
-                  @if (downgradeTierTarget()) {
-                    <ul class="plan-features-preview">
-                      @for (f of featuresFor(downgradeTierTarget()); track f) {
-                        <li><mat-icon class="check-icon">check_circle</mat-icon>{{ ('auth.plans.feature.' + f) | translate }}</li>
-                      }
-                    </ul>
-                  }
-                </div>
-              }
-
-              <!-- Cancel -->
-              <button class="btn-lc btn-lc--cancel" [disabled]="lifecycleLoading()" (click)="cancelMembership()">
-                <mat-icon>cancel</mat-icon>
-                {{ 'membership.lifecycle.cancelBtn' | translate }}
-              </button>
-
             </div>
-          }
-
-        </div>
+          </article>
+        }
+      </div>
+      @if (isActive() && m.cancelAtPeriodEnd) {
+        <p class="mb-hint">{{ 'membership.plans.resumeToChange' | translate }}</p>
       }
+    </section>
 
-      <!-- Lifecycle error -->
-      @if (lifecycleError()) {
-        <div class="lc-error">
-          <mat-icon>error_outline</mat-icon>
-          {{ lifecycleError()! | translate }}
+    <!-- ── Danger zone ───────────────────────────────────────────────────── -->
+    @if (isActive() && !m.cancelAtPeriodEnd) {
+      <section class="mb-card mb-danger">
+        <div>
+          <h2 class="mb-danger__title">{{ 'membership.danger.title' | translate }}</h2>
+          <p class="mb-danger__desc">{{ 'membership.danger.desc' | translate }}</p>
         </div>
-      }
-
-    </div>
+        <button class="btn btn--danger-outline" [disabled]="lifecycleLoading()" (click)="cancelMembership()">
+          {{ 'membership.lifecycle.cancelBtn' | translate }}
+        </button>
+      </section>
+    }
   }
-
 
 </div>
