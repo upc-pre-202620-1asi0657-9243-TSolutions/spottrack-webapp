@@ -1,5 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { DecimalPipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { DashboardStore } from '../../application/dashboard.store';
 import { TicketType } from '../../../maintenance/domain/model/maintenance-ticket.entity';
@@ -11,7 +12,7 @@ import { PaginatorComponent, paginate } from '../../../shared/presentation/compo
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [MatIconModule, TranslatePipe, ContextMenuDirective, PaginatorComponent],
+  imports: [DecimalPipe, MatIconModule, TranslatePipe, ContextMenuDirective, PaginatorComponent],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css'],
 })

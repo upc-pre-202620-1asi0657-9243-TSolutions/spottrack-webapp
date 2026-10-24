@@ -120,7 +120,7 @@ export class DashboardStore {
           machineId: s.equipmentId.slice(0, 8),
           name:      s.equipmentName,
           location:  `Zona ${s.zoneId}`,
-          hours:     `${s.totalUsageHours}h`,
+          hours:     `${Math.round(s.totalUsageHours * 10) / 10}h`,
           roi,
         };
       });

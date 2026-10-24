@@ -2,18 +2,16 @@
    Design tokens (mirror analytics / global theme)
 ═══════════════════════════════════════════════════════════════════════════ */
 :host {
-  --bg-page:   #121212;
-  --bg-card:   #1e1e1e;
-  --bg-card2:  #252525;
-  --border:    #333333;
-  --text:      #e0e0e0;
-  --muted:     #9ca3af;
-  --accent:    #f5bc36;
-  --teal:      #00ccb2;
-  --red:       #fb2c36;
-  --green:     #00c950;
-  --blue:      #4fc3f7;
-  --amber:     #f0b100;
+  /* Local aliases onto the global design tokens (src/styles.css).
+     --border, --text, --accent and --teal come straight from the globals. */
+  --bg-page:   var(--bg);
+  --bg-card:   var(--surface);
+  --bg-card2:  var(--surface-2);
+  --muted:     var(--text-muted);
+  --red:       var(--danger);
+  --green:     var(--success);
+  --blue:      var(--info);
+  --amber:     var(--warning);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -45,7 +43,8 @@
   gap: 16px;
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   padding: 18px 20px;
 }
 
@@ -65,10 +64,10 @@
   height: 22px;
 }
 
-.kpi-card__icon--green  { background: rgba(0, 201, 80, .12);  color: var(--green); }
-.kpi-card__icon--amber  { background: rgba(240, 177, 0, .12); color: var(--amber); }
-.kpi-card__icon--red    { background: rgba(251, 44, 54, .12); color: var(--red);   }
-.kpi-card__icon--blue   { background: rgba(79, 195, 247, .12);color: var(--blue);  }
+.kpi-card__icon--green  { background: var(--success-soft); color: var(--green); }
+.kpi-card__icon--amber  { background: var(--warning-soft); color: var(--amber); }
+.kpi-card__icon--red    { background: var(--danger-soft);  color: var(--red);   }
+.kpi-card__icon--blue   { background: var(--info-soft);    color: var(--blue);  }
 
 .kpi-card__body { display: flex; flex-direction: column; gap: 4px; }
 
@@ -84,7 +83,7 @@
   margin: 0;
   font-size: 1.75rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--text);
   line-height: 1;
 }
 
@@ -103,7 +102,8 @@
 .chart-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   padding: 20px 24px;
   display: flex;
   flex-direction: column;
@@ -115,40 +115,62 @@
   margin: 0;
   font-size: 1rem;
   font-weight: 600;
-  color: #fff;
+  color: var(--text);
 }
 
 /* ── Line chart ─────────────────────────────────────────────────────────── */
 .line-chart-wrap {
   flex: 1;
   display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  padding-left: 28px;
-  padding-bottom: 8px;
-  min-height: 180px;
+  gap: 10px;
+  min-height: 200px;
+  padding: 6px 6px 24px 0;
+}
+
+.line-chart__y {
+  position: relative;
+  width: 36px;
+  flex-shrink: 0;
+}
+
+.line-chart__y span {
+  position: absolute;
+  right: 0;
+  transform: translateY(-50%);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.line-chart__plot {
+  position: relative;
+  flex: 1;
+  min-width: 0;
 }
 
 .line-svg {
-  flex: 1;
+  position: absolute;
+  inset: 0;
   width: 100%;
+  height: 100%;
   display: block;
   overflow: visible;
 }
 
 .grid-line {
-  stroke: #2a2a2a;
+  stroke: var(--chart-grid);
   stroke-width: 1;
+  vector-effect: non-scaling-stroke;
 }
 
-.axis-label {
-  fill: var(--muted);
-  font-size: 11px;
-  font-family: monospace;
-}
-
-.axis-label--y {
-  font-size: 10px;
+.line-chart__x span {
+  position: absolute;
+  top: calc(100% + 8px);
+  transform: translateX(-50%);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
 .area-fill {
@@ -161,12 +183,18 @@
   stroke-width: 2.5;
   stroke-linejoin: round;
   stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
 }
 
 .data-dot {
-  fill: var(--accent);
-  stroke: var(--bg-card);
-  stroke-width: 2;
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--accent);
+  border: 2px solid var(--surface);
+  box-sizing: border-box;
 }
 
 /* ── Bar chart ──────────────────────────────────────────────────────────── */
@@ -223,7 +251,7 @@
   width: 100%;
   max-width: 56px;
   height: 160px;
-  background: #2a2a2a;
+  background: var(--surface-2);
   border-radius: 4px 4px 0 0;
   display: flex;
   align-items: flex-end;
@@ -266,7 +294,8 @@
 .table-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   padding: 20px 24px;
   display: flex;
   flex-direction: column;
@@ -293,7 +322,7 @@
   padding: 12px 12px 12px 0;
   font-size: 0.875rem;
   color: var(--text);
-  border-bottom: 1px solid #2a2a2a;
+  border-bottom: 1px solid var(--border);
 }
 
 .data-table tr:last-child td {
@@ -302,7 +331,7 @@
 
 .cell--id {
   font-weight: 600;
-  color: #fff;
+  color: var(--text);
   font-family: monospace;
 }
 
@@ -324,15 +353,16 @@
   font-weight: 600;
 }
 
-.roi-badge--low    { background: rgba(251, 44, 54, .15); color: var(--red);   border: 1px solid rgba(251, 44, 54, .3);  }
-.roi-badge--medium { background: rgba(240, 177, 0, .15); color: var(--amber); border: 1px solid rgba(240, 177, 0, .3);  }
-.roi-badge--high   { background: rgba(0, 201, 80, .15);  color: var(--green); border: 1px solid rgba(0, 201, 80, .3);   }
+.roi-badge--low    { background: var(--danger-soft);  color: var(--red);   border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent);  }
+.roi-badge--medium { background: var(--warning-soft); color: var(--amber); border: 1px solid color-mix(in srgb, var(--warning) 30%, transparent); }
+.roi-badge--high   { background: var(--success-soft); color: var(--green); border: 1px solid color-mix(in srgb, var(--success) 30%, transparent); }
 
 /* ── Kanban card ───────────────────────────────────────────────────────── */
 .kanban-card {
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   padding: 20px 24px;
   display: flex;
   flex-direction: column;
@@ -389,7 +419,7 @@
 
 .kanban-item {
   background: var(--bg-card2);
-  border-radius: 8px;
+  border-radius: var(--radius);
   padding: 10px 12px;
   border-left: 3px solid transparent;
   display: flex;
@@ -420,7 +450,7 @@
 .kanban-item__id {
   font-size: 0.8rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--text);
   font-family: monospace;
 }
 
