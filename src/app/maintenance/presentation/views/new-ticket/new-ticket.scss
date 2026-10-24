@@ -1,23 +1,22 @@
-$bg-page:  #121212;
-$bg-card:  #1e1e1e;
-$border:   #333333;
-$text:     #e0e0e0;
-$muted:    #9ca3af;
-$accent:   #f5bc36;
-$red:      #fb2c36;
-$green:    #00c950;
+$bg-page:  var(--surface-2);
+$bg-card:  var(--surface);
+$border:   var(--border);
+$text:     var(--text);
+$muted:    var(--text-muted);
+$accent:   var(--accent);
+$red:      var(--danger);
+$green:    var(--success);
 
 // ── Full-page overlay ─────────────────────────────────────────────────────────
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.65);
+  background: var(--overlay);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
   padding: 24px;
-  backdrop-filter: blur(2px);
 }
 
 // ── Modal card ────────────────────────────────────────────────────────────────
@@ -33,11 +32,11 @@ $green:    #00c950;
   display: flex;
   flex-direction: column;
   gap: 20px;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+  box-shadow: var(--shadow-lg);
 
   &::-webkit-scrollbar { width: 4px; }
   &::-webkit-scrollbar-track { background: transparent; }
-  &::-webkit-scrollbar-thumb { background: #444; border-radius: 2px; }
+  &::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
 }
 
 // ── Header ────────────────────────────────────────────────────────────────────
@@ -50,7 +49,7 @@ $green:    #00c950;
 .modal__title {
   font-size: 1.125rem;
   font-weight: 700;
-  color: #fff;
+  color: $text;
 }
 
 .modal__close {
@@ -61,7 +60,7 @@ $green:    #00c950;
   padding: 0;
   display: flex;
   opacity: .7;
-  &:hover { opacity: 1; color: #fff; }
+  &:hover { opacity: 1; color: $text; }
 }
 
 // ── Peak warning ──────────────────────────────────────────────────────────────
@@ -69,8 +68,8 @@ $green:    #00c950;
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  background: rgba(251, 44, 54, .1);
-  border: 1px solid rgba(251, 44, 54, .35);
+  background: var(--danger-soft);
+  border: 1px solid color-mix(in srgb, var(--danger) 35%, transparent);
   border-radius: 8px;
   padding: 12px 14px;
   color: $red;
@@ -97,8 +96,8 @@ $green:    #00c950;
 }
 
 .chip {
-  background: rgba(0, 201, 80, .12);
-  border: 1px solid rgba(0, 201, 80, .4);
+  background: var(--success-soft);
+  border: 1px solid color-mix(in srgb, var(--success) 40%, transparent);
   border-radius: 20px;
   padding: 3px 14px;
   font-size: .8rem;
@@ -134,7 +133,7 @@ $green:    #00c950;
     ::ng-deep {
       .mdc-notched-outline__leading,
       .mdc-notched-outline__notch,
-      .mdc-notched-outline__trailing { border-color: $border !important; }
+      .mdc-notched-outline__trailing { border-color: var(--border-strong) !important; }
       .mat-mdc-floating-label, .mdc-floating-label { color: $muted !important; }
       .mat-mdc-select-value-text, .mdc-text-field input { color: $text !important; }
       .mat-mdc-select-arrow { color: $muted !important; }
@@ -153,7 +152,7 @@ $green:    #00c950;
     border-radius: 4px;
     font-size: .875rem;
     color: $muted;
-    font-family: 'Consolas', monospace;
+    font-family: var(--font-mono);
     min-height: 40px;
     display: flex;
     align-items: center;
@@ -174,13 +173,13 @@ $green:    #00c950;
 
 .btn-cancel {
   padding: 10px 24px;
-  background: $bg-page;
+  background: $bg-card;
   border: 1px solid $border;
   border-radius: 6px;
   color: $text;
   font-size: .875rem;
   cursor: pointer;
-  &:hover { border-color: #555; color: #fff; }
+  &:hover { background: var(--surface-hover); border-color: var(--border-strong); }
 }
 
 .btn-submit {
@@ -188,11 +187,11 @@ $green:    #00c950;
   background: $accent;
   border: none;
   border-radius: 6px;
-  color: #000;
+  color: var(--accent-contrast);
   font-weight: 700;
   font-size: .875rem;
   cursor: pointer;
-  &:hover:not(:disabled) { opacity: .85; }
+  &:hover:not(:disabled) { background: var(--accent-hover); }
   &:disabled { opacity: .4; cursor: not-allowed; }
 }
 
