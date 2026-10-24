@@ -814,6 +814,22 @@
     }
   },
   "profile": {
+    "sections": {
+      "back": "Volver",
+      "personalDesc": "Tu nombre y teléfono los ve el personal de tu gimnasio. El correo y el DNI están ligados a tu cuenta y no se cambian aquí.",
+      "gymDesc": "Un resumen de tu gimnasio. Abre cualquier tarjeta para gestionarlo.",
+      "gymsDesc": "Gimnasios a los que perteneces. Cambia el activo o únete a otro que tenga tu DNI habilitado.",
+      "notificationsDesc": "Elige sobre qué te avisa SpotTrack.",
+      "preferencesTitle": "Preferencias",
+      "theme": "Apariencia",
+      "themeDesc": "Se guarda en este navegador.",
+      "theme_light": "Claro",
+      "theme_dark": "Oscuro",
+      "securityDesc": "Mantén tu cuenta segura.",
+      "passwordTitle": "Contraseña",
+      "passwordDesc": "Usa al menos 8 caracteres que no uses en otro sitio.",
+      "logoutDesc": "Cierra tu sesión en este dispositivo."
+    },
     "admin": {
       "title": "Panel del Administrador",
       "roleBadge": "Administrador",

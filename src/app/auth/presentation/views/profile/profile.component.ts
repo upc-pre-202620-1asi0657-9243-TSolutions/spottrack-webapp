@@ -18,6 +18,7 @@ import { MonitoringStore } from '../../../../monitoring/application/monitoring.s
 import { ContextMenuDirective } from '../../../../shared/presentation/directives/context-menu.directive';
 import { ContextMenuItem } from '../../../../shared/application/context-menu.service';
 import { GymSwitcherComponent } from '../../components/gym-switcher/gym-switcher';
+import { Theme, ThemeService } from '../../../../shared/application/theme.service';
 
 @Component({
   selector: 'app-profile',
@@ -39,6 +40,9 @@ export class ProfileComponent implements OnInit {
   readonly whitelistStore = inject(WhitelistStore);
   readonly branchStore    = inject(BranchStore);
   readonly monitoringStore = inject(MonitoringStore);
+  readonly themeService    = inject(ThemeService);
+
+  readonly themes: Theme[] = ['light', 'dark'];
 
   readonly pageMenu: ContextMenuItem[] = [
     { label: 'Logout', icon: 'logout', action: () => this.logout() },
@@ -101,6 +105,20 @@ export class ProfileComponent implements OnInit {
   readonly isAdmin     = this.authStore.isAdmin;
 
   readonly profile        = this.profileStore.profile;
+
+  readonly initials = computed(() => {
+    const p = this.profile();
+    const name = p?.fullName || [p?.firstName, p?.lastName].filter(Boolean).join(' ') || this.currentUser()?.email || '';
+    return name.split(/[\s@.]+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase() || 'U';
+  });
+
+  /** Save is enabled once every editable field has a value and something actually changed. */
+  canSave(): boolean {
+    const p = this.profile();
+    const values = [this.accountFirstName, this.accountLastName, this.accountPhoneNumber].map(v => v.trim());
+    if (values.some(v => !v) || !this.accountDni.trim()) return false;
+    return !p || values[0] !== (p.firstName ?? '') || values[1] !== (p.lastName ?? '') || values[2] !== (p.phoneNumber ?? '');
+  }
   readonly profileLoading = this.profileStore.loading;
 
   ngOnInit(): void {

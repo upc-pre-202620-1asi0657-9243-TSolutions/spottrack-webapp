@@ -1,692 +1,538 @@
-// Variables
-// Colours come from the design tokens in src/styles.css (light/dark themes).
-$bg-main: var(--bg);
-$bg-card: var(--surface);
-$bg-item: var(--surface-2);
-$text-primary: var(--text);
-$text-secondary: var(--text-muted);
-$accent-gold: var(--accent);          // fills & borders
-$accent-gold-text: var(--accent-text); // text & icons on surfaces
-$success-green: var(--success);
-$border-color: var(--border);
-$border-radius: 12px;
-$font-family: 'Inter', 'Segoe UI', sans-serif;
-
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  background-color: $bg-main;
-  color: $text-primary;
-  font-family: $font-family;
-}
-
-.profile-container {
-  max-width: 800px;
+// Settings-style profile: identity header, then sections with the title on the
+// left and the controls on the right (stacked on narrow screens).
+.pf-page {
+  max-width: 1040px;
   margin: 0 auto;
-  padding: 2rem;
-}
-
-// Header
-.profile-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 2rem;
-
-  .back-btn {
-    background: transparent;
-    border: none;
-    color: $text-primary;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  h1 {
-    font-size: 1.25rem;
-    font-weight: 600;
-  }
-}
-
-// Cards
-.card {
-  background-color: $bg-card;
-  border: 1px solid $border-color;
-  border-radius: $border-radius;
-  box-shadow: var(--shadow-sm);
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.text-muted {
-  color: $text-secondary;
-  font-size: 0.875rem;
-}
-
-// User Card Specific
-.user-card {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  .user-info {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-
-    .avatar {
-      background-color: $accent-gold;
-      color: var(--accent-contrast);
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .user-details {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-      align-items: flex-start;
-
-      h2 {
-        font-size: 1rem;
-      }
-
-      .badge {
-        font-size: 0.75rem;
-        padding: 0.15rem 0.5rem;
-        border-radius: 4px;
-        margin-top: 0.25rem;
-
-        &.badge-outline {
-          border: 1px solid $accent-gold;
-          color: $accent-gold-text;
-        }
-      }
-    }
-  }
-
-}
-
-// Nuevas variables sugeridas al principio del archivo
-$accent-cyan: var(--teal);
-$danger-color: var(--danger);
-
-// Estilos para Formularios y Tarjetas de Configuración
-.form-card, .settings-card {
-  .card-header {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
-
-    h3 {
-      font-size: 1rem;
-      font-weight: 600;
-    }
-  }
-}
-
-.form-group {
+  padding: 28px 32px 56px;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1.25rem;
+  gap: 28px;
+  color: var(--text);
+  box-sizing: border-box;
+}
 
-  &:last-child {
-    margin-bottom: 0;
-  }
+// ── Header & identity ──────────────────────────────────────────────────────
+.pf-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 
-  label {
-    font-size: 0.875rem;
-    font-weight: 500;
-  }
-
-  .help-text {
-    font-size: 0.75rem;
-    color: $text-secondary;
-    margin-top: 0.25rem;
+  &__title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
   }
 }
 
-.form-control {
-  background-color: var(--surface-2);
-  border: 1px solid var(--border-strong);
-  color: $text-primary;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  font-family: inherit;
-  width: 100%;
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+.pf-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text-muted);
+  cursor: pointer;
 
-  &::placeholder { color: var(--text-faint); }
+  &:hover { background: var(--surface-hover); color: var(--text); }
+  mat-icon { font-size: 20px; width: 20px; height: 20px; }
+}
+
+.pf-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 20px;
+    border-top: 1px solid var(--border);
+    background: var(--surface-2);
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  }
+}
+
+.pf-identity {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+
+  &__text { flex: 1; min-width: 0; }
+
+  &__name {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  &__email {
+    margin: 2px 0 0;
+    font-size: 14px;
+    color: var(--text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.pf-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.pf-role {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; color: var(--text-muted); }
+
+  &--admin {
+    border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+    background: var(--accent-soft);
+    color: var(--accent-text);
+
+    mat-icon { color: var(--accent-text); }
+  }
+}
+
+// ── Sections ───────────────────────────────────────────────────────────────
+.pf-section {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 24px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+
+  &__intro {
+    h3 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    p {
+      margin: 6px 0 0;
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--text-muted);
+    }
+  }
+
+  &__body { min-width: 0; }
+  &__body--padded { padding: 16px 20px; }
+}
+
+.pf-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+// ── Form ───────────────────────────────────────────────────────────────────
+.pf-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 20px;
+}
+
+.pf-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+
+  &--full { grid-column: 1 / -1; }
+
+  label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-2);
+  }
+}
+
+.pf-input {
+  width: 100%;
+  height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.15s, box-shadow 0.15s;
 
   &:focus {
     border-color: var(--accent);
     box-shadow: var(--focus-ring);
   }
+
+  &:disabled {
+    background: var(--surface-2);
+    border-color: var(--border);
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+
+  &--mono {
+    font-family: var(--font-mono);
+    letter-spacing: 0.04em;
+  }
 }
 
-// Contenedor del Select para el icono personalizado
-.select-wrapper {
+.pf-input-wrap {
   position: relative;
 
-  select {
-    appearance: none;
-    cursor: pointer;
-  }
-
-  .select-icon {
-    position: absolute;
-    right: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
-    color: $text-secondary;
-  }
+  .pf-input { padding-right: 36px; }
 }
 
-// Lista de Notificaciones (Checkboxes Personalizados)
-.notification-list {
+.pf-input-lock {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  color: var(--text-faint);
+}
+
+.pf-feedback {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 4px;
+  min-height: 20px;
+  font-size: 13px;
 
-  .notification-item {
-    display: flex;
-    justify-content: space-between;
+  &--ok, &--error {
+    display: inline-flex;
     align-items: center;
+    gap: 6px;
 
-    .notification-text {
-      h4 {
-        font-size: 0.875rem;
-        margin-bottom: 0.25rem;
-      }
-      p {
-        font-size: 0.75rem;
-        color: $text-secondary;
-      }
+    mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  }
+
+  &--ok    { color: var(--success); }
+  &--error { color: var(--danger); }
+}
+
+// ── Rows (preferences, notifications, security) ────────────────────────────
+.pf-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  cursor: default;
+
+  &:last-child { border-bottom: none; }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  &__title {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  &__desc {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  &__control { flex-shrink: 0; }
+}
+
+label.pf-row { cursor: pointer; }
+
+.pf-lang { width: 200px; }
+
+.pf-segmented {
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  flex-shrink: 0;
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--text-muted);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+
+    mat-icon { font-size: 16px; width: 16px; height: 16px; }
+
+    &:hover { color: var(--text); }
+
+    &--active {
+      background: var(--surface);
+      color: var(--text);
+      font-weight: 600;
+      box-shadow: var(--shadow-sm);
     }
+
+    &:focus-visible { outline: none; box-shadow: var(--focus-ring); }
   }
 }
 
-.custom-checkbox {
+.pf-switch {
   position: relative;
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
+  flex-shrink: 0;
 
   input {
+    position: absolute;
     opacity: 0;
     width: 0;
     height: 0;
-
-    &:checked ~ .checkmark {
-      background-color: $accent-cyan;
-      border-color: $accent-cyan;
-
-      svg {
-        display: block;
-      }
-    }
   }
 
-  .checkmark {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 20px;
-    width: 20px;
-    background-color: transparent;
-    border: 2px solid $text-secondary;
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s;
-
-    svg {
-      display: none;
-      width: 14px;
-      height: 14px;
-      color: var(--surface);
-    }
-  }
-}
-
-// Acciones de Seguridad
-.security-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-// Botones Generales
-.btn-outline {
-  background-color: transparent;
-  border: 1px solid var(--border-strong);
-  color: $text-primary;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s;
-
-  &:hover {
-    background-color: var(--surface-hover);
+  &__track {
+    display: block;
+    width: 38px;
+    height: 22px;
+    border-radius: 999px;
+    background: var(--border-strong);
+    transition: background 0.15s;
   }
 
-  &.btn-danger {
-    color: $danger-color;
-    &:hover {
-      background-color: var(--danger-soft);
-      border-color: color-mix(in srgb, #{$danger-color} 50%, transparent);
-    }
-  }
-}
-
-.btn-primary {
-  width: 100%;
-  background-color: $accent-gold;
-  color: var(--accent-contrast);
-  border: none;
-  padding: 1rem;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  margin-top: 1rem;
-
-  &:hover {
-    background-color: var(--accent-hover);
-  }
-}
-
-// ── Card header (shared for admin sections) ───────────────────────────────────
-.card-header {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
-
-  mat-icon { color: $accent-gold-text; font-size: 20px; width: 20px; height: 20px; }
-
-  h3 { font-size: 1rem; font-weight: 600; }
-}
-
-// ── Admin identity card ───────────────────────────────────────────────────────
-.admin-identity-card {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  flex-wrap: wrap;
-}
-
-.admin-avatar {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: var(--accent-soft);
-  border: 2px solid color-mix(in srgb, #{$accent-gold} 40%, transparent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-
-  mat-icon {
-    font-size: 32px;
-    width: 32px;
-    height: 32px;
-    color: $accent-gold-text;
-  }
-}
-
-.admin-identity-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  flex: 1;
-  min-width: 0;
-}
-
-.admin-name {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: $text-primary;
-}
-
-.admin-email {
-  font-size: 0.875rem;
-  color: $text-secondary;
-}
-
-.role-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.2rem 0.7rem;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  width: fit-content;
-
-  &--admin {
-    background: var(--accent-soft);
-    border: 1px solid color-mix(in srgb, #{$accent-gold} 40%, transparent);
-    color: $accent-gold-text;
-  }
-}
-
-.admin-since {
-  text-align: right;
-  flex-shrink: 0;
-
-  &__label { font-size: 0.75rem; color: $text-secondary; margin-bottom: 2px; }
-  &__value { font-size: 0.9rem; font-weight: 600; color: $text-primary; }
-}
-
-// ── Section heading ───────────────────────────────────────────────────────────
-.section-heading {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-
-  &__icon { color: $accent-gold-text; font-size: 22px; width: 22px; height: 22px; }
-  &__title { font-size: 1.1rem; font-weight: 700; color: $text-primary; }
-}
-
-// ── Gym stat cards grid ───────────────────────────────────────────────────────
-.gym-stats {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-}
-
-.gym-stat-card {
-  background: $bg-card;
-  border: 1px solid $border-color;
-  border-radius: $border-radius;
-  box-shadow: var(--shadow-sm);
-  padding: 1.25rem;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  border-left: 3px solid transparent;
-
-  &__icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-
-    mat-icon { font-size: 22px; width: 22px; height: 22px; }
+  &__thumb {
+    display: block;
+    width: 18px;
+    height: 18px;
+    margin: 2px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.15s;
   }
 
-  &__body { display: flex; flex-direction: column; gap: 3px; }
-
-  &__value {
-    font-size: 1.75rem;
-    font-weight: 700;
-    line-height: 1;
-    color: $text-primary;
-  }
-
-  &__label { font-size: 0.78rem; color: $text-secondary; }
-
-  &--blue  { border-left-color: var(--info); .gym-stat-card__icon { background: var(--info-soft); mat-icon { color: var(--info); } } .gym-stat-card__value { color: var(--info); } }
-  &--yellow { border-left-color: $accent-gold; .gym-stat-card__icon { background: var(--accent-soft); mat-icon { color: $accent-gold-text; } } .gym-stat-card__value { color: $accent-gold-text; } }
-  &--green { border-left-color: $success-green; .gym-stat-card__icon { background: var(--success-soft); mat-icon { color: $success-green; } } .gym-stat-card__value { color: $success-green; } }
-  &--teal  { border-left-color: var(--teal); .gym-stat-card__icon { background: color-mix(in srgb, var(--teal) 12%, transparent); mat-icon { color: var(--teal); } } .gym-stat-card__value { color: var(--teal); } }
-  &--link  { text-decoration: none; cursor: pointer; transition: background 0.15s, transform 0.1s; &:hover { background: var(--surface-hover); transform: translateY(-1px); } }
+  input:checked + &__track { background: var(--accent); }
+  input:checked + &__track &__thumb { transform: translateX(16px); }
+  input:focus-visible + &__track { box-shadow: var(--focus-ring); }
 }
 
-// ── Admin plan card ───────────────────────────────────────────────────────────
-.admin-plan-card {
-  &__header {
+.pf-password {
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+
+  > .pf-feedback--ok { padding: 16px 20px; }
+
+  .pf-form { padding-bottom: 8px; }
+
+  &__footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
-    margin-bottom: 1.25rem;
-    flex-wrap: wrap;
+    gap: 12px;
+    padding: 0 20px 16px;
+  }
+}
+
+// ── Admin gym & plan ───────────────────────────────────────────────────────
+.pf-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.pf-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.15s, background 0.15s;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    margin-bottom: 4px;
+    color: var(--accent-text);
   }
 
-  &__title-group {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
+  &:hover {
+    border-color: var(--border-strong);
+    background: var(--surface-hover);
+  }
+
+  &__value {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__label {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+}
+
+.pf-plan {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.15s, background 0.15s;
+
+  &:hover {
+    border-color: var(--border-strong);
+    background: var(--surface-hover);
   }
 
   &__icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 10px;
-    background: var(--accent-soft);
-    border: 1px solid color-mix(in srgb, #{$accent-gold} 30%, transparent);
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 40px;
+    height: 40px;
     flex-shrink: 0;
+    border-radius: var(--radius);
+    background: var(--accent-soft);
+    color: var(--accent-text);
+  }
 
-    mat-icon { font-size: 24px; width: 24px; height: 24px; color: $accent-gold-text; }
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
   }
 
   &__name {
-    font-size: 1rem;
-    font-weight: 700;
-    color: $text-primary;
-  }
-}
-
-.plan-badge {
-  padding: 0.25rem 0.85rem;
-  border-radius: 20px;
-  font-size: 0.78rem;
-  font-weight: 700;
-  background: var(--success-soft);
-  border: 1px solid color-mix(in srgb, #{$success-green} 40%, transparent);
-  color: $success-green;
-  white-space: nowrap;
-}
-
-.admin-plan-features {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-  margin-bottom: 1.25rem;
-
-  &__item {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    font-size: 0.875rem;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  &__status {
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: var(--surface-3);
     color: var(--text-2);
+    font-size: 11px;
+    font-weight: 600;
+
+    &--active    { background: var(--success-soft); color: var(--success); }
+    &--suspended { background: var(--danger-soft);  color: var(--danger); }
   }
 
-  &__check {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
-    color: $success-green;
-    flex-shrink: 0;
-  }
-}
-
-.admin-plan-renewal {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  background: $bg-item;
-  padding: 0.85rem 1rem;
-  border-radius: 8px;
-
-  mat-icon { color: $text-secondary; font-size: 20px; width: 20px; height: 20px; flex-shrink: 0; }
-
-  &__label { font-size: 0.875rem; font-weight: 500; color: $text-primary; margin-bottom: 2px; }
-}
-
-// ── Responsive ────────────────────────────────────────────────────────────────
-@media (max-width: 640px) {
-  .profile-container { padding: 1rem; }
-
-  .gym-stats { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
-
-  .user-card {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
+  &__meta {
+    font-size: 13px;
+    color: var(--text-muted);
   }
 
-  .admin-identity-card { gap: 1rem; }
-  .admin-since { text-align: left; }
-}
+  &__link {
+    display: inline-flex;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent-text);
+    white-space: nowrap;
 
-@media (max-width: 480px) {
-  .profile-container { padding: 0.75rem; }
-
-  .gym-stats { grid-template-columns: 1fr; gap: 0.6rem; }
-
-  .gym-stat-card__value { font-size: 1.4rem; }
-
-  .admin-identity-card { flex-direction: column; align-items: flex-start; }
-
-  .admin-plan-card__header { flex-direction: column; align-items: flex-start; }
-}
-
-/* ── Inline change-password form ──────────────────────────────────────────── */
-.change-pwd-form {
-  margin-top: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding-top: 16px;
-  border-top: 1px solid $border-color;
-}
-
-.cpwd-actions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.cpwd-error {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  border-radius: 8px;
-  background: var(--danger-soft);
-  color: var(--danger);
-  font-size: 0.875rem;
-  mat-icon { font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; }
-}
-
-.cpwd-success {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  border-radius: 8px;
-  background: var(--success-soft);
-  color: var(--success);
-  font-size: 0.875rem;
-  mat-icon { font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; }
-}
-
-// ── Plan badge status variants ────────────────────────────────────────────────
-.plan-badge--suspended {
-  background: var(--warning-soft);
-  border-color: color-mix(in srgb, var(--warning) 40%, transparent);
-  color: var(--warning);
-}
-
-.plan-badge--cancelled {
-  background: var(--danger-soft);
-  border-color: color-mix(in srgb, #{$danger-color} 40%, transparent);
-  color: $danger-color;
-}
-
-// ── Plan notice (cancelAtPeriodEnd / pendingDowngrade) ────────────────────────
-.plan-notice {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 0.65rem 0.9rem;
-  border-radius: 8px;
-  font-size: 0.82rem;
-  margin-bottom: 0.75rem;
-
-  mat-icon { font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; }
-
-  &--warn {
-    background: var(--warning-soft);
-    border: 1px solid color-mix(in srgb, var(--warning) 30%, transparent);
-    color: var(--warning);
-  }
-
-  &--info {
-    background: var(--surface-2);
-    border: 1px solid $border-color;
-    color: $text-secondary;
+    mat-icon { font-size: 18px; width: 18px; height: 18px; }
   }
 }
 
-// ── Membership manage button ──────────────────────────────────────────────────
-.membership-manage-btn {
+// The gym switcher carries its own title; the section intro already names it.
+:host ::ng-deep app-gym-switcher .gym-switcher__header { display: none; }
+
+// ── Buttons ────────────────────────────────────────────────────────────────
+.btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  margin-top: 1rem;
-  padding: 0.6rem 1rem;
-  background: var(--accent-soft);
-  border: 1px solid color-mix(in srgb, #{$accent-gold} 35%, transparent);
-  color: $accent-gold-text;
-  border-radius: 8px;
-  font-size: 0.875rem;
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font: inherit;
+  font-size: 14px;
   font-weight: 600;
+  white-space: nowrap;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.15s, border-color 0.15s;
 
-  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  &:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
 
-  &:hover { background: color-mix(in srgb, #{$accent-gold} 24%, transparent); }
-}
+  &--primary { background: var(--accent); color: var(--accent-contrast); }
+  &--primary:hover:not(:disabled) { background: var(--accent-hover); }
 
-// ── Plan loading skeleton ─────────────────────────────────────────────────────
-.plan-loading {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+  &--secondary { background: var(--surface); border-color: var(--border-strong); color: var(--text); }
+  &--secondary:hover:not(:disabled) { background: var(--surface-hover); }
 
-  &__line {
-    height: 14px;
-    border-radius: 4px;
-    background: var(--surface-3);
-    animation: skeleton-pulse 1.5s ease-in-out infinite;
-
-    &--wide  { width: 120px; }
-    &--short { width: 80px; height: 12px; }
+  &--danger-outline {
+    background: var(--surface);
+    border-color: color-mix(in srgb, var(--danger) 45%, transparent);
+    color: var(--danger);
   }
+  &--danger-outline:hover:not(:disabled) { background: var(--danger-soft); }
 }
 
-@keyframes skeleton-pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.4; }
+// ── Responsive ─────────────────────────────────────────────────────────────
+@media (max-width: 900px) {
+  .pf-section { grid-template-columns: 1fr; gap: 12px; }
+  .pf-stats { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 600px) {
+  .pf-page { padding: 20px 16px 40px; gap: 20px; }
+  .pf-section { padding-top: 20px; }
+  .pf-identity { flex-wrap: wrap; }
+  .pf-form { grid-template-columns: 1fr; padding: 16px; }
+  .pf-row { flex-wrap: wrap; }
+  .pf-lang { width: 100%; }
 }
