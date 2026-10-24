@@ -1,24 +1,15 @@
-$bg-page:      var(--bg);
-$bg-card:      var(--surface);
-$bg-hover:     var(--surface-hover);
-$border:       var(--border);
-$text-primary: var(--text);
-$text-muted:   var(--text-muted);
-$text-faint:   var(--text-faint);
-$accent:       var(--accent);
-$accent-text:  var(--accent-text);
-$red:          var(--danger);
-$green:        var(--success);
-
 // ─── Page shell ──────────────────────────────────────────────────────────────
 .wl-page {
-  background: $bg-page;
+  background: var(--bg);
   min-height: 100%;
   padding: 28px 32px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  color: $text-primary;
+  gap: 20px;
+  color: var(--text);
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 // ─── Header ──────────────────────────────────────────────────────────────────
@@ -28,106 +19,156 @@ $green:        var(--success);
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
-}
 
-.wl-header__title {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 700;
-  letter-spacing: -0.3px;
-}
+  &__title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
 
-.wl-header__subtitle {
-  margin: 4px 0 0;
-  font-size: 14px;
-  color: $text-muted;
+  &__subtitle {
+    margin: 4px 0 0;
+    font-size: 14px;
+    color: var(--text-muted);
+  }
 }
 
 .wl-gym-badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 14px;
-  background: var(--accent-soft);
-  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
-  border-radius: 20px;
-  color: $accent-text;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-2);
   font-size: 13px;
-  font-weight: 700;
-  white-space: nowrap;
+  font-weight: 600;
 
-  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+  mat-icon { font-size: 16px; width: 16px; height: 16px; color: var(--accent-text); }
 }
 
-// ─── Error / info banners ─────────────────────────────────────────────────────
-.wl-banner {
+// ─── Summary ─────────────────────────────────────────────────────────────────
+.wl-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.wl-stat {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  border-radius: 8px;
-  font-size: 14px;
-
-  mat-icon { font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; }
-
-  &--error { background: var(--danger-soft); color: $red; }
-}
-
-// ─── Add DNI card ─────────────────────────────────────────────────────────────
-.wl-add-card {
-  background: $bg-card;
-  border: 1px solid $border;
+  gap: 14px;
+  padding: 16px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius);
+    background: var(--accent-soft);
+    color: var(--accent-text);
+
+    mat-icon { font-size: 20px; width: 20px; height: 20px; }
+
+    &--member  { background: var(--success-soft); color: var(--success); }
+    &--pending { background: var(--warning-soft); color: var(--warning); }
+  }
+
+  &__value {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__label {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
 }
 
-.wl-add-card__label {
-  margin: 0;
-  font-size: 13px;
-  font-weight: 700;
-  color: $text-muted;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+// ─── Add DNI ─────────────────────────────────────────────────────────────────
+.wl-add-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+  padding: 16px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+
+  &__title {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  &__hint {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
 }
 
 .wl-add-row {
   display: flex;
-  gap: 10px;
+  gap: 8px;
 }
 
-.wl-add-input {
-  flex: 1;
-  background: $bg-card;
+.wl-input {
+  height: 36px;
+  padding: 0 12px;
+  background: var(--surface);
   border: 1px solid var(--border-strong);
-  border-radius: 8px;
-  padding: 9px 14px;
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font: inherit;
   font-size: 14px;
-  color: $text-primary;
-  font-family: var(--font-mono);
   outline: none;
+  box-sizing: border-box;
   transition: border-color 0.15s, box-shadow 0.15s;
 
-  &::placeholder { color: $text-faint; }
-  &:focus        { border-color: $accent; box-shadow: var(--focus-ring); }
+  &::placeholder { color: var(--text-faint); }
+
+  &:focus {
+    border-color: var(--accent);
+    box-shadow: var(--focus-ring);
+  }
+
+  &--dni {
+    width: 180px;
+    font-family: var(--font-mono);
+    letter-spacing: 0.06em;
+  }
 }
 
 .btn-add {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 9px 18px;
-  background: $accent;
-  color: var(--accent-contrast);
-  font-size: 14px;
-  font-weight: 700;
+  gap: 4px;
+  height: 36px;
+  padding: 0 14px;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  white-space: nowrap;
   transition: background 0.15s;
 
   mat-icon { font-size: 18px; width: 18px; height: 18px; }
@@ -137,129 +178,311 @@ $green:        var(--success);
 }
 
 .wl-field-error {
+  flex-basis: 100%;
   font-size: 12px;
-  color: $red;
+  color: var(--danger);
 }
 
-// ─── Loading ──────────────────────────────────────────────────────────────────
+// ─── Table card ──────────────────────────────────────────────────────────────
+.wl-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+
+  &__footer {
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+  }
+}
+
+.wl-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.wl-search {
+  position: relative;
+  flex: 1;
+  min-width: 220px;
+  max-width: 360px;
+
+  mat-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    color: var(--text-faint);
+    pointer-events: none;
+  }
+
+  .wl-input {
+    width: 100%;
+    padding-left: 34px;
+  }
+}
+
+.wl-segmented {
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--text-muted);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s;
+
+    &:hover { color: var(--text); }
+
+    &--active {
+      background: var(--surface);
+      color: var(--text);
+      font-weight: 600;
+      box-shadow: var(--shadow-sm);
+    }
+
+    &:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+  }
+
+  &__count {
+    font-size: 11px;
+    color: var(--text-faint);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.wl-table-wrap {
+  overflow-x: auto;
+}
+
+.wl-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+
+  th {
+    padding: 10px 16px;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--surface-hover); }
+
+  &__actions {
+    width: 48px;
+    text-align: right;
+  }
+
+  &__empty {
+    padding: 32px 16px !important;
+    text-align: center;
+    color: var(--text-muted);
+  }
+}
+
+.wl-member {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  &__name {
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  &__email {
+    font-size: 12px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__unclaimed {
+    color: var(--text-faint);
+    font-style: italic;
+  }
+}
+
+.wl-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent-text);
+  font-size: 12px;
+  font-weight: 700;
+
+  &--empty {
+    background: var(--surface-2);
+    border: 1px dashed var(--border-strong);
+    color: var(--text-faint);
+
+    mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  }
+}
+
+.wl-dni {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-2);
+  letter-spacing: 0.04em;
+}
+
+.wl-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+
+  &__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  &--member     { background: var(--success-soft); color: var(--success); }
+  &--registered { background: var(--info-soft);    color: var(--info); }
+  &--pending    { background: var(--warning-soft); color: var(--warning); }
+}
+
+.btn-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-faint);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+  &:hover {
+    background: var(--danger-soft);
+    color: var(--danger);
+  }
+
+  &:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+// ─── States ──────────────────────────────────────────────────────────────────
+.wl-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  font-size: 14px;
+
+  &--error {
+    background: var(--danger-soft);
+    border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent);
+    color: var(--danger);
+  }
+}
+
 .wl-loading {
   display: flex;
   justify-content: center;
-  padding: 40px 0;
+  padding: 48px 0;
 }
 
 .wl-spinner {
-  font-size: 32px;
-  width: 32px;
-  height: 32px;
-  color: $accent-text;
-  animation: spin 1s linear infinite;
+  color: var(--accent-text);
+  animation: wl-spin 1s linear infinite;
 }
 
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+@keyframes wl-spin {
+  to { transform: rotate(360deg); }
 }
 
-// ─── Empty state ──────────────────────────────────────────────────────────────
 .wl-empty {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  padding: 60px 0;
-  color: $text-muted;
+  gap: 8px;
+  padding: 48px 16px;
+  background: var(--surface);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  color: var(--text-muted);
+  text-align: center;
 
-  mat-icon { font-size: 48px; width: 48px; height: 48px; opacity: 0.3; }
+  mat-icon { font-size: 36px; width: 36px; height: 36px; color: var(--text-faint); }
   p { margin: 0; font-size: 14px; }
 }
 
-// ─── Whitelist card ───────────────────────────────────────────────────────────
-.wl-card {
-  background: $bg-card;
-  border: 1px solid $border;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
-  overflow: hidden;
-}
-
-.wl-card__header {
-  padding: 14px 20px;
-  border-bottom: 1px solid $border;
-  background: var(--surface-2);
-}
-
-.wl-count {
-  font-size: 12px;
-  font-weight: 700;
-  color: $text-muted;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-// ─── DNI list ─────────────────────────────────────────────────────────────────
-.wl-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.wl-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 20px;
-  border-bottom: 1px solid $border;
-  transition: background 0.12s;
-
-  &:last-child { border-bottom: none; }
-  &:hover      { background: $bg-hover; }
-}
-
-.wl-item__info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.wl-item__icon {
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
-  color: $text-muted;
-}
-
-.wl-item__dni {
-  font-size: 14px;
-  font-family: var(--font-mono);
-  font-weight: 600;
-  color: $text-primary;
-  letter-spacing: 0.05em;
-}
-
-// ─── Remove button ────────────────────────────────────────────────────────────
-.btn-remove {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  background: transparent;
-  border: none;
-  border-radius: 6px;
-  color: $text-muted;
-  cursor: pointer;
-  transition: color 0.12s, background 0.12s;
-
-  mat-icon { font-size: 18px; width: 18px; height: 18px; }
-
-  &:hover { color: $red; background: var(--danger-soft); }
-}
-
 // ─── Responsive ──────────────────────────────────────────────────────────────
-@media (max-width: 700px) {
-  .wl-page   { padding: 16px; gap: 16px; }
-  .wl-header { flex-direction: column; align-items: flex-start; }
-  .wl-add-row { flex-direction: column; }
-  .btn-add    { width: 100%; justify-content: center; }
+@media (max-width: 768px) {
+  .wl-page { padding: 20px 16px; }
+  .wl-stats { grid-template-columns: 1fr; }
+  .wl-add-row { width: 100%; }
+  .wl-input--dni { flex: 1; width: auto; }
+  .wl-search { max-width: none; }
 }

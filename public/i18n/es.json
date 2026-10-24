@@ -1041,6 +1041,31 @@
     }
   },
   "whitelist": {
+    "addHint": "Los clientes solo pueden unirse a tu gimnasio con un DNI de esta lista.",
+    "searchPlaceholder": "Buscar por nombre, DNI o correo",
+    "notSignedUp": "Aún no registrado",
+    "noMatches": "Ningún DNI coincide con estos filtros.",
+    "stats": {
+      "total": "DNIs habilitados",
+      "members": "Socios unidos",
+      "waiting": "Por unirse"
+    },
+    "filter": {
+      "all": "Todos",
+      "member": "Socios",
+      "registered": "Registrados",
+      "pending": "Sin registrar"
+    },
+    "status": {
+      "member": "Socio",
+      "registered": "Registrado, sin unirse",
+      "pending": "Sin registrar"
+    },
+    "col": {
+      "member": "Socio",
+      "dni": "DNI",
+      "status": "Estado"
+    },
     "title": "Gestión de Whitelist",
     "subtitle": "Administra qué clientes pueden acceder a tu gimnasio por DNI",
     "addDni": "Agregar DNI",

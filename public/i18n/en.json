@@ -1041,6 +1041,31 @@
     }
   },
   "whitelist": {
+    "addHint": "Clients can only sign up to your gym with a DNI on this list.",
+    "searchPlaceholder": "Search by name, DNI or email",
+    "notSignedUp": "Not signed up yet",
+    "noMatches": "No DNIs match these filters.",
+    "stats": {
+      "total": "Whitelisted DNIs",
+      "members": "Joined members",
+      "waiting": "Waiting to join"
+    },
+    "filter": {
+      "all": "All",
+      "member": "Members",
+      "registered": "Registered",
+      "pending": "Not signed up"
+    },
+    "status": {
+      "member": "Member",
+      "registered": "Registered, not joined",
+      "pending": "Not signed up"
+    },
+    "col": {
+      "member": "Member",
+      "dni": "DNI",
+      "status": "Status"
+    },
     "title": "Whitelist Management",
     "subtitle": "Manage which clients can access your gym by DNI",
     "addDni": "Add DNI",

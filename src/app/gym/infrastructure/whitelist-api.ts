@@ -6,6 +6,11 @@ import { environment } from '../../../environments/environment';
 export interface WhitelistEntryResource {
   gymId: string;
   dni:   string;
+  /** Who signed up with this DNI; null while nobody has. */
+  fullName?: string | null;
+  email?:    string | null;
+  /** True once that client has associated with this gym. */
+  joined?:   boolean;
 }
 
 @Injectable({ providedIn: 'root' })
