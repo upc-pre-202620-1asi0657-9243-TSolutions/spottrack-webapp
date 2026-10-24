@@ -1042,6 +1042,10 @@
     }
   },
   "shared": {
+    "theme": {
+      "toLight": "Switch to light mode",
+      "toDark": "Switch to dark mode"
+    },
     "paginator": {
       "rowsPerPage": "Rows",
       "of": "of",
