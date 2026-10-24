@@ -47,7 +47,8 @@ export class FinancialImpactStore {
         const total        = s.downtimeCost;
         const ratePerHour  = Math.round(total / hours);
         return { machine: s.equipmentName, hours, ratePerHour, total };
-      });
+      })
+      .sort((a, b) => b.total - a.total);
   });
 
   readonly totalMonthlyLoss = computed(() =>

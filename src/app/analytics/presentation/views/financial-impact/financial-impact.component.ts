@@ -5,6 +5,7 @@ import { MatIconModule }  from '@angular/material/icon';
 import { FinancialImpactStore } from '../../../application/financial-impact.store';
 import { ContextMenuDirective } from '../../../../shared/presentation/directives/context-menu.directive';
 import { ContextMenuItem } from '../../../../shared/application/context-menu.service';
+import { PaginatorComponent, paginate } from '../../../../shared/presentation/components/paginator/paginator';
 
 interface RoiMonth { month: string; cumulative: number; }
 
@@ -18,6 +19,7 @@ const ROI_MONTHS_LABELS = ['Mes 1', 'Mes 2', 'Mes 3', 'Mes 4', 'Mes 5', 'Mes 6',
     TranslateModule,
     MatIconModule,
     ContextMenuDirective,
+    PaginatorComponent,
   ],
   templateUrl: './financial-impact.component.html',
   styleUrl:    './financial-impact.component.scss',
@@ -34,6 +36,12 @@ export class FinancialImpactComponent implements OnInit {
   get inactivityLoss() { return this.store.inactivityLoss(); }
 
   readonly totalMonthlyLoss = this.store.totalMonthlyLoss;
+
+  readonly lossPage     = signal(0);
+  readonly lossPageSize = signal(5);
+  readonly pagedInactivityLoss = computed(() =>
+    paginate(this.store.inactivityLoss(), this.lossPage(), this.lossPageSize())
+  );
 
   get maintenanceTypes() { return this.store.maintenanceTypes(); }
 

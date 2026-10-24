@@ -80,7 +80,7 @@
           </tr>
           </thead>
           <tbody>
-            @for (row of inactivityLoss; track row.machine) {
+            @for (row of pagedInactivityLoss(); track row.machine) {
               <tr [appContextMenu]="lossRowMenu(row.machine, row.total)">
                 <td>{{ row.machine }}</td>
                 <td><span class="hours-badge">{{ row.hours }}h</span></td>
@@ -97,6 +97,12 @@
           </tfoot>
         </table>
       </div>
+      @if (inactivityLoss.length > 0) {
+        <app-paginator
+          [total]="inactivityLoss.length"
+          [(page)]="lossPage"
+          [(pageSize)]="lossPageSize" />
+      }
     </div>
 
     <!-- Maintenance cost breakdown -->

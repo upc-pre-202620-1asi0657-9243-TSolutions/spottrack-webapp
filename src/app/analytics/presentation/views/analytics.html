@@ -220,7 +220,7 @@
     </div>
 
     <div class="reloc-list">
-      @for (r of relocationData; track r.machine) {
+      @for (r of pagedRelocations(); track r.machine) {
         <div class="reloc-row" [appContextMenu]="relocationMenu(r.machine)">
 
           <span class="priority-badge" [class]="'priority-badge--' + r.priority.toLowerCase()">
@@ -265,6 +265,13 @@
         </div>
       }
     </div>
+
+    @if (relocationData.length > 0) {
+      <app-paginator
+        [total]="relocationData.length"
+        [(page)]="relocationPage"
+        [(pageSize)]="relocationPageSize" />
+    }
   </div>
 
   <!-- ── Resumen Ejecutivo ───────────────────────────────────────────────── -->
