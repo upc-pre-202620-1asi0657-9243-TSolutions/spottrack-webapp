@@ -254,7 +254,8 @@ $blue:     var(--info);
   background: $bg-card;
   border: 1px solid var(--border-strong);
   border-radius: 6px;
-  padding: 6px 12px 6px 36px;
+  height: 38px;
+  padding: 0 12px 0 36px;
   color: $text;
   font-size: .875rem;
   outline: none;
@@ -274,7 +275,8 @@ $blue:     var(--info);
     .mdc-notched-outline__trailing { border-color: var(--border-strong) !important; }
     .mat-mdc-select-value-text { color: $text !important; font-size: .875rem; }
     .mat-mdc-select-arrow { color: $muted !important; }
-    .mat-mdc-form-field-infix { padding-top: 6px !important; padding-bottom: 6px !important; min-height: unset; }
+    // Same 38px box as the search input next to it.
+    .mat-mdc-form-field-infix { padding-top: 8px !important; padding-bottom: 8px !important; min-height: 38px; box-sizing: border-box; }
   }
 }
 
