@@ -20,20 +20,20 @@
   font-size: 48px;
   width: 48px;
   height: 48px;
-  color: #f5bc36;
+  color: var(--accent-text);
 }
 
 .gym-create__title {
   margin: 0;
   font-size: 1.5rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--text);
 }
 
 .gym-create__subtitle {
   margin: 0;
   font-size: 0.9rem;
-  color: #9ca3af;
+  color: var(--text-muted);
 }
 
 // ── Error banner ──────────────────────────────────────────────────────────────
@@ -42,9 +42,9 @@
   align-items: center;
   gap: 8px;
   padding: 10px 14px;
-  background: rgba(239, 68, 68, 0.1);
+  background: var(--danger-soft);
   border-radius: 8px;
-  color: #ef4444;
+  color: var(--danger);
   font-size: 0.875rem;
 
   mat-icon { font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; }
@@ -60,17 +60,17 @@
 .gym-create__input {
   width: 100%;
   padding: 12px 14px;
-  background: #1e1e1e;
-  border: 1px solid #333;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
   border-radius: 8px;
-  color: #fff;
+  color: var(--text);
   font-size: 0.95rem;
   outline: none;
   box-sizing: border-box;
-  transition: border-color 0.15s;
+  transition: border-color 0.15s, box-shadow 0.15s;
 
-  &::placeholder { color: #6b7280; }
-  &:focus { border-color: #f5bc36; }
+  &::placeholder { color: var(--text-faint); }
+  &:focus { border-color: var(--accent); box-shadow: var(--focus-ring); }
 }
 
 .gym-create__btn {
@@ -79,16 +79,17 @@
   justify-content: center;
   gap: 8px;
   padding: 12px;
-  background: #f5bc36;
-  color: #000;
+  background: var(--accent);
+  color: var(--accent-contrast);
   font-size: 0.9rem;
   font-weight: 700;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  transition: opacity 0.15s;
+  transition: background 0.15s, opacity 0.15s;
 
-  &:hover:not(:disabled) { opacity: 0.85; }
+  &:hover:not(:disabled) { background: var(--accent-hover); }
+  &:focus-visible { outline: none; box-shadow: var(--focus-ring); }
   &:disabled { opacity: 0.45; cursor: not-allowed; }
 }
 

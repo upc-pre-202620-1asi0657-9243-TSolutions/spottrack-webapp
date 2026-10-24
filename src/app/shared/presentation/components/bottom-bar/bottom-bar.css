@@ -2,8 +2,8 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
-  background-color: #1e1e1e;
-  border-top: 1px solid #333;
+  background-color: var(--surface);
+  border-top: 1px solid var(--border);
   position: fixed;
   bottom: 0;
   left: 0;
@@ -17,7 +17,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: #888;
+  color: var(--text-muted);
   text-decoration: none;
   font-size: 12px;
   gap: 4px;
@@ -33,7 +33,8 @@
 }
 
 .bottom-bar__item--active {
-  color: #4fc3f7;
+  color: var(--accent-text);
+  font-weight: 600;
 }
 
 @media (max-width: 480px) {

@@ -59,59 +59,40 @@
           <p>{{ 'dashboardAdmin.charts.noCapacityData' | translate }}</p>
         </div>
       } @else {
+        <!-- The SVG stretches to the card (preserveAspectRatio="none"), so text and dots
+             live in HTML on top of it and keep their shape; positions are percentages. -->
         <div class="line-chart-wrap">
-          <svg
-            [attr.viewBox]="'0 0 ' + SVG_W + ' ' + (SVG_H + 24)"
-            preserveAspectRatio="none"
-            class="line-svg"
-          >
-            <defs>
-              <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%"   stop-color="#f5bc36" stop-opacity="0.25"/>
-                <stop offset="100%" stop-color="#f5bc36" stop-opacity="0"/>
-              </linearGradient>
-            </defs>
-
+          <div class="line-chart__y">
             @for (tick of yTicks; track tick.label) {
-              <line
-                [attr.x1]="0"
-                [attr.y1]="tick.y"
-                [attr.x2]="SVG_W"
-                [attr.y2]="tick.y"
-                class="grid-line"
-              />
-              <text
-                [attr.x]="-6"
-                [attr.y]="tick.y + 4"
-                class="axis-label axis-label--y"
-                text-anchor="end"
-              >{{ tick.label }}</text>
+              <span [style.top.%]="(tick.y / SVG_H) * 100">{{ tick.label }}%</span>
             }
-
-            <path [attr.d]="store.areaPath()" fill="url(#areaGrad)" class="area-fill"/>
-
-            <polyline [attr.points]="store.polylinePoints()" class="line-stroke"/>
-
-            @for (pt of store.linePoints(); track pt.hour) {
-              <circle
-                [attr.cx]="pt.x"
-                [attr.cy]="pt.y"
-                r="5"
-                class="data-dot"
-              />
-            }
-
-            @for (pt of store.linePoints(); track pt.hour; let i = $index) {
-              @if (i % 2 === 0 || i === store.linePoints().length - 1) {
-                <text
-                  [attr.x]="pt.x"
-                  [attr.y]="SVG_H + 18"
-                  class="axis-label"
-                  text-anchor="middle"
-                >{{ pt.hour }}</text>
+          </div>
+          <div class="line-chart__plot">
+            <svg [attr.viewBox]="'0 0 ' + SVG_W + ' ' + SVG_H" preserveAspectRatio="none" class="line-svg">
+              <defs>
+                <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%"   style="stop-color: var(--accent)" stop-opacity="0.25"/>
+                  <stop offset="100%" style="stop-color: var(--accent)" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              @for (tick of yTicks; track tick.label) {
+                <line [attr.x1]="0" [attr.y1]="tick.y" [attr.x2]="SVG_W" [attr.y2]="tick.y" class="grid-line"/>
               }
+              <path [attr.d]="store.areaPath()" fill="url(#areaGrad)" class="area-fill"/>
+              <polyline [attr.points]="store.polylinePoints()" class="line-stroke"/>
+            </svg>
+            @for (pt of store.linePoints(); track pt.hour) {
+              <span class="data-dot" [style.left.%]="(pt.x / SVG_W) * 100" [style.top.%]="(pt.y / SVG_H) * 100"
+                    [title]="pt.hour + ' · ' + pt.value + '%'"></span>
             }
-          </svg>
+            <div class="line-chart__x">
+              @for (pt of store.linePoints(); track pt.hour; let i = $index) {
+                @if (i % 2 === 0 || i === store.linePoints().length - 1) {
+                  <span [style.left.%]="(pt.x / SVG_W) * 100">{{ pt.hour }}</span>
+                }
+              }
+            </div>
+          </div>
         </div>
       }
     </div>
@@ -132,8 +113,8 @@
         <div class="bar-chart-wrap">
           <div class="bar-chart">
             @for (bar of store.machineUsageBars(); track bar.name) {
-              <div class="bar-col" [title]="bar.name + ' · ' + bar.hours + 'h'">
-                <span class="bar-col__hours">{{ bar.hours }}h</span>
+              <div class="bar-col" [title]="bar.name + ' · ' + (bar.hours | number:'1.0-1') + 'h'">
+                <span class="bar-col__hours">{{ bar.hours | number:'1.0-1' }}h</span>
                 <div class="bar-col__track">
                   <div
                     class="bar-col__fill"

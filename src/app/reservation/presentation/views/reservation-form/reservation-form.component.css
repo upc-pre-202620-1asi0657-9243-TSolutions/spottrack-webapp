@@ -1,7 +1,8 @@
 .form-container {
-  background: #1e1e1e;
-  border: 1px solid #333;
-  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   overflow: hidden;
   max-width: 480px;
   width: 100%;
@@ -12,20 +13,20 @@
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid var(--border);
 
-  h2 { margin: 0; font-size: 1rem; font-weight: 700; color: #fff; }
+  h2 { margin: 0; font-size: 1rem; font-weight: 700; color: var(--text); }
 }
 
 .close-btn {
   background: transparent;
   border: none;
-  color: #9ca3af;
+  color: var(--text-muted);
   cursor: pointer;
   display: flex;
   align-items: center;
   mat-icon { font-size: 20px; width: 20px; height: 20px; }
-  &:hover { color: #fff; }
+  &:hover { color: var(--text); }
 }
 
 .form-body {
@@ -40,7 +41,7 @@
   flex-direction: column;
   gap: 8px;
 
-  label { font-size: 0.875rem; font-weight: 500; color: #9ca3af; }
+  label { font-size: 0.875rem; font-weight: 500; color: var(--text-muted); }
 }
 
 .form-select { width: 100%; }
@@ -49,32 +50,32 @@
   display: flex;
   gap: 12px;
   padding: 16px 24px;
-  border-top: 1px solid #333;
+  border-top: 1px solid var(--border);
   justify-content: flex-end;
 }
 
 .btn-cancel {
   padding: 10px 18px;
   border-radius: 8px;
-  background: transparent;
-  border: 1px solid #333;
-  color: #9ca3af;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  &:hover { border-color: #555; color: #fff; }
+  &:hover { background: var(--surface-hover); border-color: var(--border-strong); }
 }
 
 .btn-confirm {
   padding: 10px 18px;
   border-radius: 8px;
-  background: #f5bc36;
+  background: var(--accent);
   border: none;
-  color: #000;
+  color: var(--accent-contrast);
   font-size: 0.875rem;
   font-weight: 700;
   cursor: pointer;
 
   &:disabled { opacity: 0.4; cursor: not-allowed; }
-  &:not(:disabled):hover { opacity: 0.85; }
+  &:not(:disabled):hover { background: var(--accent-hover); }
 }

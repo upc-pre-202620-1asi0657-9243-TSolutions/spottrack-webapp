@@ -11,6 +11,7 @@ import { AuthStore } from '../../../../auth/application/auth.store';
 import { UserProfile } from '../user-profile/user-profile';
 import { AlertsService } from '../../../../alerts/application/alerts.service';
 import { ContextMenuComponent } from '../context-menu/context-menu.component';
+import { ThemeToggle } from '../theme-toggle/theme-toggle';
 
 @Component({
   selector: 'app-layout',
@@ -26,6 +27,7 @@ import { ContextMenuComponent } from '../context-menu/context-menu.component';
     TranslateModule,
     UserProfile,
     ContextMenuComponent,
+    ThemeToggle,
   ],
   templateUrl: './layout.html',
   styleUrl: './layout.css',

@@ -12,7 +12,7 @@
 }
 
 .gym-switcher__header-icon {
-  color: #4fc3f7;
+  color: var(--info);
   font-size: 20px;
   width: 20px;
   height: 20px;
@@ -22,7 +22,7 @@
   font-size: 15px;
   font-weight: 600;
   margin: 0;
-  color: #f0f0f0;
+  color: var(--text);
 }
 
 .gym-switcher__list {
@@ -40,13 +40,13 @@
   justify-content: space-between;
   padding: 10px 14px;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
   transition: border-color 0.2s;
 
   &--active {
-    border-color: #4fc3f7;
-    background: rgba(79, 195, 247, 0.08);
+    border-color: var(--info);
+    background: var(--info-soft);
   }
 }
 
@@ -60,16 +60,16 @@
   font-size: 18px;
   width: 18px;
   height: 18px;
-  color: #aaa;
+  color: var(--text-muted);
 
   .gym-switcher__item--active & {
-    color: #4fc3f7;
+    color: var(--info);
   }
 }
 
 .gym-switcher__item-name {
   font-size: 14px;
-  color: #e0e0e0;
+  color: var(--text);
 }
 
 .gym-switcher__badge {
@@ -77,19 +77,19 @@
   font-weight: 600;
   padding: 2px 8px;
   border-radius: 20px;
-  background: rgba(79, 195, 247, 0.18);
-  color: #4fc3f7;
+  background: var(--info-soft);
+  color: var(--info);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
 .gym-switcher__btn-switch {
   background: none;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid var(--border-strong);
   border-radius: 8px;
   padding: 4px 8px;
   cursor: pointer;
-  color: #aaa;
+  color: var(--text-muted);
   display: flex;
   align-items: center;
   transition: color 0.2s, border-color 0.2s;
@@ -101,8 +101,8 @@
   }
 
   &:hover {
-    color: #4fc3f7;
-    border-color: #4fc3f7;
+    color: var(--info);
+    border-color: var(--info);
   }
 }
 
@@ -111,11 +111,11 @@
   align-items: center;
   gap: 6px;
   background: none;
-  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border: 1px dashed var(--border-strong);
   border-radius: 10px;
   padding: 10px 14px;
   cursor: pointer;
-  color: #aaa;
+  color: var(--text-muted);
   font-size: 14px;
   width: 100%;
   transition: color 0.2s, border-color 0.2s;
@@ -127,8 +127,8 @@
   }
 
   &:hover {
-    color: #4fc3f7;
-    border-color: #4fc3f7;
+    color: var(--info);
+    border-color: var(--info);
   }
 }
 
@@ -138,8 +138,8 @@
   gap: 10px;
   padding: 12px;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
 }
 
 .gym-switcher__add-header {
@@ -151,7 +151,7 @@
 .gym-switcher__add-title {
   font-size: 13px;
   font-weight: 600;
-  color: #ccc;
+  color: var(--text-2);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -160,7 +160,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: #888;
+  color: var(--text-muted);
   display: flex;
   align-items: center;
   padding: 2px;
@@ -173,7 +173,7 @@
     height: 18px;
   }
 
-  &:hover { color: #e0e0e0; }
+  &:hover { color: var(--text); }
 }
 
 .gym-switcher__btn-join {
@@ -181,8 +181,8 @@
   font-weight: 500;
   padding: 5px 14px;
   border-radius: 8px;
-  background: #4fc3f7;
-  color: #000;
+  background: var(--info);
+  color: var(--surface); // light text on the blue fill in light mode, dark text in dark mode
   border: none;
   cursor: pointer;
   transition: opacity 0.2s;
@@ -201,9 +201,9 @@
   gap: 8px;
   padding: 10px 12px;
   border-radius: 8px;
-  background: rgba(229, 57, 53, 0.12);
-  border: 1px solid rgba(229, 57, 53, 0.3);
-  color: #ef9a9a;
+  background: var(--danger-soft);
+  border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent);
+  color: var(--danger);
   font-size: 13px;
 
   mat-icon {
@@ -222,12 +222,17 @@
 
 .gym-switcher__spinner {
   animation: spin 1s linear infinite;
-  color: #4fc3f7;
+  color: var(--info);
+}
+
+// Inside the blue join button, the spinner takes the button's text colour.
+.gym-switcher__btn-join .gym-switcher__spinner {
+  color: inherit;
 }
 
 .gym-switcher__empty {
   font-size: 13px;
-  color: #888;
+  color: var(--text-muted);
   margin: 0;
   text-align: center;
   padding: 8px 0;

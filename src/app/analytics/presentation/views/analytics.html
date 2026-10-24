@@ -183,21 +183,21 @@
         <svg viewBox="0 0 1160 200" preserveAspectRatio="none" class="line-svg">
           <defs>
             <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%"   stop-color="#fb2c36" stop-opacity="0.25"/>
-              <stop offset="100%" stop-color="#fb2c36" stop-opacity="0"/>
+              <stop offset="0%"   style="stop-color: var(--danger)" stop-opacity="0.25"/>
+              <stop offset="100%" style="stop-color: var(--danger)" stop-opacity="0"/>
             </linearGradient>
           </defs>
           @for (y of [0, 50, 100, 150, 200]; track y) {
-            <line [attr.x1]="0" [attr.x2]="1160" [attr.y1]="y" [attr.y2]="y" stroke="#333" stroke-width="1"/>
+            <line [attr.x1]="0" [attr.x2]="1160" [attr.y1]="y" [attr.y2]="y" style="stroke: var(--chart-grid)" stroke-width="1"/>
           }
           <line x1="0" x2="1160" [attr.y1]="threshold90Y" [attr.y2]="threshold90Y"
-                stroke="#fb2c36" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.7"/>
-          <text x="4" [attr.y]="threshold90Y - 4" fill="#fb2c36" font-size="10" opacity="0.8">90%</text>
+                style="stroke: var(--danger)" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.7"/>
+          <text x="4" [attr.y]="threshold90Y - 4" style="fill: var(--danger)" font-size="10" opacity="0.8">90%</text>
           <path [attr.d]="areaPath()" fill="url(#areaGrad)"/>
-          <polyline [attr.points]="polylinePoints()" fill="none" stroke="#fb2c36" stroke-width="2.5"
+          <polyline [attr.points]="polylinePoints()" fill="none" style="stroke: var(--danger)" stroke-width="2.5"
                     stroke-linejoin="round" stroke-linecap="round"/>
           @for (p of linePoints(); track p.hour) {
-            <circle [attr.cx]="p.x" [attr.cy]="p.y" r="4" fill="#fb2c36" stroke="#121212" stroke-width="2"/>
+            <circle [attr.cx]="p.x" [attr.cy]="p.y" r="4" style="fill: var(--danger); stroke: var(--surface)" stroke-width="2"/>
           }
         </svg>
         <div class="line-chart__x-axis">

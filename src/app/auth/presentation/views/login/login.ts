@@ -5,11 +5,12 @@ import { TranslateModule } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthStore } from '../../../application/auth.store';
 import { LanguageSwitcher } from '../../../../shared/presentation/components/language-switcher/language-switcher';
+import { ThemeToggle } from '../../../../shared/presentation/components/theme-toggle/theme-toggle';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, TranslateModule, MatIconModule, LanguageSwitcher, RouterLink],
+  imports: [FormsModule, TranslateModule, MatIconModule, LanguageSwitcher, RouterLink, ThemeToggle],
   templateUrl: './login.html',
   styleUrl:    './login.scss',
 })

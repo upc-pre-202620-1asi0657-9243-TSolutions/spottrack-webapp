@@ -4,11 +4,12 @@ import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule } from '@ngx-translate/core';
 import { PasswordStore } from '../../../application/password.store';
+import { ThemeToggle } from '../../../../shared/presentation/components/theme-toggle/theme-toggle';
 
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
-  imports: [FormsModule, RouterLink, MatIconModule, TranslateModule],
+  imports: [FormsModule, RouterLink, MatIconModule, TranslateModule, ThemeToggle],
   templateUrl: './forgot-password.html',
   styleUrl: './forgot-password.css',
 })

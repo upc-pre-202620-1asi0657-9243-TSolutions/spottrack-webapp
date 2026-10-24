@@ -350,7 +350,22 @@
     "reservations": "My Reservations",
     "profile": "My Profile",
     "financial": "Financial Impact",
-    "settings": "Settings"
+    "settings": "Settings",
+    "membership": "Membership",
+    "sections": {
+      "overview": "Overview",
+      "operations": "Operations",
+      "insights": "Insights",
+      "account": "Account"
+    },
+    "gymMenu": {
+      "branches": "{{count}} branches",
+      "yourGyms": "Your gyms",
+      "manageBranches": "Branches & zones",
+      "whitelist": "Member whitelist",
+      "addGym": "Add another gym"
+    },
+    "sensorsOnline": "{{online}} of {{total}} sensors online"
   },
   "monitoring": {
     "sensors": {
@@ -1042,6 +1057,10 @@
     }
   },
   "shared": {
+    "theme": {
+      "toLight": "Switch to light mode",
+      "toDark": "Switch to dark mode"
+    },
     "paginator": {
       "rowsPerPage": "Rows",
       "of": "of",

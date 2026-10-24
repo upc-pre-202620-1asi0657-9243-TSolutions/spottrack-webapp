@@ -1,12 +1,14 @@
-$bg-page:      #0f0f0f;
-$bg-card:      #1a1a1a;
-$bg-hover:     #252525;
-$border:       #2d2d2d;
-$text-primary: #f0f0f0;
-$text-muted:   #8a8a9a;
-$accent:       #f5bc36;
-$red:          #f43f5e;
-$green:        #22c55e;
+$bg-page:      var(--bg);
+$bg-card:      var(--surface);
+$bg-hover:     var(--surface-hover);
+$border:       var(--border);
+$text-primary: var(--text);
+$text-muted:   var(--text-muted);
+$text-faint:   var(--text-faint);
+$accent:       var(--accent);
+$accent-text:  var(--accent-text);
+$red:          var(--danger);
+$green:        var(--success);
 
 // ─── Page shell ──────────────────────────────────────────────────────────────
 .wl-page {
@@ -46,10 +48,10 @@ $green:        #22c55e;
   align-items: center;
   gap: 6px;
   padding: 6px 14px;
-  background: rgba($accent, 0.1);
-  border: 1px solid rgba($accent, 0.35);
+  background: var(--accent-soft);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
   border-radius: 20px;
-  color: $accent;
+  color: $accent-text;
   font-size: 13px;
   font-weight: 700;
   white-space: nowrap;
@@ -68,14 +70,15 @@ $green:        #22c55e;
 
   mat-icon { font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; }
 
-  &--error { background: rgba($red, 0.1); color: $red; }
+  &--error { background: var(--danger-soft); color: $red; }
 }
 
 // ─── Add DNI card ─────────────────────────────────────────────────────────────
 .wl-add-card {
   background: $bg-card;
   border: 1px solid $border;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -98,18 +101,18 @@ $green:        #22c55e;
 
 .wl-add-input {
   flex: 1;
-  background: $bg-page;
-  border: 1px solid $border;
+  background: $bg-card;
+  border: 1px solid var(--border-strong);
   border-radius: 8px;
   padding: 9px 14px;
   font-size: 14px;
   color: $text-primary;
-  font-family: 'Roboto Mono', monospace;
+  font-family: var(--font-mono);
   outline: none;
-  transition: border-color 0.15s;
+  transition: border-color 0.15s, box-shadow 0.15s;
 
-  &::placeholder { color: $text-muted; }
-  &:focus        { border-color: $accent; }
+  &::placeholder { color: $text-faint; }
+  &:focus        { border-color: $accent; box-shadow: var(--focus-ring); }
 }
 
 .btn-add {
@@ -118,18 +121,19 @@ $green:        #22c55e;
   gap: 6px;
   padding: 9px 18px;
   background: $accent;
-  color: #000;
+  color: var(--accent-contrast);
   font-size: 14px;
   font-weight: 700;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   white-space: nowrap;
-  transition: opacity 0.15s;
+  transition: background 0.15s;
 
   mat-icon { font-size: 18px; width: 18px; height: 18px; }
 
-  &:hover { opacity: 0.88; }
+  &:hover { background: var(--accent-hover); }
+  &:focus-visible { outline: none; box-shadow: var(--focus-ring); }
 }
 
 .wl-field-error {
@@ -148,7 +152,7 @@ $green:        #22c55e;
   font-size: 32px;
   width: 32px;
   height: 32px;
-  color: $accent;
+  color: $accent-text;
   animation: spin 1s linear infinite;
 }
 
@@ -174,14 +178,15 @@ $green:        #22c55e;
 .wl-card {
   background: $bg-card;
   border: 1px solid $border;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   overflow: hidden;
 }
 
 .wl-card__header {
   padding: 14px 20px;
   border-bottom: 1px solid $border;
-  background: rgba(255,255,255,0.02);
+  background: var(--surface-2);
 }
 
 .wl-count {
@@ -226,7 +231,7 @@ $green:        #22c55e;
 
 .wl-item__dni {
   font-size: 14px;
-  font-family: 'Roboto Mono', monospace;
+  font-family: var(--font-mono);
   font-weight: 600;
   color: $text-primary;
   letter-spacing: 0.05em;
@@ -248,7 +253,7 @@ $green:        #22c55e;
 
   mat-icon { font-size: 18px; width: 18px; height: 18px; }
 
-  &:hover { color: $red; background: rgba($red, 0.1); }
+  &:hover { color: $red; background: var(--danger-soft); }
 }
 
 // ─── Responsive ──────────────────────────────────────────────────────────────

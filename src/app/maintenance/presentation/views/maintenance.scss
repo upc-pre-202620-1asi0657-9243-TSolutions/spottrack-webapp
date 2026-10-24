@@ -1,14 +1,17 @@
-$bg-page:  #121212;
-$bg-card:  #1e1e1e;
-$bg-inner: #121212;
-$border:   #333333;
-$text:     #e0e0e0;
-$muted:    #9ca3af;
-$accent:   #f5bc36;
-$amber:    #f0b100;
-$red:      #fb2c36;
-$green:    #00c950;
-$blue:     #4fc3f7;
+$bg-page:  var(--bg);
+$bg-card:  var(--surface);
+$bg-inner: var(--surface-2);
+$border:   var(--border);
+$text:     var(--text);
+$heading:  var(--text);
+$muted:    var(--text-muted);
+$faint:    var(--text-faint);
+$accent:   var(--accent);
+$accent-text: var(--accent-text);
+$amber:    var(--warning);
+$red:      var(--danger);
+$green:    var(--success);
+$blue:     var(--info);
 
 // ── Page ─────────────────────────────────────────────────────────────────────
 .maint-page {
@@ -28,7 +31,7 @@ $blue:     #4fc3f7;
   justify-content: space-between;
 }
 
-.maint-title   { margin: 0; font-size: 1.875rem; font-weight: 700; color: #fff; }
+.maint-title   { margin: 0; font-size: 1.875rem; font-weight: 700; color: $heading; }
 .maint-subtitle { margin: 4px 0 0; color: $muted; font-size: 1rem; }
 
 .btn-new {
@@ -39,21 +42,23 @@ $blue:     #4fc3f7;
   background: $accent;
   border: none;
   border-radius: 6px;
-  color: #000;
+  color: var(--accent-contrast);
   font-weight: 700;
   font-size: 0.875rem;
   cursor: pointer;
-  transition: opacity .15s;
+  transition: background .15s;
 
   mat-icon { font-size: 16px; width: 16px; height: 16px; }
-  &:hover { opacity: .85; }
+  &:hover { background: var(--accent-hover); }
+  &:focus-visible { outline: none; box-shadow: var(--focus-ring); }
 }
 
 // ── New-ticket form card ──────────────────────────────────────────────────────
 .form-card {
   background: $bg-card;
   border: 1px solid $border;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   padding: 20px 24px;
 
   &__head {
@@ -63,7 +68,7 @@ $blue:     #4fc3f7;
     margin-bottom: 16px;
     font-size: 1rem;
     font-weight: 600;
-    color: #fff;
+    color: $heading;
   }
 }
 
@@ -74,15 +79,15 @@ $blue:     #4fc3f7;
   cursor: pointer;
   padding: 0;
   display: flex;
-  &:hover { color: #fff; }
+  &:hover { color: $text; }
 }
 
 .peak-banner {
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  background: rgba(251, 44, 54, .1);
-  border: 1px solid rgba(251, 44, 54, .35);
+  background: var(--danger-soft);
+  border: 1px solid color-mix(in srgb, var(--danger) 35%, transparent);
   border-radius: 8px;
   padding: 12px 14px;
   margin-bottom: 12px;
@@ -111,8 +116,8 @@ $blue:     #4fc3f7;
 }
 
 .chip {
-  background: rgba(0, 201, 80, .12);
-  border: 1px solid rgba(0, 201, 80, .4);
+  background: var(--success-soft);
+  border: 1px solid color-mix(in srgb, var(--success) 40%, transparent);
   border-radius: 20px;
   padding: 3px 14px;
   font-size: .8rem;
@@ -135,7 +140,7 @@ $blue:     #4fc3f7;
   ::ng-deep {
     .mdc-notched-outline__leading,
     .mdc-notched-outline__notch,
-    .mdc-notched-outline__trailing { border-color: $border !important; }
+    .mdc-notched-outline__trailing { border-color: var(--border-strong) !important; }
     .mat-mdc-floating-label, .mdc-floating-label { color: $muted !important; }
     .mat-mdc-select-value-text, .mdc-text-field input { color: $text !important; }
     .mat-mdc-select-arrow { color: $muted !important; }
@@ -157,13 +162,13 @@ $blue:     #4fc3f7;
 
 .btn-cancel {
   padding: 8px 20px;
-  background: transparent;
+  background: $bg-card;
   border: 1px solid $border;
   border-radius: 6px;
-  color: $muted;
+  color: $text;
   font-size: .875rem;
   cursor: pointer;
-  &:hover { border-color: #666; color: #fff; }
+  &:hover { background: var(--surface-hover); border-color: var(--border-strong); }
 }
 
 .btn-submit {
@@ -171,11 +176,11 @@ $blue:     #4fc3f7;
   background: $accent;
   border: none;
   border-radius: 6px;
-  color: #000;
+  color: var(--accent-contrast);
   font-weight: 700;
   font-size: .875rem;
   cursor: pointer;
-  &:hover:not(:disabled) { opacity: .85; }
+  &:hover:not(:disabled) { background: var(--accent-hover); }
   &:disabled { opacity: .4; cursor: not-allowed; }
 }
 
@@ -192,7 +197,8 @@ $blue:     #4fc3f7;
   justify-content: space-between;
   background: $bg-card;
   border: 1px solid $border;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   padding: 24px;
 }
 
@@ -201,7 +207,7 @@ $blue:     #4fc3f7;
   margin: 0;
   font-size: 1.875rem;
   font-weight: 700;
-  color: #fff;
+  color: $heading;
   &--amber { color: $amber; }
   &--green { color: $green; }
 }
@@ -221,7 +227,8 @@ $blue:     #4fc3f7;
   gap: 12px;
   background: $bg-card;
   border: 1px solid $border;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   padding: 12px 16px;
 }
 
@@ -245,7 +252,7 @@ $blue:     #4fc3f7;
 .search-input {
   width: 100%;
   background: $bg-card;
-  border: 1px solid $border;
+  border: 1px solid var(--border-strong);
   border-radius: 6px;
   padding: 6px 12px 6px 36px;
   color: $text;
@@ -253,8 +260,8 @@ $blue:     #4fc3f7;
   outline: none;
   box-sizing: border-box;
 
-  &::placeholder { color: $muted; }
-  &:focus { border-color: #555; }
+  &::placeholder { color: $faint; }
+  &:focus { border-color: $accent; box-shadow: var(--focus-ring); }
 }
 
 .filter-field {
@@ -264,7 +271,7 @@ $blue:     #4fc3f7;
   ::ng-deep {
     .mdc-notched-outline__leading,
     .mdc-notched-outline__notch,
-    .mdc-notched-outline__trailing { border-color: $border !important; }
+    .mdc-notched-outline__trailing { border-color: var(--border-strong) !important; }
     .mat-mdc-select-value-text { color: $text !important; font-size: .875rem; }
     .mat-mdc-select-arrow { color: $muted !important; }
     .mat-mdc-form-field-infix { padding-top: 6px !important; padding-bottom: 6px !important; min-height: unset; }
@@ -282,7 +289,8 @@ $blue:     #4fc3f7;
 .kanban-col {
   background: $bg-card;
   border: 1px solid $border;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   overflow: hidden;
 
   &__header {
@@ -297,7 +305,7 @@ $blue:     #4fc3f7;
   gap: 8px;
   font-size: 1rem;
   font-weight: 700;
-  color: #fff;
+  color: $heading;
 }
 
 .col-dot {
@@ -324,7 +332,7 @@ $blue:     #4fc3f7;
 
   &::-webkit-scrollbar { width: 4px; }
   &::-webkit-scrollbar-track { background: transparent; }
-  &::-webkit-scrollbar-thumb { background: #444; border-radius: 2px; }
+  &::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
 }
 
 // ── Ticket card ───────────────────────────────────────────────────────────────
@@ -338,7 +346,7 @@ $blue:     #4fc3f7;
   gap: 10px;
 
   &--in-progress {
-    border-color: rgba(240, 177, 0, .5);
+    border-color: color-mix(in srgb, var(--warning) 55%, transparent);
     border-width: 2px;
   }
 
@@ -363,7 +371,7 @@ $blue:     #4fc3f7;
 }
 
 .ticket-id {
-  font-family: 'Consolas', monospace;
+  font-family: var(--font-mono);
   font-size: .75rem;
   color: $muted;
 }
@@ -371,14 +379,14 @@ $blue:     #4fc3f7;
 .ticket-name {
   font-size: 1rem;
   font-weight: 700;
-  color: #fff;
+  color: $heading;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 
   &--done {
     text-decoration: line-through;
-    color: #999;
+    color: $faint;
   }
 }
 
@@ -430,10 +438,10 @@ $blue:     #4fc3f7;
   font-size: .75rem;
   font-weight: 700;
 
-  &--urgent { border: 1px solid $red;    color: $red;    background: rgba(251, 44, 54, .1); }
-  &--high   { border: 1px solid $red;    color: $red;    background: rgba(251, 44, 54, .1); }
-  &--medium { border: 1px solid $amber;  color: $amber;  background: rgba(240,177, 0, .1); }
-  &--low    { border: 1px solid #6b7280; color: #6b7280; background: rgba(107,114,128, .1); }
+  &--urgent { border: 1px solid $red;    color: $red;    background: var(--danger-soft); }
+  &--high   { border: 1px solid $red;    color: $red;    background: var(--danger-soft); }
+  &--medium { border: 1px solid $amber;  color: $amber;  background: var(--warning-soft); }
+  &--low    { border: 1px solid var(--border-strong); color: $muted; background: $bg-inner; }
 }
 
 // ── Action buttons ────────────────────────────────────────────────────────────
@@ -444,17 +452,17 @@ $blue:     #4fc3f7;
   gap: 6px;
   width: 100%;
   padding: 8px 0;
-  background: $amber;
+  background: $accent;
   border: none;
   border-radius: 6px;
-  color: #000;
+  color: var(--accent-contrast);
   font-weight: 700;
   font-size: .875rem;
   cursor: pointer;
-  transition: opacity .15s;
+  transition: background .15s;
 
   mat-icon { font-size: 16px; width: 16px; height: 16px; }
-  &:hover { opacity: .85; }
+  &:hover { background: var(--accent-hover); }
 }
 
 .btn-complete {
@@ -505,7 +513,7 @@ $blue:     #4fc3f7;
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, .65);
+  background: var(--overlay);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -516,6 +524,7 @@ $blue:     #4fc3f7;
   background: $bg-card;
   border: 1px solid $border;
   border-radius: 16px;
+  box-shadow: var(--shadow-lg);
   padding: 32px;
   width: 420px;
   max-width: 90vw;
@@ -537,20 +546,20 @@ $blue:     #4fc3f7;
   justify-content: center;
   padding: 4px;
   border-radius: 4px;
-  &:hover { color: #fff; }
+  &:hover { color: $text; background: var(--surface-hover); }
 }
 
 .modal__title {
   margin: 0 0 4px;
   font-size: 1.2rem;
   font-weight: 700;
-  color: #fff;
+  color: $heading;
 }
 
 .modal__subtitle {
   margin: 0 0 12px;
   color: $muted;
-  font-family: 'Consolas', monospace;
+  font-family: var(--font-mono);
   font-size: .85rem;
 }
 
@@ -572,8 +581,8 @@ $blue:     #4fc3f7;
 .modal__input,
 .modal__textarea {
   width: 100%;
-  background: $bg-inner;
-  border: 1px solid $border;
+  background: $bg-card;
+  border: 1px solid var(--border-strong);
   border-radius: 8px;
   padding: 10px 12px;
   color: $text;
@@ -583,8 +592,8 @@ $blue:     #4fc3f7;
   font-family: inherit;
   resize: vertical;
 
-  &::placeholder { color: $muted; }
-  &:focus { border-color: $accent; }
+  &::placeholder { color: $faint; }
+  &:focus { border-color: $accent; box-shadow: var(--focus-ring); }
 }
 
 .modal__error {
@@ -607,12 +616,13 @@ $blue:     #4fc3f7;
   font-weight: 700;
   cursor: pointer;
   border: none;
-  transition: opacity .15s;
+  transition: background .15s;
 
-  &--primary   { background: $accent; color: #000; }
-  &--secondary { background: transparent; color: $muted; border: 1px solid $border; }
+  &--primary   { background: $accent; color: var(--accent-contrast); }
+  &--secondary { background: $bg-card; color: $text; border: 1px solid $border; }
 
-  &:hover:not(:disabled) { opacity: .85; }
+  &--primary:hover:not(:disabled)   { background: var(--accent-hover); }
+  &--secondary:hover:not(:disabled) { background: var(--surface-hover); }
   &:disabled { opacity: .4; cursor: not-allowed; }
 }
 

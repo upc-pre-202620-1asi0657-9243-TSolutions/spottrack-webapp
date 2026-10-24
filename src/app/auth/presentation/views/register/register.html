@@ -1,10 +1,16 @@
 <div class="register-page">
+  <div class="auth-corner">
+    <app-theme-toggle></app-theme-toggle>
+  </div>
+
   <div class="register-card">
 
     <!-- Brand -->
     <div class="register-header">
       <div class="register-brand">
-        <img class="register-brand__logo" src="MOscuroSinBG.svg" alt="SpotTrack logo">
+        <span class="brand-logo-tile">
+          <img class="register-brand__logo" src="MOscuroSinBG.svg" alt="SpotTrack logo">
+        </span>
         <span class="register-brand__name">SpotTrack</span>
       </div>
       <h1 class="register-title">{{ 'auth.register.title' | translate }}</h1>

@@ -177,15 +177,15 @@ export class AnalyticsStore {
     const total = equips.length || 1;
 
     return [
-      { label: 'Cardio', pct: Math.round((counts.Cardio / total) * 100), color: '#f5bc36' },
-      { label: 'Fuerza', pct: Math.round((counts.Fuerza / total) * 100), color: '#00ccb2' },
-      { label: 'Pesas',  pct: Math.round((counts.Pesas  / total) * 100), color: '#22c55e' },
+      { label: 'Cardio', pct: Math.round((counts.Cardio / total) * 100), color: 'var(--accent)' },
+      { label: 'Fuerza', pct: Math.round((counts.Fuerza / total) * 100), color: 'var(--teal)' },
+      { label: 'Pesas',  pct: Math.round((counts.Pesas  / total) * 100), color: 'var(--success)' },
     ];
   });
 
   pieGradient(): string {
     let cur = 0;
-    if (this.machineTypes().every(t => t.pct === 0)) return '#2a2a2a 0% 100%';
+    if (this.machineTypes().every(t => t.pct === 0)) return 'var(--surface-3) 0% 100%';
     const types = this.machineTypes();
     return types.map((t, i) => {
       // Rounded percentages can sum to 99 or 101; the last slice always closes the circle.

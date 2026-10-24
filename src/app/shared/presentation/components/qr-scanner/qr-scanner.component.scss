@@ -1,17 +1,16 @@
-$bg-modal:    #1a1a1a;
-$bg-hover:    #252525;
-$border:      #2d2d2d;
-$text-primary: #f0f0f0;
-$text-muted:  #8a8a9a;
-$accent:      #f5bc36;
-$teal:        #14b8a6;
-$red:         #f43f5e;
+$bg-modal:    var(--surface);
+$bg-hover:    var(--surface-hover);
+$border:      var(--border);
+$text-primary: var(--text);
+$text-muted:  var(--text-muted);
+$accent:      var(--accent);
+$teal:        var(--teal);
+$red:         var(--danger);
 
 .scanner-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(6px);
+  background: var(--overlay);
   z-index: 1100;
   display: flex;
   align-items: center;
@@ -22,7 +21,8 @@ $red:         #f43f5e;
 .scanner-modal {
   background: $bg-modal;
   border: 1px solid $border;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
   width: 100%;
   max-width: 400px;
   display: flex;
@@ -77,7 +77,7 @@ $red:         #f43f5e;
   border-radius: 6px;
   transition: color 0.12s, background 0.12s;
 
-  &:hover { color: $text-primary; background: rgba(255,255,255,0.06); }
+  &:hover { color: $text-primary; background: $bg-hover; }
 
   mat-icon { font-size: 20px; height: 20px; width: 20px; }
 }
@@ -109,7 +109,7 @@ $red:         #f43f5e;
   &--active {
     color: $teal;
     border-bottom-color: $teal;
-    background: rgba($teal, 0.05);
+    background: color-mix(in srgb, #{$teal} 6%, transparent);
   }
 
   &:not(.tab-btn--active):hover { color: $text-primary; }
@@ -119,6 +119,7 @@ $red:         #f43f5e;
 .camera-container {
   width: 100%;
   min-height: 260px;
+  // Camera viewfinder: stays dark in both themes (it frames a video feed)
   background: #0a0a0a;
 
   // html5-qrcode injects its own video/canvas here
@@ -160,13 +161,13 @@ $red:         #f43f5e;
 
 .btn-start {
   background: $teal;
-  color: #000;
+  color: var(--surface);
 }
 
 .btn-stop {
-  background: rgba($red, 0.15);
+  background: var(--danger-soft);
   color: $red;
-  border: 1px solid rgba($red, 0.3);
+  border: 1px solid color-mix(in srgb, #{$red} 30%, transparent);
 }
 
 // ── File drop zone ───────────────────────────────────────────────────────────
@@ -199,7 +200,7 @@ $red:         #f43f5e;
   gap: 8px;
   padding: 10px 20px;
   background: $teal;
-  color: #000;
+  color: var(--surface);
   font-size: 13px;
   font-weight: 600;
   border-radius: 8px;
@@ -235,8 +236,8 @@ $red:         #f43f5e;
   gap: 8px;
   margin: 12px 20px 0;
   padding: 10px 14px;
-  background: rgba($red, 0.1);
-  border: 1px solid rgba($red, 0.25);
+  background: var(--danger-soft);
+  border: 1px solid color-mix(in srgb, #{$red} 25%, transparent);
   border-radius: 8px;
   color: $red;
   font-size: 13px;

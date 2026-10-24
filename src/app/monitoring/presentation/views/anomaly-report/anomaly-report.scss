@@ -1,10 +1,10 @@
-$bg-page:  #121212;
-$bg-card:  #1e1e1e;
-$border:   #333333;
-$text:     #e0e0e0;
-$muted:    #9ca3af;
-$accent:   #f5bc36;
-$red:      #fb2c36;
+$bg-page:  var(--bg);
+$bg-card:  var(--surface);
+$border:   var(--border);
+$text:     var(--text);
+$muted:    var(--text-muted);
+$accent:   var(--accent);
+$red:      var(--danger);
 
 .monitoring-page {
   padding: 24px;
@@ -25,10 +25,10 @@ $red:      #fb2c36;
   cursor: pointer;
   padding: 0 0 8px;
   display: inline-flex;
-  &:hover { color: #fff; }
+  &:hover { color: var(--text); }
 }
 
-.page-title { margin: 0; font-size: 1.875rem; font-weight: 700; color: #fff; }
+.page-title { margin: 0; font-size: 1.875rem; font-weight: 700; color: var(--text); }
 .page-subtitle { margin: 4px 0 0; color: $muted; font-size: 1rem; }
 
 .error-state {
@@ -37,8 +37,8 @@ $red:      #fb2c36;
   gap: 12px;
   padding: 16px;
   color: $red;
-  background: rgba(251, 44, 54, .08);
-  border: 1px solid rgba(251, 44, 54, .3);
+  background: var(--danger-soft);
+  border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent);
   border-radius: 8px;
 }
 
@@ -52,7 +52,8 @@ $red:      #fb2c36;
 .section-card {
   background: $bg-card;
   border: 1px solid $border;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -63,7 +64,7 @@ $red:      #fb2c36;
   display: flex;
   align-items: center;
   gap: 10px;
-  h2 { margin: 0; font-size: 1rem; font-weight: 700; color: #fff; }
+  h2 { margin: 0; font-size: 1rem; font-weight: 700; color: var(--text); }
   mat-icon { color: $muted; }
 }
 
@@ -76,7 +77,7 @@ $red:      #fb2c36;
   font-size: .8rem;
   font-weight: 700;
 }
-.count-badge--red { background: rgba(251, 44, 54, .12); color: $red; }
+.count-badge--red { background: var(--danger-soft); color: $red; }
 
 .empty-msg { color: $muted; font-size: .9rem; }
 
@@ -90,7 +91,7 @@ $red:      #fb2c36;
   ::ng-deep {
     .mdc-notched-outline__leading,
     .mdc-notched-outline__notch,
-    .mdc-notched-outline__trailing { border-color: $border !important; }
+    .mdc-notched-outline__trailing { border-color: var(--border-strong) !important; }
     .mat-mdc-floating-label, .mdc-floating-label { color: $muted !important; }
     .mat-mdc-select-value-text, .mdc-text-field input, textarea { color: $text !important; }
     .mdc-text-field--focused .mdc-notched-outline__leading,
@@ -105,18 +106,19 @@ $red:      #fb2c36;
   background: $accent;
   border: none;
   border-radius: 6px;
-  color: #000;
+  color: var(--accent-contrast);
   font-weight: 700;
   font-size: .875rem;
   cursor: pointer;
-  &:hover:not(:disabled) { opacity: .85; }
+  transition: background-color .15s;
+  &:hover:not(:disabled) { background: var(--accent-hover); }
   &:disabled { opacity: .4; cursor: not-allowed; }
 }
 
 .reports-list { display: flex; flex-direction: column; gap: 10px; }
 
 .report-row {
-  background: #2a2a2a;
+  background: var(--surface-2);
   border-left: 3px solid $red;
   border-radius: 8px;
   padding: 12px 14px;
@@ -135,7 +137,7 @@ $red:      #fb2c36;
   margin-left: auto;
   font-size: .75rem;
   color: $muted;
-  background: #333;
+  background: var(--surface-3);
   padding: 3px 10px;
   border-radius: 6px;
 }

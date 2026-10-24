@@ -1,9 +1,105 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Design tokens
+   Flat surfaces, hairline borders and one accent (brand amber), in the spirit
+   of Stripe / cloud consoles. Components use these variables only, so the
+   light and dark themes below are the single place colours are defined.
+   The theme is chosen by data-theme on <html> (see ThemeService).
+═══════════════════════════════════════════════════════════════════════════ */
+:root,
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --bg:             #f6f8fa;
+  --surface:        #ffffff;
+  --surface-2:      #f6f8fa;
+  --surface-3:      #eef1f5;
+  --surface-hover:  #f0f3f7;
+  --border:         #e3e8ee;
+  --border-strong:  #cfd7e0;
+
+  --text:           #1a1f36;
+  --text-2:         #3c4257;
+  --text-muted:     #697386;
+  --text-faint:     #a3acb9;
+
+  --accent:          #f5bc36;
+  --accent-hover:    #e8ad22;
+  --accent-contrast: #1a1f36;
+  --accent-text:     #8a5a00;
+  --accent-soft:     rgba(245, 188, 54, 0.16);
+
+  --success:      #1a7f37;
+  --success-soft: #dafbe1;
+  --danger:       #cf222e;
+  --danger-soft:  #ffebe9;
+  --warning:      #9a6700;
+  --warning-soft: #fff8c5;
+  --info:         #0969da;
+  --info-soft:    #ddf4ff;
+  --teal:         #0a8f80;
+
+  --chart-grid:   #e8edf2;
+  --overlay:      rgba(26, 31, 54, 0.45);
+  --shadow-sm:    0 1px 2px rgba(16, 24, 40, 0.06);
+  --shadow-md:    0 4px 12px rgba(16, 24, 40, 0.08), 0 1px 3px rgba(16, 24, 40, 0.06);
+  --shadow-lg:    0 12px 32px rgba(16, 24, 40, 0.14);
+  --focus-ring:   0 0 0 3px rgba(245, 188, 54, 0.35);
+
+  --radius-sm: 6px;
+  --radius:    8px;
+  --radius-lg: 12px;
+
+  --font-sans: 'Inter', 'Roboto', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --bg:             #0e1117;
+  --surface:        #161b22;
+  --surface-2:      #1c2128;
+  --surface-3:      #22272e;
+  --surface-hover:  #1f252d;
+  --border:         #2d333b;
+  --border-strong:  #3d444d;
+
+  --text:           #e6edf3;
+  --text-2:         #c9d1d9;
+  --text-muted:     #8b949e;
+  --text-faint:     #6e7681;
+
+  --accent:          #f5bc36;
+  --accent-hover:    #ffcb52;
+  --accent-contrast: #161b22;
+  --accent-text:     #f5bc36;
+  --accent-soft:     rgba(245, 188, 54, 0.14);
+
+  --success:      #3fb950;
+  --success-soft: rgba(63, 185, 80, 0.15);
+  --danger:       #f85149;
+  --danger-soft:  rgba(248, 81, 73, 0.15);
+  --warning:      #d29922;
+  --warning-soft: rgba(210, 153, 34, 0.15);
+  --info:         #58a6ff;
+  --info-soft:    rgba(88, 166, 255, 0.15);
+  --teal:         #2dd4bf;
+
+  --chart-grid:   #262c34;
+  --overlay:      rgba(1, 4, 9, 0.65);
+  --shadow-sm:    none;
+  --shadow-md:    0 4px 12px rgba(1, 4, 9, 0.4);
+  --shadow-lg:    0 12px 32px rgba(1, 4, 9, 0.55);
+  --focus-ring:   0 0 0 3px rgba(245, 188, 54, 0.3);
+}
+
 html, body {
   margin: 0;
   height: 100%;
-  background: #0d0d0d;
-  /* Prevent Material's light-theme typography from inheriting dark text into dark cards */
-  color: #e0e0e0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }
 
 app-root,
@@ -17,40 +113,55 @@ app-layout {
   z-index: 2001 !important;
 }
 
-/* Mat-select panel dark theme */
-.mat-mdc-select-panel {
-  background: #1e1e1e !important;
+/* ── Material overlays & controls follow the tokens ─────────────────────── */
+.mat-mdc-select-panel,
+.mat-mdc-menu-panel,
+.mat-datepicker-content {
+  background: var(--surface) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md) !important;
 }
 
-.mat-mdc-option {
-  color: #fff !important;
+.mat-mdc-option,
+.mat-mdc-menu-item {
+  color: var(--text) !important;
 }
 
-.mat-mdc-option:hover:not(.mdc-list-item--disabled) {
-  background: #2a2a2a !important;
+.mat-mdc-option:hover:not(.mdc-list-item--disabled),
+.mat-mdc-menu-item:hover:not([disabled]) {
+  background: var(--surface-hover) !important;
 }
 
-/* Input text color for Material 3 (MDC) */
+.mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+  background: var(--accent-soft) !important;
+}
+
 .mdc-text-field__input {
-  color: #fff !important;
-  caret-color: #fff !important;
+  color: var(--text) !important;
+  caret-color: var(--accent) !important;
 }
 
-/* Mat-table dark theme — MDC resets cell color to near-black by default */
+/* Mat-table — MDC resets cell colours, so restate them */
+.mat-mdc-table {
+  background: var(--surface) !important;
+}
+
 .mat-mdc-header-cell,
 .mdc-data-table__header-cell {
-  color: #aaa !important;
-  border-bottom-color: #2a2a2a !important;
+  color: var(--text-muted) !important;
+  background: var(--surface-2);
+  border-bottom-color: var(--border) !important;
 }
 
 .mat-mdc-cell,
 .mdc-data-table__cell {
-  color: #e0e0e0 !important;
-  border-bottom-color: #2a2a2a !important;
+  color: var(--text) !important;
+  border-bottom-color: var(--border) !important;
 }
 
 .mat-mdc-no-data-row td {
-  color: #aaa !important;
+  color: var(--text-muted) !important;
 }
 
 /* mat-select trigger text — component CSS can't pierce mat-select's encapsulation */
@@ -58,76 +169,66 @@ app-layout {
 .booking-select .mat-mdc-select-value,
 .form-select .mat-mdc-select-trigger,
 .form-select .mat-mdc-select-value {
-  color: #fff !important;
+  color: var(--text) !important;
 }
 
 .booking-select .mat-mdc-select-placeholder,
 .form-select .mat-mdc-select-placeholder {
-  color: #6b7280 !important;
+  color: var(--text-faint) !important;
 }
 
 .booking-select .mat-mdc-select-arrow,
 .form-select .mat-mdc-select-arrow {
-  color: #9ca3af !important;
+  color: var(--text-muted) !important;
 }
 
-/* Booking modal select panel */
-.booking-select-panel {
-  background: #1a1a1a !important;
-}
-
-.booking-select-panel .mat-mdc-option {
-  color: #fff !important;
-}
-
-.booking-select-panel .mat-mdc-option:hover:not(.mdc-list-item--disabled) {
-  background: rgba(245, 197, 24, 0.12) !important;
-}
-
-.booking-select-panel .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
-  background: #f5c518 !important;
-}
-
-.booking-select-panel .mat-mdc-option.mdc-list-item--selected .mdc-list-item__primary-text {
-  color: #000 !important;
-  font-weight: 600;
-}
-
-/* Routine modal select panel */
+/* Booking & routine modal select panels */
+.booking-select-panel,
 .routine-select-panel {
-  background: #1a1a1a !important;
+  background: var(--surface) !important;
 }
 
+.booking-select-panel .mat-mdc-option,
 .routine-select-panel .mat-mdc-option {
-  color: #fff !important;
+  color: var(--text) !important;
 }
 
+.booking-select-panel .mat-mdc-option:hover:not(.mdc-list-item--disabled),
 .routine-select-panel .mat-mdc-option:hover:not(.mdc-list-item--disabled) {
-  background: rgba(245, 197, 24, 0.12) !important;
+  background: var(--accent-soft) !important;
 }
 
+.booking-select-panel .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled),
 .routine-select-panel .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
-  background: #f5c518 !important;
+  background: var(--accent) !important;
 }
 
+.booking-select-panel .mat-mdc-option.mdc-list-item--selected .mdc-list-item__primary-text,
 .routine-select-panel .mat-mdc-option.mdc-list-item--selected .mdc-list-item__primary-text {
-  color: #000 !important;
+  color: var(--accent-contrast) !important;
   font-weight: 600;
 }
 
 /* Routine creation snackbar */
 .routine-snackbar {
-  background-color: #1e1e1e !important;
-  color: #ffffff !important;
-  border: 1px solid #f5c518 !important;
-  border-radius: 10px !important;
+  background-color: var(--surface) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--accent) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: var(--shadow-lg) !important;
 }
 
 .routine-snackbar .mat-mdc-snack-bar-label {
-  color: #ffffff !important;
+  color: var(--text) !important;
 }
 
 .routine-snackbar .mat-mdc-button {
-  color: #f5c518 !important;
+  color: var(--accent-text) !important;
   font-weight: 700;
+}
+
+/* Thin, theme-aware scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
 }
