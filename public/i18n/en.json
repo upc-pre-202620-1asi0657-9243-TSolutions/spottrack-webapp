@@ -618,7 +618,10 @@
         "inventory": "Spare Parts Inventory"
       },
       "roiProjection": {
-        "title": "ROI Projection – New Machine"
+        "title": "ROI Projection – New Machine",
+      "breakEven": "Break-even",
+      "noBreakEven": "No break-even within 8 months",
+      "month": "Month"
       },
       "simulator": {
         "title": "Return on Investment (ROI) Simulator",

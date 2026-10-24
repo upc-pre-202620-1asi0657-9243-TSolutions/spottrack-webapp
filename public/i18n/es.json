@@ -618,7 +618,10 @@
         "inventory": "Inventario de Repuestos"
       },
       "roiProjection": {
-        "title": "Proyección de ROI – Nueva Máquina"
+        "title": "Proyección de ROI – Nueva Máquina",
+      "breakEven": "Punto de equilibrio",
+      "noBreakEven": "Sin punto de equilibrio en 8 meses",
+      "month": "Mes"
       },
       "simulator": {
         "title": "Simulador de Retorno de Inversión (ROI)",

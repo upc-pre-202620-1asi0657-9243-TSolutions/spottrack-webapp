@@ -144,39 +144,35 @@
   <div class="chart-card chart-card--full">
     <div class="chart-card__header">
       <span class="chart-card__title">{{ 'financialImpact.roiProjection.title' | translate }}</span>
+      <span class="roi-break-even" [class.roi-break-even--none]="!breakEvenMonth()">
+        @if (breakEvenMonth(); as month) {
+          {{ 'financialImpact.roiProjection.breakEven' | translate }}: {{ month }}
+        } @else {
+          {{ 'financialImpact.roiProjection.noBreakEven' | translate }}
+        }
+      </span>
     </div>
 
-    <div class="roi-bar-chart">
-      <div class="bar-chart__y-axis">
-        @for (label of roiYAxisLabels; track label) {
-          <span>{{ label }}</span>
-        }
-      </div>
-      <div class="roi-plot">
-        <div class="bar-chart__grid">
-          @for (l of gridLines; track $index) {
-            <div class="grid-line"></div>
-          }
-        </div>
-        <div class="roi-zero-line" [style.bottom]="roiZeroLinePct()"></div>
-        <div class="bar-chart__bars bar-chart__bars--roi">
-          @for (m of roiProjectionData(); track m.month) {
-            <div class="bar-group">
-              <div class="bar-group__bars bar-group__bars--roi">
-                <div class="bar bar--roi"
-                     [class.bar--roi-pos]="m.cumulative >= 0"
-                     [class.bar--roi-neg]="m.cumulative < 0"
-                     [style.height]="roiBarHeight(m.cumulative)"
-                     [style.bottom]="roiBarBottom(m.cumulative)"
-                     [title]="'$' + m.cumulative">
-                </div>
-              </div>
-              <span class="bar-label">{{ m.month }}</span>
-            </div>
-          }
-        </div>
-      </div>
-    </div>
+    <svg class="roi-svg" [attr.viewBox]="'0 0 ' + ROI_W + ' ' + ROI_H" role="img"
+         [attr.aria-label]="'financialImpact.roiProjection.title' | translate">
+      @for (tick of roiScale().ticks; track tick.value) {
+        <line [attr.x1]="ROI_LEFT" [attr.x2]="ROI_W" [attr.y1]="tick.y" [attr.y2]="tick.y"
+              class="roi-svg__grid" [class.roi-svg__grid--zero]="tick.value === 0" />
+        <text [attr.x]="ROI_LEFT - 8" [attr.y]="tick.y + 4" class="roi-svg__axis" text-anchor="end">{{ tick.label }}</text>
+      }
+      @for (bar of roiBars(); track bar.month) {
+        <rect [attr.x]="bar.x" [attr.y]="bar.y" [attr.width]="roiBarWidth()" [attr.height]="bar.height" rx="3"
+              [class]="bar.cumulative >= 0 ? 'roi-svg__bar roi-svg__bar--pos' : 'roi-svg__bar roi-svg__bar--neg'">
+          <title>{{ bar.month }}: {{ formatMoney(bar.cumulative) }}</title>
+        </rect>
+        <text [attr.x]="bar.x + roiBarWidth() / 2" [attr.y]="bar.labelY" class="roi-svg__value" text-anchor="middle">
+          {{ formatMoney(bar.cumulative) }}
+        </text>
+        <text [attr.x]="bar.x + roiBarWidth() / 2" [attr.y]="roiScale().baseY + 20" class="roi-svg__axis" text-anchor="middle">
+          {{ bar.month }}
+        </text>
+      }
+    </svg>
   </div>
 
   <!-- ── ROI Simulator ──────────────────────────────────────────────────────── -->

@@ -9,6 +9,10 @@ import { PaginatorComponent, paginate } from '../../../../shared/presentation/co
 
 interface RoiMonth { month: string; cumulative: number; }
 
+interface RoiBar extends RoiMonth { x: number; y: number; height: number; labelY: number; }
+
+interface RoiTick { value: number; y: number; label: string; }
+
 const ROI_MONTHS_LABELS = ['Mes 1', 'Mes 2', 'Mes 3', 'Mes 4', 'Mes 5', 'Mes 6', 'Mes 7', 'Mes 8'];
 
 @Component({
@@ -64,31 +68,57 @@ export class FinancialImpactComponent implements OnInit {
     }));
   });
 
-  readonly roiYAxisLabels = ['6000', '3000', '0', '-3000', '-6000'];
-  readonly gridLines      = new Array(7);
+  // ── ROI chart geometry (SVG user units) ────────────────────────────────
+  // The axis is derived from the data, so a bar's height is always its exact
+  // cumulative value; the old fixed ±6000 axis clipped anything larger.
+  readonly ROI_W = 800;
+  readonly ROI_H = 280;
+  readonly ROI_LEFT = 64;
+  private readonly ROI_TOP = 24;
+  private readonly ROI_BOTTOM = 32;
 
-  private readonly ROI_MIN   = -6000;
-  private readonly ROI_MAX   =  6000;
-  private readonly ROI_RANGE =  12000;
+  readonly roiScale = computed(() => {
+    const values = this.roiProjectionData().map(m => m.cumulative);
+    const min = Math.min(0, ...values);
+    const max = Math.max(0, ...values);
+    const step = niceStep((max - min) / 4 || 1);
+    let lo = Math.floor(min / step) * step;
+    let hi = Math.ceil(max / step) * step || step;
+    // Leave room for the value labels drawn past the end of the tallest bars.
+    if (min < 0 && min - lo < step * 0.3) lo -= step;
+    if (max > 0 && hi - max < step * 0.3) hi += step;
+    const plotH = this.ROI_H - this.ROI_TOP - this.ROI_BOTTOM;
+    const y = (v: number) => this.ROI_TOP + ((hi - v) / (hi - lo)) * plotH;
+    const ticks: RoiTick[] = [];
+    for (let v = lo; v <= hi + step / 2; v += step) {
+      ticks.push({ value: v, y: y(v), label: formatMoney(v) });
+    }
+    return { y, ticks, zeroY: y(0), baseY: this.ROI_H - this.ROI_BOTTOM };
+  });
 
-  roiZeroLinePct(): string {
-    return `${((0 - this.ROI_MIN) / this.ROI_RANGE) * 100}%`;
-  }
+  readonly roiBars = computed((): RoiBar[] => {
+    const data = this.roiProjectionData();
+    const { y, zeroY } = this.roiScale();
+    const slot = (this.ROI_W - this.ROI_LEFT) / data.length;
+    return data.map((m, i) => {
+      const top = Math.min(y(m.cumulative), zeroY);
+      const height = Math.max(Math.abs(y(m.cumulative) - zeroY), 1);
+      return {
+        ...m,
+        x: this.ROI_LEFT + i * slot + slot * 0.18,
+        y: top,
+        height,
+        labelY: m.cumulative >= 0 ? top - 6 : top + height + 14,
+      };
+    });
+  });
 
-  private clampRoi(value: number): number {
-    return Math.max(this.ROI_MIN, Math.min(this.ROI_MAX, value));
-  }
+  readonly roiBarWidth = computed(() => ((this.ROI_W - this.ROI_LEFT) / this.roiProjectionData().length) * 0.64);
 
-  roiBarHeight(value: number): string {
-    const clamped = this.clampRoi(value);
-    return `${(Math.abs(clamped) / this.ROI_RANGE) * 100}%`;
-  }
+  /** First month whose cumulative return is no longer negative, or null if it never gets there. */
+  readonly breakEvenMonth = computed(() => this.roiProjectionData().find(m => m.cumulative >= 0)?.month ?? null);
 
-  roiBarBottom(value: number): string {
-    const clamped = this.clampRoi(value);
-    const pct = (Math.min(clamped, 0) - this.ROI_MIN) / this.ROI_RANGE * 100;
-    return `${pct}%`;
-  }
+  formatMoney(value: number): string { return formatMoney(value); }
 
   calculateRoi(): void {
     this.simMachineCost.set(this.pendingMachineCost());
@@ -148,4 +178,17 @@ export class FinancialImpactComponent implements OnInit {
       { label: 'Export CSV',   icon: 'download',     action: () => this.exportCsv() },
     ];
   }
+}
+
+/** Rounds a raw axis step up to 1, 2 or 5 × a power of ten, so ticks land on readable values. */
+function niceStep(raw: number): number {
+  const magnitude = Math.pow(10, Math.floor(Math.log10(raw)));
+  const fraction = raw / magnitude;
+  return (fraction <= 1 ? 1 : fraction <= 2 ? 2 : fraction <= 5 ? 5 : 10) * magnitude;
+}
+
+function formatMoney(value: number): string {
+  const abs = Math.abs(value);
+  const text = abs >= 1000 ? `${Math.round(abs / 100) / 10}k` : `${Math.round(abs)}`;
+  return `${value < 0 ? '-' : ''}$${text}`;
 }
