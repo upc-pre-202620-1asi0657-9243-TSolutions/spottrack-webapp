@@ -21,7 +21,7 @@
   <!-- ── Filters ────────────────────────────────────────────────────────── -->
   <div class="filters-bar">
 
-    <mat-form-field appearance="outline" class="filter-field">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-field">
       <mat-label>{{ 'analytics.filters.period.label' | translate }}</mat-label>
       <mat-select [value]="selectedPeriod()" (valueChange)="selectedPeriod.set($event)">
         <mat-option value="month">{{ 'analytics.filters.period.month' | translate }}</mat-option>
@@ -30,7 +30,7 @@
       </mat-select>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="filter-field">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filter-field">
       <mat-label>{{ 'analytics.filters.branch.label' | translate }}</mat-label>
       <mat-select [value]="selectedBranch()" (valueChange)="selectedBranch.set($event)">
         <mat-option value="all">{{ 'analytics.filters.branch.all' | translate }}</mat-option>
@@ -38,7 +38,7 @@
       </mat-select>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="filter-field filter-field--date">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" floatLabel="always" class="filter-field filter-field--date">
       <mat-label>{{ 'analytics.filters.customRange' | translate }}</mat-label>
       <mat-date-range-input [formGroup]="dateRange" [rangePicker]="picker" separator="→">
         <input matStartDate formControlName="start" [placeholder]="'analytics.filters.dateStart' | translate">
