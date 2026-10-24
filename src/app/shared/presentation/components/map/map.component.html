@@ -278,11 +278,11 @@
 
                 <div class="gym-card-stats">
                   <div class="gym-stat gym-stat--green">
-                    <span class="gym-stat-dot" style="background:#4caf50"></span>
+                    <span class="gym-stat-dot" style="background: var(--success)"></span>
                     <span>{{ branchAvailable(branch.branchId) }} {{ 'map.stats.free' | translate }}</span>
                   </div>
                   <div class="gym-stat gym-stat--red">
-                    <span class="gym-stat-dot" style="background:#f44336"></span>
+                    <span class="gym-stat-dot" style="background: var(--danger)"></span>
                     <span>{{ branchInUse(branch.branchId) }} {{ 'map.stats.inUse' | translate }}</span>
                   </div>
                 </div>
