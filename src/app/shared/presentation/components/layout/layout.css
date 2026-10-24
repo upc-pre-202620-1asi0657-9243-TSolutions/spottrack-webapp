@@ -1,70 +1,7 @@
 .shell {
   display: flex;
   height: 100vh;
-  background: #0d0d0d;
-}
-
-/* ── Background ambient orbs ─────────────────────────────── */
-.bg-orbs {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  overflow: hidden;
-}
-
-.orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(100px);
-}
-
-.orb-1 {
-  width: 700px;
-  height: 700px;
-  background: rgba(245, 188, 54, 0.14);
-  top: -180px;
-  left: -120px;
-  animation: orb-drift-1 22s ease-in-out infinite alternate;
-}
-
-.orb-2 {
-  width: 550px;
-  height: 550px;
-  background: rgba(245, 188, 54, 0.10);
-  bottom: -140px;
-  right: -100px;
-  animation: orb-drift-2 28s ease-in-out infinite alternate;
-  animation-delay: -12s;
-}
-
-.orb-3 {
-  width: 420px;
-  height: 420px;
-  background: rgba(245, 188, 54, 0.07);
-  top: 45%;
-  left: 48%;
-  animation: orb-drift-3 19s ease-in-out infinite alternate;
-  animation-delay: -6s;
-}
-
-@keyframes orb-drift-1 {
-  0%   { transform: translate(0, 0); }
-  50%  { transform: translate(90px, 70px); }
-  100% { transform: translate(-50px, 140px); }
-}
-
-@keyframes orb-drift-2 {
-  0%   { transform: translate(0, 0); }
-  50%  { transform: translate(-70px, -90px); }
-  100% { transform: translate(50px, -130px); }
-}
-
-@keyframes orb-drift-3 {
-  0%   { transform: translate(-50%, -50%); }
-  33%  { transform: translate(calc(-50% + 70px), calc(-50% - 50px)); }
-  66%  { transform: translate(calc(-50% - 50px), calc(-50% + 90px)); }
-  100% { transform: translate(-50%, calc(-50% + 40px)); }
+  background: var(--bg);
 }
 
 .shell__body {
@@ -72,77 +9,52 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-width: 0;
 }
 
 .shell__topbar {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 16px;
-  padding: 0 16px;
-  height: 52px;
-  background: #1e1e1e;
-  border-bottom: 1px solid #333;
+  gap: 12px;
+  padding: 0 20px;
+  height: 56px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.topbar__spacer {
+  flex-grow: 1;
+}
+
+.topbar__icon-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+
+.topbar__icon-link:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+
+.topbar__icon-link mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
 }
 
 .shell__content {
   flex: 1;
   overflow-y: auto;
-}
-
-/* User info in topbar */
-.topbar__user {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding-left: 12px;
-  border-left: 1px solid #333;
-}
-
-.topbar__user-icon {
-  font-size: 28px;
-  width: 28px;
-  height: 28px;
-  color: #9ca3af;
-}
-
-.topbar__user-info {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.2;
-}
-
-.topbar__user-name {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #fff;
-}
-
-.topbar__user-role {
-  font-size: 0.7rem;
-  color: #f5bc36;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.topbar__logout {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: none;
-  color: #9ca3af;
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 6px;
-  transition: color 0.15s, background 0.15s;
-
-  mat-icon { font-size: 20px; width: 20px; height: 20px; }
-}
-
-.topbar__logout:hover {
-  color: #ef4444;
-  background: rgba(239, 68, 68, 0.1);
+  background: var(--bg);
 }
 
 .shell.is-client .shell__body {
@@ -156,15 +68,15 @@
   justify-content: center;
   background: transparent;
   border: none;
-  color: #e0e0e0;
+  color: var(--text);
   cursor: pointer;
   padding: 4px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   transition: background 0.15s;
   flex-shrink: 0;
 }
 
-.topbar__hamburger:hover { background: #2a2a2a; }
+.topbar__hamburger:hover { background: var(--surface-hover); }
 
 .topbar__hamburger mat-icon {
   font-size: 24px;
@@ -177,7 +89,7 @@
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: var(--overlay);
   z-index: 199;
 }
 
@@ -192,7 +104,7 @@
 
 /* ── Small phones (≤ 480px) ─────────────────────────── */
 @media (max-width: 480px) {
-  .shell__topbar { gap: 6px; padding: 0 10px; height: 48px; }
+  .shell__topbar { gap: 6px; padding: 0 10px; height: 52px; }
 
   .shell.is-client .shell__body { padding-bottom: 60px; }
 }

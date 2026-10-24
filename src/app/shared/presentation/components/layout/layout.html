@@ -1,11 +1,5 @@
 <div class="shell" [class.is-client]="currentRole === 'client'" [class.sidebar-open]="sidebarOpen">
 
-  <div class="bg-orbs" aria-hidden="true">
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
-  </div>
-
   @if (currentRole === 'admin') {
     <app-sidebar [role]="currentRole" [open]="sidebarOpen" (linkClicked)="closeSidebar()"></app-sidebar>
     <div class="sidebar-overlay" (click)="closeSidebar()"></div>
@@ -18,9 +12,10 @@
           <mat-icon>menu</mat-icon>
         </button>
       }
-      <div style="flex-grow: 1;"></div>
+      <div class="topbar__spacer"></div>
 
-      <a routerLink="/alerts" style="display: flex; align-items: center; color: inherit; text-decoration: none;" [title]="'nav.alerts' | translate">
+      <app-theme-toggle></app-theme-toggle>
+      <a routerLink="/alerts" class="topbar__icon-link" [title]="'nav.alerts' | translate">
         <mat-icon
           [matBadge]="unreadCount()"
           [matBadgeHidden]="unreadCount() === 0"

@@ -1,48 +1,64 @@
 .sidebar {
-  width: 220px;
-  min-width: 220px;
+  width: 232px;
+  min-width: 232px;
   height: 100vh;
-  background: #1a1a1a;
-  border-right: 1px solid #2a2a2a;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
 }
 
 .sidebar__brand {
-  height: 52px;
+  height: 56px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 0 20px;
-  border-bottom: 1px solid #2a2a2a;
+  gap: 10px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
 }
 
-.sidebar__brand img {
-  height: 28px;
-  width: auto;
+.sidebar__logo-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  background: #161b22;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.sidebar__logo-tile img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
 }
 
 .sidebar__brand-text {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 700;
-  color: #fff;
-  letter-spacing: 0.05em;
+  color: var(--text);
+  letter-spacing: -0.01em;
 }
 
 .sidebar__nav {
   display: flex;
   flex-direction: column;
-  padding: 12px 8px;
+  padding: 12px 10px;
   gap: 2px;
+  overflow-y: auto;
 }
 
 .sidebar__item {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  color: #aaa;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  color: var(--text-2);
   text-decoration: none;
   font-size: 0.875rem;
   font-weight: 500;
@@ -50,23 +66,37 @@
 }
 
 .sidebar__item:hover {
-  background: #2a2a2a;
-  color: #fff;
+  background: var(--surface-hover);
+  color: var(--text);
 }
 
 .sidebar__item--active {
-  background: #f5c518;
-  color: #1a1a1a;
+  background: var(--accent-soft);
+  color: var(--text);
+  font-weight: 600;
 }
 
-.sidebar__item--active .sidebar__icon {
-  color: #1a1a1a;
+.sidebar__item--active::before {
+  content: '';
+  position: absolute;
+  left: -10px;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--accent);
 }
 
 .sidebar__icon {
   font-size: 20px;
   width: 20px;
   height: 20px;
+  color: var(--text-muted);
+}
+
+.sidebar__item:hover .sidebar__icon,
+.sidebar__item--active .sidebar__icon {
+  color: var(--accent-text);
 }
 
 /* ── Mobile drawer ──────────────────────────────────── */
@@ -83,6 +113,6 @@
 
   :host.open .sidebar {
     transform: translateX(0);
-    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.5);
+    box-shadow: var(--shadow-lg);
   }
 }

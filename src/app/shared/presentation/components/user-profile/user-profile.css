@@ -9,15 +9,15 @@
   gap: 8px;
   background: transparent;
   border: none;
-  color: #e0e0e0;
+  color: var(--text);
   cursor: pointer;
-  padding: 4px 12px;
-  border-radius: 6px;
+  padding: 4px 10px 4px 4px;
+  border-radius: var(--radius-sm);
   transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
 .profile-link:hover {
-  background-color: #333;
+  background-color: var(--surface-hover);
 }
 
 .profile-link:active {
@@ -28,14 +28,14 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: #3f51b5; /* Usando el azul de tu vista de perfil */
-  color: #fff;
+  background-color: var(--accent-soft);
+  color: var(--accent-text);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  font-size: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 13px;
+  border: 1px solid var(--border);
 }
 
 .user-info {
@@ -46,8 +46,8 @@
 }
 
 .user-name {
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -55,7 +55,7 @@
 
 .gym-name {
   font-size: 11px;
-  color: #f5bc36;
+  color: var(--text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
