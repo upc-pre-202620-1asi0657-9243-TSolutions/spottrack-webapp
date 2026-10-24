@@ -1,75 +1,102 @@
-import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, computed, inject, OnInit } from '@angular/core';
+import { DatePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import { TranslateModule } from '@ngx-translate/core';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { MembershipStore } from '../../../application/membership.store';
-import { PLAN_FEATURES } from '../../../../shared/application/plan-features.data';
+import { BranchStore } from '../../../../gym/application/branch.store';
+import { EquipmentStore } from '../../../../gym/application/equipment.store';
+import {
+  MembershipTier, PLAN_FEATURES, PLAN_LIMITS, PLAN_PRICES,
+} from '../../../../shared/application/plan-features.data';
+
+const TIERS: MembershipTier[] = ['BASIC', 'MID', 'PLATINUM'];
+
+interface PlanOption {
+  tier: MembershipTier;
+  price: number;
+  features: string[];
+  relation: 'current' | 'upgrade' | 'downgrade';
+}
+
+interface UsageMeter {
+  labelKey: string;
+  used: number;
+  limit: number | null;
+  pct: number;
+  nearLimit: boolean;
+}
 
 @Component({
   selector: 'app-membership-list',
   standalone: true,
-  imports: [FormsModule, MatIconModule, TranslateModule],
+  imports: [DatePipe, MatIconModule, TranslateModule],
   templateUrl: './membership-list.component.html',
   styleUrl:    './membership-list.component.css',
 })
 export class MembershipListComponent implements OnInit {
   readonly store = inject(MembershipStore);
+  private readonly branchStore    = inject(BranchStore);
+  private readonly equipmentStore = inject(EquipmentStore);
+  private readonly translate      = inject(TranslateService);
 
   readonly lifecycleLoading  = this.store.lifecycleLoading;
   readonly lifecycleError    = this.store.lifecycleError;
   readonly membershipLoading = this.store.membershipLoading;
 
-  readonly tiers = ['BASIC', 'MID', 'PLATINUM'] as const;
+  readonly membership = this.store.myMembership;
+  readonly tier = computed(() => (this.membership()?.membershipTier ?? null) as MembershipTier | null);
+  readonly isActive = computed(() => this.membership()?.status === 'ACTIVE');
 
-  readonly upgradeTierTarget     = signal('');
-  readonly downgradeTierTarget   = signal('');
-  readonly resubscribeTierTarget = signal('BASIC');
-
-  readonly currentTierIndex = computed(() => {
-    const tier = this.store.myMembership()?.membershipTier ?? '';
-    return this.tiers.indexOf(tier as typeof this.tiers[number]);
+  /** All plans side by side, each marked against the current one. Inactive members see them all as options. */
+  readonly plans = computed<PlanOption[]>(() => {
+    const currentIndex = this.tier() && this.isActive() ? TIERS.indexOf(this.tier()!) : -1;
+    return TIERS.map((tier, i) => ({
+      tier,
+      price: PLAN_PRICES[tier],
+      features: PLAN_FEATURES[tier],
+      relation: i === currentIndex ? 'current' : i > currentIndex ? 'upgrade' : 'downgrade',
+    }));
   });
 
-  readonly upgradeOptions = computed(() =>
-    this.currentTierIndex() >= 0 ? Array.from(this.tiers).slice(this.currentTierIndex() + 1) : []
-  );
-
-  readonly downgradeOptions = computed(() =>
-    this.currentTierIndex() > 0 ? Array.from(this.tiers).slice(0, this.currentTierIndex()) : []
-  );
-
-  constructor() {
-    // Initialize selectors to sensible defaults once the membership resolves.
-    // Guards prevent re-overwriting after the user makes a selection.
-    effect(() => {
-      const opts = this.upgradeOptions();
-      if (opts.length > 0 && !this.upgradeTierTarget()) this.upgradeTierTarget.set(opts[0]);
+  readonly usage = computed<UsageMeter[]>(() => {
+    const tier = this.tier();
+    if (!tier) return [];
+    const limits = PLAN_LIMITS[tier];
+    const meter = (labelKey: string, used: number, limit: number | null): UsageMeter => ({
+      labelKey, used, limit,
+      pct: limit ? Math.min(100, Math.round((used / limit) * 100)) : 0,
+      nearLimit: !!limit && used / limit >= 0.8,
     });
-    effect(() => {
-      const opts = this.downgradeOptions();
-      if (opts.length > 0 && !this.downgradeTierTarget()) this.downgradeTierTarget.set(opts[opts.length - 1]);
-    });
-  }
+    return [
+      meter('membership.usage.branches', this.branchStore.branches().length, limits.branches),
+      meter('membership.usage.equipment', this.equipmentStore.equipment().length, limits.equipment),
+    ];
+  });
 
   ngOnInit(): void {
     this.store.loadMyMembership();
   }
 
+  tierLabel(tier: string | null | undefined): string {
+    return tier ? this.translate.instant('auth.plans.tier.' + tier.toLowerCase()) : '';
+  }
+
+  choosePlan(plan: PlanOption): void {
+    if (!this.isActive()) {
+      this.store.resubscribe(plan.tier);
+    } else if (plan.relation === 'upgrade') {
+      this.store.upgradePlan(plan.tier);
+    } else if (plan.relation === 'downgrade') {
+      this.store.downgradePlan(plan.tier);
+    }
+  }
+
   cancelMembership(): void {
-    if (confirm('¿Cancelar la membresía? Seguirá activa hasta fin del período de facturación.')) {
+    if (confirm(this.translate.instant('membership.lifecycle.cancelConfirm'))) {
       this.store.cancel();
     }
   }
 
   undoCancel(): void { this.store.undoCancel(); }
-
   payDebt(): void    { this.store.payDebt(); }
-  upgradePlan(): void  { if (this.upgradeTierTarget())   this.store.upgradePlan(this.upgradeTierTarget()); }
-  downgradePlan(): void { if (this.downgradeTierTarget()) this.store.downgradePlan(this.downgradeTierTarget()); }
-  resubscribe(): void   { if (this.resubscribeTierTarget()) this.store.resubscribe(this.resubscribeTierTarget()); }
-
-  featuresFor(tier: string): string[] {
-    return PLAN_FEATURES[tier as keyof typeof PLAN_FEATURES] ?? [];
-  }
-
 }

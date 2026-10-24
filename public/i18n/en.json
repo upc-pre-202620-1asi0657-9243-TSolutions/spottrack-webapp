@@ -943,6 +943,28 @@
     }
   },
   "membership": {
+    "current": {
+      "label": "Current plan",
+      "endsOn": "Ends on",
+      "periodStart": "Period started"
+    },
+    "usage": {
+      "branches": "Branches",
+      "equipment": "Machines",
+      "unlimited": "Unlimited"
+    },
+    "plans": {
+      "title": "Plans",
+      "subtitle": "Upgrades apply right away; downgrades take effect at the end of the billing period.",
+      "current": "Current",
+      "scheduled": "Scheduled",
+      "yourPlan": "Your plan",
+      "resumeToChange": "Resume your subscription to change plans."
+    },
+    "danger": {
+      "title": "Cancel membership",
+      "desc": "Your plan stays active until the end of the current billing period, then access ends. You can resume any time before that."
+    },
     "page": {
       "title":    "Membership Plans",
       "subtitle": "Manage your plans and venue access",
@@ -953,6 +975,7 @@
       "cancelAtPeriodEndNotice": "Cancels at end of current period ({{date}}). No further charges.",
       "pendingDowngradeNotice": "Plan will downgrade to {{tier}} at end of current period.",
       "cancelBtn": "Cancel Membership",
+      "cancelConfirm": "Cancel your membership? It stays active until the end of the current billing period.",
       "undoCancelBtn": "Resume subscription",
       "payDebtBtn": "Pay Debt",
       "resubscribeBtn": "Resubscribe",

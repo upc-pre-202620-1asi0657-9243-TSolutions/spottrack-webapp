@@ -943,6 +943,28 @@
     }
   },
   "membership": {
+    "current": {
+      "label": "Plan actual",
+      "endsOn": "Termina el",
+      "periodStart": "Inicio del período"
+    },
+    "usage": {
+      "branches": "Sedes",
+      "equipment": "Máquinas",
+      "unlimited": "Ilimitado"
+    },
+    "plans": {
+      "title": "Planes",
+      "subtitle": "Las mejoras se aplican al instante; las bajadas de plan rigen al final del período de facturación.",
+      "current": "Actual",
+      "scheduled": "Programado",
+      "yourPlan": "Tu plan",
+      "resumeToChange": "Reanuda tu suscripción para cambiar de plan."
+    },
+    "danger": {
+      "title": "Cancelar membresía",
+      "desc": "Tu plan sigue activo hasta el fin del período de facturación y luego se corta el acceso. Puedes reanudarla antes de esa fecha."
+    },
     "page": {
       "title":    "Planes de Membresía",
       "subtitle": "Administra los planes y accesos a sedes",
@@ -953,6 +975,7 @@
       "cancelAtPeriodEndNotice": "Se cancela al fin del período actual ({{date}}). No se generarán más cobros.",
       "pendingDowngradeNotice": "El plan bajará a {{tier}} al fin del período actual.",
       "cancelBtn": "Cancelar Membresía",
+      "cancelConfirm": "¿Cancelar la membresía? Seguirá activa hasta el fin del período de facturación.",
       "undoCancelBtn": "Retomar suscripción",
       "payDebtBtn": "Pagar Deuda",
       "resubscribeBtn": "Resubscribirse",
