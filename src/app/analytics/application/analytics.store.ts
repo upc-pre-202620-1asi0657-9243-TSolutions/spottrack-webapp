@@ -36,6 +36,17 @@ export interface BranchStats {
   inactiveChange:  number;
 }
 
+const CARDIO_NAMES = /treadmill|bike|cycl|elliptic|row|cardio|cinta|remo|bicicleta|elíptic|escalador|stair/;
+const FREE_WEIGHT_NAMES = /rack|banco|bench|barra|barbell|mancuerna|dumbbell|kettlebell|disco|plate|peso libre/;
+
+/** Cardio and Fuerza use the same words as the gym map; free-weight gear (racks, benches, bars) is Pesas. */
+function machineCategory(name: string): 'Cardio' | 'Fuerza' | 'Pesas' {
+  const n = name.toLowerCase();
+  if (CARDIO_NAMES.test(n)) return 'Cardio';
+  if (FREE_WEIGHT_NAMES.test(n)) return 'Pesas';
+  return 'Fuerza';
+}
+
 @Injectable({ providedIn: 'root' })
 export class AnalyticsStore {
 
@@ -160,30 +171,25 @@ export class AnalyticsStore {
       ? allEquip.filter(e => e.zoneId === '1')
       : allEquip;
 
-    if (!equips.length) {
-      return [
-        { label: 'Cardio',    pct: 45, color: '#f5bc36' },
-        { label: 'Fuerza',    pct: 35, color: '#00ccb2' },
-        { label: 'Funcional', pct: 20, color: '#22c55e' },
-      ];
-    }
-
-    const cardio    = equips.filter(e => e.zoneId === '1').length;
-    const fuerza    = equips.filter(e => e.zoneId === '2').length;
-    const funcional = equips.filter(e => e.zoneId !== '1' && e.zoneId !== '2').length;
-    const total     = equips.length || 1;
+    // Grouped by name, like the gym map does: zone ids are UUIDs, so they can't tell types apart.
+    const counts = { Cardio: 0, Fuerza: 0, Pesas: 0 };
+    for (const e of equips) counts[machineCategory(e.equipmentName)]++;
+    const total = equips.length || 1;
 
     return [
-      { label: 'Cardio',    pct: Math.round((cardio    / total) * 100), color: '#f5bc36' },
-      { label: 'Fuerza',    pct: Math.round((fuerza    / total) * 100), color: '#00ccb2' },
-      { label: 'Funcional', pct: Math.round((funcional / total) * 100), color: '#22c55e' },
+      { label: 'Cardio', pct: Math.round((counts.Cardio / total) * 100), color: '#f5bc36' },
+      { label: 'Fuerza', pct: Math.round((counts.Fuerza / total) * 100), color: '#00ccb2' },
+      { label: 'Pesas',  pct: Math.round((counts.Pesas  / total) * 100), color: '#22c55e' },
     ];
   });
 
   pieGradient(): string {
     let cur = 0;
-    return this.machineTypes().map(t => {
-      const start = cur; cur += t.pct;
+    if (this.machineTypes().every(t => t.pct === 0)) return '#2a2a2a 0% 100%';
+    const types = this.machineTypes();
+    return types.map((t, i) => {
+      // Rounded percentages can sum to 99 or 101; the last slice always closes the circle.
+      const start = cur; cur = i === types.length - 1 ? 100 : cur + t.pct;
       return `${t.color} ${start}% ${cur}%`;
     }).join(', ');
   }
