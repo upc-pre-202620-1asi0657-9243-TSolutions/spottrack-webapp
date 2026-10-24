@@ -1,6 +1,6 @@
 .result-page {
   min-height: 100vh;
-  background: #121212;
+  background: var(--bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -10,9 +10,10 @@
 .result-card {
   width: 100%;
   max-width: 420px;
-  background: #1e1e1e;
-  border: 1px solid #333;
-  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
   padding: 40px 28px;
   text-align: center;
 }
@@ -23,35 +24,36 @@
   height: 56px;
   margin-bottom: 16px;
 
-  &--success { color: #22c55e; }
-  &--cancel  { color: #ef4444; }
+  &--success { color: var(--success); }
+  &--cancel  { color: var(--danger); }
 }
 
 .result-title {
   margin: 0 0 8px;
   font-size: 1.3rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--text);
 }
 
 .result-subtitle {
   margin: 0 0 24px;
   font-size: 0.9rem;
-  color: #9ca3af;
+  color: var(--text-muted);
   line-height: 1.5;
 }
 
 .btn-continue {
   width: 100%;
   padding: 10px;
-  background: #f5bc36;
-  color: #000;
+  background: var(--accent);
+  color: var(--accent-contrast);
   font-size: 0.875rem;
   font-weight: 700;
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  transition: opacity 0.15s;
+  transition: background 0.15s;
 
-  &:hover { opacity: 0.88; }
+  &:hover { background: var(--accent-hover); }
+  &:focus-visible { outline: none; box-shadow: var(--focus-ring); }
 }

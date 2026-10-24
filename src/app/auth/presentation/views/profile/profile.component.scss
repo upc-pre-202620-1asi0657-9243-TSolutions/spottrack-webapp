@@ -1,12 +1,14 @@
 // Variables
-$bg-main: #141414;
-$bg-card: #1f1f1f;
-$bg-item: #2a2a2a;
-$text-primary: #ffffff;
-$text-secondary: #a3a3a3;
-$accent-gold: #f5b041;
-$success-green: #2ecc71;
-$border-color: #333333;
+// Colours come from the design tokens in src/styles.css (light/dark themes).
+$bg-main: var(--bg);
+$bg-card: var(--surface);
+$bg-item: var(--surface-2);
+$text-primary: var(--text);
+$text-secondary: var(--text-muted);
+$accent-gold: var(--accent);          // fills & borders
+$accent-gold-text: var(--accent-text); // text & icons on surfaces
+$success-green: var(--success);
+$border-color: var(--border);
 $border-radius: 12px;
 $font-family: 'Inter', 'Segoe UI', sans-serif;
 
@@ -56,6 +58,7 @@ body {
   background-color: $bg-card;
   border: 1px solid $border-color;
   border-radius: $border-radius;
+  box-shadow: var(--shadow-sm);
   padding: 1.5rem;
   margin-bottom: 1.5rem;
 }
@@ -78,6 +81,7 @@ body {
 
     .avatar {
       background-color: $accent-gold;
+      color: var(--accent-contrast);
       width: 50px;
       height: 50px;
       border-radius: 50%;
@@ -104,7 +108,7 @@ body {
 
         &.badge-outline {
           border: 1px solid $accent-gold;
-          color: $accent-gold;
+          color: $accent-gold-text;
         }
       }
     }
@@ -113,8 +117,8 @@ body {
 }
 
 // Nuevas variables sugeridas al principio del archivo
-$accent-cyan: #0ab5c3;
-$danger-color: #ef4444;
+$accent-cyan: var(--teal);
+$danger-color: var(--danger);
 
 // Estilos para Formularios y Tarjetas de Configuración
 .form-card, .settings-card {
@@ -154,8 +158,8 @@ $danger-color: #ef4444;
 }
 
 .form-control {
-  background-color: $bg-main;
-  border: 1px solid $border-color;
+  background-color: var(--surface-2);
+  border: 1px solid var(--border-strong);
   color: $text-primary;
   padding: 0.75rem 1rem;
   border-radius: 8px;
@@ -163,10 +167,13 @@ $danger-color: #ef4444;
   font-family: inherit;
   width: 100%;
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &::placeholder { color: var(--text-faint); }
 
   &:focus {
-    border-color: $text-secondary;
+    border-color: var(--accent);
+    box-shadow: var(--focus-ring);
   }
 }
 
@@ -253,7 +260,7 @@ $danger-color: #ef4444;
       display: none;
       width: 14px;
       height: 14px;
-      color: $bg-main;
+      color: var(--surface);
     }
   }
 }
@@ -268,7 +275,7 @@ $danger-color: #ef4444;
 // Botones Generales
 .btn-outline {
   background-color: transparent;
-  border: 1px solid $border-color;
+  border: 1px solid var(--border-strong);
   color: $text-primary;
   padding: 0.75rem 1rem;
   border-radius: 8px;
@@ -278,14 +285,14 @@ $danger-color: #ef4444;
   transition: background 0.2s;
 
   &:hover {
-    background-color: $bg-item;
+    background-color: var(--surface-hover);
   }
 
   &.btn-danger {
     color: $danger-color;
     &:hover {
-      background-color: rgba($danger-color, 0.1);
-      border-color: rgba($danger-color, 0.5);
+      background-color: var(--danger-soft);
+      border-color: color-mix(in srgb, #{$danger-color} 50%, transparent);
     }
   }
 }
@@ -293,18 +300,18 @@ $danger-color: #ef4444;
 .btn-primary {
   width: 100%;
   background-color: $accent-gold;
-  color: $bg-main;
+  color: var(--accent-contrast);
   border: none;
   padding: 1rem;
   border-radius: 8px;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: background-color 0.2s;
   margin-top: 1rem;
 
   &:hover {
-    opacity: 0.9;
+    background-color: var(--accent-hover);
   }
 }
 
@@ -315,7 +322,7 @@ $danger-color: #ef4444;
   gap: 0.75rem;
   margin-bottom: 1.5rem;
 
-  mat-icon { color: $accent-gold; font-size: 20px; width: 20px; height: 20px; }
+  mat-icon { color: $accent-gold-text; font-size: 20px; width: 20px; height: 20px; }
 
   h3 { font-size: 1rem; font-weight: 600; }
 }
@@ -332,8 +339,8 @@ $danger-color: #ef4444;
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  background: rgba($accent-gold, 0.12);
-  border: 2px solid rgba($accent-gold, 0.4);
+  background: var(--accent-soft);
+  border: 2px solid color-mix(in srgb, #{$accent-gold} 40%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -343,7 +350,7 @@ $danger-color: #ef4444;
     font-size: 32px;
     width: 32px;
     height: 32px;
-    color: $accent-gold;
+    color: $accent-gold-text;
   }
 }
 
@@ -376,9 +383,9 @@ $danger-color: #ef4444;
   width: fit-content;
 
   &--admin {
-    background: rgba($accent-gold, 0.12);
-    border: 1px solid rgba($accent-gold, 0.4);
-    color: $accent-gold;
+    background: var(--accent-soft);
+    border: 1px solid color-mix(in srgb, #{$accent-gold} 40%, transparent);
+    color: $accent-gold-text;
   }
 }
 
@@ -397,7 +404,7 @@ $danger-color: #ef4444;
   gap: 0.5rem;
   margin-top: 0.5rem;
 
-  &__icon { color: $accent-gold; font-size: 22px; width: 22px; height: 22px; }
+  &__icon { color: $accent-gold-text; font-size: 22px; width: 22px; height: 22px; }
   &__title { font-size: 1.1rem; font-weight: 700; color: $text-primary; }
 }
 
@@ -412,6 +419,7 @@ $danger-color: #ef4444;
   background: $bg-card;
   border: 1px solid $border-color;
   border-radius: $border-radius;
+  box-shadow: var(--shadow-sm);
   padding: 1.25rem;
   display: flex;
   align-items: center;
@@ -441,11 +449,11 @@ $danger-color: #ef4444;
 
   &__label { font-size: 0.78rem; color: $text-secondary; }
 
-  &--blue  { border-left-color: #4fc3f7; .gym-stat-card__icon { background: rgba(79,195,247,.12); mat-icon { color: #4fc3f7; } } .gym-stat-card__value { color: #4fc3f7; } }
-  &--yellow { border-left-color: $accent-gold; .gym-stat-card__icon { background: rgba($accent-gold,.12); mat-icon { color: $accent-gold; } } .gym-stat-card__value { color: $accent-gold; } }
-  &--green { border-left-color: $success-green; .gym-stat-card__icon { background: rgba($success-green,.12); mat-icon { color: $success-green; } } .gym-stat-card__value { color: $success-green; } }
-  &--teal  { border-left-color: #00bcd4; .gym-stat-card__icon { background: rgba(0,188,212,.12); mat-icon { color: #00bcd4; } } .gym-stat-card__value { color: #00bcd4; } }
-  &--link  { text-decoration: none; cursor: pointer; transition: background 0.15s, transform 0.1s; &:hover { background: lighten($bg-card, 4%); transform: translateY(-1px); } }
+  &--blue  { border-left-color: var(--info); .gym-stat-card__icon { background: var(--info-soft); mat-icon { color: var(--info); } } .gym-stat-card__value { color: var(--info); } }
+  &--yellow { border-left-color: $accent-gold; .gym-stat-card__icon { background: var(--accent-soft); mat-icon { color: $accent-gold-text; } } .gym-stat-card__value { color: $accent-gold-text; } }
+  &--green { border-left-color: $success-green; .gym-stat-card__icon { background: var(--success-soft); mat-icon { color: $success-green; } } .gym-stat-card__value { color: $success-green; } }
+  &--teal  { border-left-color: var(--teal); .gym-stat-card__icon { background: color-mix(in srgb, var(--teal) 12%, transparent); mat-icon { color: var(--teal); } } .gym-stat-card__value { color: var(--teal); } }
+  &--link  { text-decoration: none; cursor: pointer; transition: background 0.15s, transform 0.1s; &:hover { background: var(--surface-hover); transform: translateY(-1px); } }
 }
 
 // ── Admin plan card ───────────────────────────────────────────────────────────
@@ -469,14 +477,14 @@ $danger-color: #ef4444;
     width: 44px;
     height: 44px;
     border-radius: 10px;
-    background: rgba($accent-gold, 0.12);
-    border: 1px solid rgba($accent-gold, 0.3);
+    background: var(--accent-soft);
+    border: 1px solid color-mix(in srgb, #{$accent-gold} 30%, transparent);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
 
-    mat-icon { font-size: 24px; width: 24px; height: 24px; color: $accent-gold; }
+    mat-icon { font-size: 24px; width: 24px; height: 24px; color: $accent-gold-text; }
   }
 
   &__name {
@@ -491,8 +499,8 @@ $danger-color: #ef4444;
   border-radius: 20px;
   font-size: 0.78rem;
   font-weight: 700;
-  background: rgba($success-green, 0.12);
-  border: 1px solid rgba($success-green, 0.4);
+  background: var(--success-soft);
+  border: 1px solid color-mix(in srgb, #{$success-green} 40%, transparent);
   color: $success-green;
   white-space: nowrap;
 }
@@ -509,7 +517,7 @@ $danger-color: #ef4444;
     align-items: center;
     gap: 0.5rem;
     font-size: 0.875rem;
-    color: #d1d5db;
+    color: var(--text-2);
   }
 
   &__check {
@@ -584,8 +592,8 @@ $danger-color: #ef4444;
   gap: 8px;
   padding: 10px 14px;
   border-radius: 8px;
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
+  background: var(--danger-soft);
+  color: var(--danger);
   font-size: 0.875rem;
   mat-icon { font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; }
 }
@@ -596,22 +604,22 @@ $danger-color: #ef4444;
   gap: 8px;
   padding: 10px 14px;
   border-radius: 8px;
-  background: rgba(34, 197, 94, 0.1);
-  color: #22c55e;
+  background: var(--success-soft);
+  color: var(--success);
   font-size: 0.875rem;
   mat-icon { font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; }
 }
 
 // ── Plan badge status variants ────────────────────────────────────────────────
 .plan-badge--suspended {
-  background: rgba(245, 158, 11, 0.12);
-  border-color: rgba(245, 158, 11, 0.4);
-  color: #f59e0b;
+  background: var(--warning-soft);
+  border-color: color-mix(in srgb, var(--warning) 40%, transparent);
+  color: var(--warning);
 }
 
 .plan-badge--cancelled {
-  background: rgba($danger-color, 0.12);
-  border-color: rgba($danger-color, 0.4);
+  background: var(--danger-soft);
+  border-color: color-mix(in srgb, #{$danger-color} 40%, transparent);
   color: $danger-color;
 }
 
@@ -628,14 +636,14 @@ $danger-color: #ef4444;
   mat-icon { font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; }
 
   &--warn {
-    background: rgba(245, 158, 11, 0.1);
-    border: 1px solid rgba(245, 158, 11, 0.3);
-    color: #f59e0b;
+    background: var(--warning-soft);
+    border: 1px solid color-mix(in srgb, var(--warning) 30%, transparent);
+    color: var(--warning);
   }
 
   &--info {
-    background: rgba($text-secondary, 0.08);
-    border: 1px solid rgba($text-secondary, 0.2);
+    background: var(--surface-2);
+    border: 1px solid $border-color;
     color: $text-secondary;
   }
 }
@@ -647,9 +655,9 @@ $danger-color: #ef4444;
   gap: 6px;
   margin-top: 1rem;
   padding: 0.6rem 1rem;
-  background: rgba($accent-gold, 0.1);
-  border: 1px solid rgba($accent-gold, 0.35);
-  color: $accent-gold;
+  background: var(--accent-soft);
+  border: 1px solid color-mix(in srgb, #{$accent-gold} 35%, transparent);
+  color: $accent-gold-text;
   border-radius: 8px;
   font-size: 0.875rem;
   font-weight: 600;
@@ -658,7 +666,7 @@ $danger-color: #ef4444;
 
   mat-icon { font-size: 16px; width: 16px; height: 16px; }
 
-  &:hover { background: rgba($accent-gold, 0.18); }
+  &:hover { background: color-mix(in srgb, #{$accent-gold} 24%, transparent); }
 }
 
 // ── Plan loading skeleton ─────────────────────────────────────────────────────
@@ -670,7 +678,7 @@ $danger-color: #ef4444;
   &__line {
     height: 14px;
     border-radius: 4px;
-    background: rgba($text-secondary, 0.15);
+    background: var(--surface-3);
     animation: skeleton-pulse 1.5s ease-in-out infinite;
 
     &--wide  { width: 120px; }

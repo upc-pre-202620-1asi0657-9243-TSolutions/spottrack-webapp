@@ -20,20 +20,20 @@
   font-size: 48px;
   width: 48px;
   height: 48px;
-  color: #f5bc36;
+  color: var(--accent-text);
 }
 
 .gym-associate__title {
   margin: 0;
   font-size: 1.5rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--text);
 }
 
 .gym-associate__subtitle {
   margin: 0;
   font-size: 0.9rem;
-  color: #9ca3af;
+  color: var(--text-muted);
 }
 
 // ── Error banner ──────────────────────────────────────────────────────────────
@@ -42,9 +42,9 @@
   align-items: center;
   gap: 8px;
   padding: 10px 14px;
-  background: rgba(239, 68, 68, 0.1);
+  background: var(--danger-soft);
   border-radius: 8px;
-  color: #ef4444;
+  color: var(--danger);
   font-size: 0.875rem;
 
   mat-icon { font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; }
@@ -58,7 +58,7 @@
 }
 
 .gym-associate__spinner {
-  color: #f5bc36;
+  color: var(--accent-text);
   font-size: 32px;
   width: 32px;
   height: 32px;
@@ -74,7 +74,7 @@
 .gym-associate__empty {
   margin: 0;
   text-align: center;
-  color: #9ca3af;
+  color: var(--text-muted);
   font-size: 0.9rem;
   padding: 32px 0;
 }
@@ -95,9 +95,10 @@
   justify-content: space-between;
   gap: 12px;
   padding: 14px 16px;
-  background: #1e1e1e;
-  border: 1px solid #333;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 10px;
+  box-shadow: var(--shadow-sm);
 }
 
 .gym-associate__item-info {
@@ -108,7 +109,7 @@
 }
 
 .gym-associate__item-icon {
-  color: #9ca3af;
+  color: var(--text-muted);
   font-size: 20px;
   width: 20px;
   height: 20px;
@@ -118,7 +119,7 @@
 .gym-associate__item-name {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #fff;
+  color: var(--text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -139,17 +140,17 @@
   mat-icon { font-size: 14px; width: 14px; height: 14px; }
 
   &--joined {
-    background: rgba(34, 197, 94, 0.12);
-    color: #22c55e;
-    border: 1px solid rgba(34, 197, 94, 0.3);
+    background: var(--success-soft);
+    color: var(--success);
+    border: 1px solid color-mix(in srgb, var(--success) 30%, transparent);
   }
 }
 
 // ── Join button ───────────────────────────────────────────────────────────────
 .gym-associate__btn-join {
   padding: 6px 18px;
-  background: #f5bc36;
-  color: #000;
+  background: var(--accent);
+  color: var(--accent-contrast);
   font-size: 0.8rem;
   font-weight: 700;
   border: none;
@@ -157,8 +158,9 @@
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
-  transition: opacity 0.15s;
+  transition: background 0.15s, opacity 0.15s;
 
-  &:hover:not(:disabled) { opacity: 0.85; }
+  &:hover:not(:disabled) { background: var(--accent-hover); }
+  &:focus-visible { outline: none; box-shadow: var(--focus-ring); }
   &:disabled { opacity: 0.45; cursor: not-allowed; }
 }

@@ -1,26 +1,38 @@
 .register-page {
+  position: relative;
   min-height: 100vh;
-  background: #121212;
+  background: var(--bg);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 16px;
 }
 
+// ── Theme toggle (top-right) ─────────────────────────────────────────────────
+.auth-corner {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 // ── Card ─────────────────────────────────────────────────────────────────────
 .register-card {
   width: 100%;
   max-width: 520px;
-  background: #1e1e1e;
-  border: 1px solid #333;
-  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
   overflow: hidden;
 }
 
 // ── Header ───────────────────────────────────────────────────────────────────
 .register-header {
   padding: 24px 24px 20px;
-  border-bottom: 1px solid #2a2a2a;
+  border-bottom: 1px solid var(--border);
   text-align: center;
 }
 
@@ -31,6 +43,14 @@
   margin-bottom: 16px;
 }
 
+// The logo art is drawn for dark backgrounds, so it sits on a dark tile in both themes.
+.brand-logo-tile {
+  display: inline-flex;
+  background: #161b22;
+  border-radius: var(--radius);
+  padding: 6px;
+}
+
 .register-brand__logo {
   height: 32px;
   width: auto;
@@ -39,7 +59,7 @@
 .register-brand__name {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--text);
   letter-spacing: 0.02em;
 }
 
@@ -47,13 +67,13 @@
   margin: 0 0 6px;
   font-size: 1.4rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--text);
 }
 
 .register-subtitle {
   margin: 0;
   font-size: 0.9rem;
-  color: #9ca3af;
+  color: var(--text-muted);
 }
 
 // ── Body ─────────────────────────────────────────────────────────────────────
@@ -74,8 +94,8 @@
 
 .account-type__label {
   font-size: 0.875rem;
-  font-weight: 700;
-  color: #fff;
+  font-weight: 600;
+  color: var(--text-2);
 }
 
 .account-type__options {
@@ -90,34 +110,35 @@
   align-items: flex-start;
   gap: 4px;
   padding: 12px;
-  background: #1e1e1e;
-  border: 1px solid #333;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
   border-radius: 8px;
   cursor: pointer;
   text-align: left;
   transition: border-color 0.15s, background 0.15s;
 
-  mat-icon { color: #9ca3af; }
+  mat-icon { color: var(--text-muted); }
 
-  &:hover { border-color: #555; }
+  &:hover { border-color: var(--text-faint); background: var(--surface-hover); }
 
-  &--active {
-    border-color: #f5bc36;
-    background: rgba(245, 188, 54, 0.08);
+  &--active,
+  &--active:hover {
+    border-color: var(--accent);
+    background: var(--accent-soft);
 
-    mat-icon { color: #f5bc36; }
+    mat-icon { color: var(--accent-text); }
   }
 }
 
 .account-type__title {
   font-size: 0.875rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--text);
 }
 
 .account-type__desc {
   font-size: 0.75rem;
-  color: #9ca3af;
+  color: var(--text-muted);
 }
 
 // ── Field rows ───────────────────────────────────────────────────────────────
@@ -133,15 +154,15 @@
   flex-direction: column;
   gap: 14px;
   padding: 14px;
-  border: 1px solid #333;
+  border: 1px solid var(--border);
   border-radius: 8px;
-  background: rgba(245, 188, 54, 0.04);
+  background: var(--surface-2);
 }
 
 .company-section__label {
   font-size: 0.8rem;
   font-weight: 700;
-  color: #f5bc36;
+  color: var(--accent-text);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -160,24 +181,24 @@ select.form-field__input {
 
 .form-field__label {
   font-size: 0.875rem;
-  font-weight: 700;
-  color: #fff;
+  font-weight: 600;
+  color: var(--text-2);
 }
 
 .form-field__input {
   width: 100%;
-  background: #1e1e1e;
-  border: 1px solid #333;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
   border-radius: 6px;
   padding: 8px 12px;
   font-size: 0.875rem;
-  color: #fff;
+  color: var(--text);
   outline: none;
   box-sizing: border-box;
-  transition: border-color 0.15s;
+  transition: border-color 0.15s, box-shadow 0.15s;
 
-  &::placeholder { color: #9ca3af; }
-  &:focus        { border-color: #f5bc36; }
+  &::placeholder { color: var(--text-faint); }
+  &:focus        { border-color: var(--accent); box-shadow: var(--focus-ring); }
 }
 
 .form-field__password-wrap {
@@ -193,19 +214,19 @@ select.form-field__input {
   transform: translateY(-50%);
   background: transparent;
   border: none;
-  color: #9ca3af;
+  color: var(--text-muted);
   cursor: pointer;
   display: flex;
   align-items: center;
   padding: 0;
 
   mat-icon { font-size: 18px; width: 18px; height: 18px; }
-  &:hover { color: #fff; }
+  &:hover { color: var(--text); }
 }
 
 .field-error {
   font-size: 0.75rem;
-  color: #ef4444;
+  color: var(--danger);
 }
 
 // ── Error banner ─────────────────────────────────────────────────────────────
@@ -214,9 +235,9 @@ select.form-field__input {
   align-items: center;
   gap: 8px;
   padding: 10px 12px;
-  background: rgba(239, 68, 68, 0.1);
+  background: var(--danger-soft);
   border-radius: 6px;
-  color: #ef4444;
+  color: var(--danger);
   font-size: 0.875rem;
 
   mat-icon { font-size: 16px; width: 16px; height: 16px; flex-shrink: 0; }
@@ -226,16 +247,17 @@ select.form-field__input {
 .btn-submit {
   width: 100%;
   padding: 10px;
-  background: #f5bc36;
-  color: #000;
+  background: var(--accent);
+  color: var(--accent-contrast);
   font-size: 0.875rem;
   font-weight: 700;
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  transition: opacity 0.15s;
+  transition: background 0.15s, opacity 0.15s;
 
-  &:hover:not(:disabled) { opacity: 0.88; }
+  &:hover:not(:disabled) { background: var(--accent-hover); }
+  &:focus-visible { outline: none; box-shadow: var(--focus-ring); }
   &:disabled { opacity: 0.55; cursor: not-allowed; }
 }
 
@@ -244,11 +266,11 @@ select.form-field__input {
   margin: 0;
   text-align: center;
   font-size: 0.875rem;
-  color: #9ca3af;
+  color: var(--text-muted);
 }
 
 .register-hint__link {
-  color: #f5bc36;
+  color: var(--accent-text);
   font-weight: 700;
   text-decoration: none;
   margin-left: 4px;

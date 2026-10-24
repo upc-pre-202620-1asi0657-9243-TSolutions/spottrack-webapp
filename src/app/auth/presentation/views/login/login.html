@@ -1,10 +1,16 @@
 <div class="login-page">
+  <div class="auth-corner">
+    <app-theme-toggle></app-theme-toggle>
+  </div>
+
   <div class="login-card">
 
     <!-- Brand -->
     <div class="login-header">
       <div class="login-brand">
-        <img class="login-brand__logo" src="MOscuroSinBG.svg" alt="SpotTrack logo">
+        <span class="brand-logo-tile">
+          <img class="login-brand__logo" src="MOscuroSinBG.svg" alt="SpotTrack logo">
+        </span>
         <span class="login-brand__name">SpotTrack</span>
       </div>
       <h1 class="login-title">{{ 'auth.login.title' | translate }}</h1>

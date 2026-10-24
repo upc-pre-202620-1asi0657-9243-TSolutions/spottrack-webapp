@@ -5,6 +5,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthStore } from '../../../application/auth.store';
 import { LanguageSwitcher } from '../../../../shared/presentation/components/language-switcher/language-switcher';
+import { ThemeToggle } from '../../../../shared/presentation/components/theme-toggle/theme-toggle';
 
 function passwordsMatch(control: AbstractControl): ValidationErrors | null {
   const pw  = control.get('password');
@@ -20,7 +21,7 @@ const COMPANY_FIELD_NAMES = [
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule, TranslateModule, MatIconModule, LanguageSwitcher],
+  imports: [ReactiveFormsModule, TranslateModule, MatIconModule, LanguageSwitcher, ThemeToggle],
   templateUrl: './register.html',
   styleUrl:    './register.scss',
 })
