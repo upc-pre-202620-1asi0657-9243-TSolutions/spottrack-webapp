@@ -146,7 +146,7 @@
       <span class="chart-card__title">{{ 'financialImpact.roiProjection.title' | translate }}</span>
       <span class="roi-break-even" [class.roi-break-even--none]="!breakEvenMonth()">
         @if (breakEvenMonth(); as month) {
-          {{ 'financialImpact.roiProjection.breakEven' | translate }}: {{ month }}
+          {{ 'financialImpact.roiProjection.breakEven' | translate }}: {{ 'financialImpact.roiProjection.month' | translate }} {{ month }}
         } @else {
           {{ 'financialImpact.roiProjection.noBreakEven' | translate }}
         }
@@ -163,13 +163,13 @@
       @for (bar of roiBars(); track bar.month) {
         <rect [attr.x]="bar.x" [attr.y]="bar.y" [attr.width]="roiBarWidth()" [attr.height]="bar.height" rx="3"
               [class]="bar.cumulative >= 0 ? 'roi-svg__bar roi-svg__bar--pos' : 'roi-svg__bar roi-svg__bar--neg'">
-          <title>{{ bar.month }}: {{ formatMoney(bar.cumulative) }}</title>
+          <title>{{ 'financialImpact.roiProjection.month' | translate }} {{ bar.month }}: {{ formatMoney(bar.cumulative) }}</title>
         </rect>
         <text [attr.x]="bar.x + roiBarWidth() / 2" [attr.y]="bar.labelY" class="roi-svg__value" text-anchor="middle">
           {{ formatMoney(bar.cumulative) }}
         </text>
         <text [attr.x]="bar.x + roiBarWidth() / 2" [attr.y]="roiScale().baseY + 20" class="roi-svg__axis" text-anchor="middle">
-          {{ bar.month }}
+          {{ 'financialImpact.roiProjection.month' | translate }} {{ bar.month }}
         </text>
       }
     </svg>

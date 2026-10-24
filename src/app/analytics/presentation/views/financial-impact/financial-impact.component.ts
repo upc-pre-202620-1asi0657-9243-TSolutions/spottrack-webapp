@@ -7,13 +7,14 @@ import { ContextMenuDirective } from '../../../../shared/presentation/directives
 import { ContextMenuItem } from '../../../../shared/application/context-menu.service';
 import { PaginatorComponent, paginate } from '../../../../shared/presentation/components/paginator/paginator';
 
-interface RoiMonth { month: string; cumulative: number; }
+/** month is 1-based; the template translates the "Month" label. */
+interface RoiMonth { month: number; cumulative: number; }
 
 interface RoiBar extends RoiMonth { x: number; y: number; height: number; labelY: number; }
 
 interface RoiTick { value: number; y: number; label: string; }
 
-const ROI_MONTHS_LABELS = ['Mes 1', 'Mes 2', 'Mes 3', 'Mes 4', 'Mes 5', 'Mes 6', 'Mes 7', 'Mes 8'];
+const ROI_MONTHS = 8;
 
 @Component({
   selector: 'app-financial-impact',
@@ -62,8 +63,8 @@ export class FinancialImpactComponent implements OnInit {
   readonly roiProjectionData = computed((): RoiMonth[] => {
     const cost    = this.simMachineCost();
     const monthly = this.simUnmetDemand() * this.simRevenuePerUser();
-    return ROI_MONTHS_LABELS.map((month, i) => ({
-      month,
+    return Array.from({ length: ROI_MONTHS }, (_, i) => ({
+      month: i + 1,
       cumulative: Math.round(-cost + monthly * (i + 1)),
     }));
   });
@@ -148,7 +149,7 @@ export class FinancialImpactComponent implements OnInit {
       [],
       ['PROYECCIÓN ROI'],
       ['Mes', 'ROI Acumulado'],
-      ...this.roiProjectionData().map(m => [m.month, `$${m.cumulative}`]),
+      ...this.roiProjectionData().map(m => [`Mes ${m.month}`, `$${m.cumulative}`]),
     ];
 
     const csv  = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');

@@ -592,59 +592,6 @@
         "title": "Optimización Requerida",
         "description": "Se registraron 124 horas de inactividad programada por mantenimiento. Aplicar el calendario inteligente podría reducir este número en un 30%."
       }
-    },
-    "financial": {
-      "title": "Impacto Financiero y ROI",
-      "subtitle": "Análisis de costos ocultos, pérdidas por inactividad y proyecciones de inversión",
-      "lossInactivity": "Pérdida por Inactividad",
-      "maintenanceCost": "Costo Mantenimiento",
-      "potentialSavings": "Ahorro Potencial",
-      "withPredictive": "Con mantenimiento predictivo",
-      "avgRoi": "ROI Promedio",
-      "months": "meses",
-      "investmentRecovery": "Recuperación de inversión",
-      "costBreakdown": "Desglose de Costos de Mantenimiento",
-      "lossTable": {
-        "title": "Pérdida por Inactividad de Equipos",
-        "machine": "Máquina",
-        "hours": "Horas",
-        "ratePerHour": "$/Hora",
-        "total": "Total",
-        "monthlyTotal": "TOTAL PÉRDIDA MENSUAL"
-      },
-      "costLabels": {
-        "corrective": "Mantenimiento Correctivo (3-5x más caro)",
-        "preventive": "Mantenimiento Preventivo",
-        "inventory": "Inventario de Repuestos"
-      },
-      "roiProjection": {
-        "title": "Proyección de ROI – Nueva Máquina",
-      "breakEven": "Punto de equilibrio",
-      "noBreakEven": "Sin punto de equilibrio en 8 meses",
-      "month": "Mes"
-      },
-      "simulator": {
-        "title": "Simulador de Retorno de Inversión (ROI)",
-        "machineCost": "Costo de la Máquina ($)",
-        "unmetDemand": "Demanda Insatisfecha (usuarios/mes)",
-        "revenuePerUser": "Ingreso por Usuario ($)",
-        "calculate": "Calcular ROI"
-      },
-      "recommendations": {
-        "title": "Recomendaciones Financieras",
-        "preventive": {
-          "title": "Migrar a Mantenimiento Preventivo",
-          "description": "Implementar alertas automáticas puede reducir costos correctivos en un 60%, ahorrando aproximadamente $1,920/mes."
-        },
-        "investment": {
-          "title": "Inversión Recomendada: 2 Racks de Sentadilla",
-          "description": "Análisis muestra 98% de ocupación en horas pico. Inversión de $10,000 se recuperaría en ~7 meses según demanda actual."
-        },
-        "relocation": {
-          "title": "Reubicar Equipos Subutilizados",
-          "description": "3 máquinas con <30% de uso en Surco podrían generar $1,200/mes adicionales si se trasladan a Miraflores."
-        }
-      }
     }
   },
   "financialImpact": {
@@ -679,7 +626,10 @@
       "inventory": "Inventario de Repuestos"
     },
     "roiProjection": {
-      "title": "Proyección de ROI – Nueva Máquina"
+      "title": "Proyección de ROI – Nueva Máquina",
+      "breakEven": "Punto de equilibrio",
+      "noBreakEven": "Sin punto de equilibrio en 8 meses",
+      "month": "Mes"
     },
     "simulator": {
       "title": "Simulador de Retorno de Inversión (ROI)",
