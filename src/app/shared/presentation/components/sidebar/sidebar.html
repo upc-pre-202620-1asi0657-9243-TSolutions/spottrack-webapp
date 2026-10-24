@@ -7,17 +7,77 @@
     <span class="sidebar__brand-text">SpotTrack</span>
   </div>
 
+  @if (isAdmin && gym(); as gym) {
+    <div class="sidebar__gym">
+      <button type="button" class="gym-menu" [matMenuTriggerFor]="gymMenu">
+        <span class="gym-menu__avatar">{{ gymInitial() }}</span>
+        <span class="gym-menu__text">
+          <span class="gym-menu__name">{{ gym.name }}</span>
+          <span class="gym-menu__meta">
+            {{ 'nav.gymMenu.branches' | translate: { count: branchCount() } }}
+            @if (planTier(); as tier) { · {{ tier }} }
+          </span>
+        </span>
+        <mat-icon class="gym-menu__chevron">unfold_more</mat-icon>
+      </button>
+
+      <mat-menu #gymMenu="matMenu" class="gym-menu-panel" xPosition="after">
+        <p class="gym-menu-panel__label">{{ 'nav.gymMenu.yourGyms' | translate }}</p>
+        @for (g of adminGymStore.myGyms(); track g.gymId) {
+          <button mat-menu-item routerLink="/gym/branches" (click)="linkClicked.emit()">
+            <mat-icon>storefront</mat-icon>
+            <span>{{ g.name }}</span>
+            @if (g.gymId === gym.gymId) { <mat-icon class="gym-menu-panel__check">check</mat-icon> }
+          </button>
+        }
+        <div class="gym-menu-panel__divider"></div>
+        <button mat-menu-item routerLink="/gym/branches" (click)="linkClicked.emit()">
+          <mat-icon>account_tree</mat-icon>
+          <span>{{ 'nav.gymMenu.manageBranches' | translate }}</span>
+        </button>
+        <button mat-menu-item routerLink="/gym/whitelist" (click)="linkClicked.emit()">
+          <mat-icon>badge</mat-icon>
+          <span>{{ 'nav.gymMenu.whitelist' | translate }}</span>
+        </button>
+        <button mat-menu-item routerLink="/gym/create" (click)="linkClicked.emit()">
+          <mat-icon>add</mat-icon>
+          <span>{{ 'nav.gymMenu.addGym' | translate }}</span>
+        </button>
+      </mat-menu>
+    </div>
+  }
+
   <nav class="sidebar__nav">
-    @for (item of navItems; track item.path) {
-      <a
-        class="sidebar__item"
-        [routerLink]="item.path"
-        routerLinkActive="sidebar__item--active"
-        (click)="linkClicked.emit()"
-      >
-        <mat-icon class="sidebar__icon">{{ item.icon }}</mat-icon>
-        <span class="sidebar__label">{{ item.labelKey | translate }}</span>
-      </a>
+    @for (section of sections; track $index) {
+      <div class="sidebar__section">
+        @if (section.labelKey) {
+          <p class="sidebar__section-label">{{ section.labelKey | translate }}</p>
+        }
+        @for (item of section.items; track item.path) {
+          <a
+            class="sidebar__item"
+            [routerLink]="item.path"
+            routerLinkActive="sidebar__item--active"
+            (click)="linkClicked.emit()"
+          >
+            <mat-icon class="sidebar__icon">{{ item.icon }}</mat-icon>
+            <span class="sidebar__label">{{ item.labelKey | translate }}</span>
+
+            @if (item.badge === 'iot') {
+              @if (sensorsTotal() > 0) {
+                <span class="sidebar__status" [title]="'nav.sensorsOnline' | translate: { online: sensorsOnline(), total: sensorsTotal() }">
+                  <span class="sidebar__dot sidebar__dot--{{ sensorHealth() }}"></span>
+                  {{ sensorsOnline() }}/{{ sensorsTotal() }}
+                </span>
+              }
+            } @else if (badgeCount(item.badge) > 0) {
+              <span class="sidebar__count" [class.sidebar__count--alert]="item.badge === 'alerts'">
+                {{ badgeCount(item.badge) > 99 ? '99+' : badgeCount(item.badge) }}
+              </span>
+            }
+          </a>
+        }
+      </div>
     }
   </nav>
 </aside>

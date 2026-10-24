@@ -350,7 +350,22 @@
     "reservations": "Mis Reservas",
     "profile": "Mi Perfil",
     "financial": "Impacto Financiero",
-    "settings": "Configuración"
+    "settings": "Configuración",
+    "membership": "Membresía",
+    "sections": {
+      "overview": "General",
+      "operations": "Operaciones",
+      "insights": "Análisis",
+      "account": "Cuenta"
+    },
+    "gymMenu": {
+      "branches": "{{count}} sedes",
+      "yourGyms": "Tus gimnasios",
+      "manageBranches": "Sedes y zonas",
+      "whitelist": "Lista de socios",
+      "addGym": "Agregar otro gimnasio"
+    },
+    "sensorsOnline": "{{online}} de {{total}} sensores en línea"
   },
   "monitoring": {
     "sensors": {
