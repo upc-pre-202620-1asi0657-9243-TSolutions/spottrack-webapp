@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core'; // signal kept for showComparison
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
@@ -11,6 +11,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { AnalyticsStore } from '../../application/analytics.store';
 import { ContextMenuDirective } from '../../../shared/presentation/directives/context-menu.directive';
 import { ContextMenuItem } from '../../../shared/application/context-menu.service';
+import { PaginatorComponent, paginate } from '../../../shared/presentation/components/paginator/paginator';
 
 @Component({
   selector: 'app-analytics',
@@ -26,6 +27,7 @@ import { ContextMenuItem } from '../../../shared/application/context-menu.servic
     MatDatepickerModule,
     MatNativeDateModule,
     ContextMenuDirective,
+    PaginatorComponent,
   ],
   templateUrl: './analytics.html',
   styleUrl:    './analytics.scss',
@@ -71,6 +73,12 @@ export class AnalyticsComponent implements OnInit {
 
   // ── Relocation recommendations ────────────────────────────────────────────
   get relocationData() { return this.store.relocationData(); }
+
+  readonly relocationPage     = signal(0);
+  readonly relocationPageSize = signal(5);
+  readonly pagedRelocations = computed(() =>
+    paginate(this.store.relocationData(), this.relocationPage(), this.relocationPageSize())
+  );
 
   // ── Actions ───────────────────────────────────────────────────────────────
   exportCsv(): void {

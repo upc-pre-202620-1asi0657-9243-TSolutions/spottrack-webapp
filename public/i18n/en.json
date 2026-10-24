@@ -592,56 +592,6 @@
         "title": "Optimization Required",
         "description": "124 hours of scheduled downtime recorded for maintenance. Applying the smart scheduler could reduce this figure by 30%."
       }
-    },
-    "financial": {
-      "title": "Financial Impact & ROI",
-      "subtitle": "Analysis of hidden costs, inactivity losses and investment projections",
-      "lossInactivity": "Inactivity Loss",
-      "maintenanceCost": "Maintenance Cost",
-      "potentialSavings": "Potential Savings",
-      "withPredictive": "With predictive maintenance",
-      "avgRoi": "Average ROI",
-      "months": "months",
-      "investmentRecovery": "Investment recovery",
-      "costBreakdown": "Maintenance Cost Breakdown",
-      "lossTable": {
-        "title": "Equipment Inactivity Loss",
-        "machine": "Machine",
-        "hours": "Hours",
-        "ratePerHour": "$/Hour",
-        "total": "Total",
-        "monthlyTotal": "TOTAL MONTHLY LOSS"
-      },
-      "costLabels": {
-        "corrective": "Corrective Maintenance (3-5x more expensive)",
-        "preventive": "Preventive Maintenance",
-        "inventory": "Spare Parts Inventory"
-      },
-      "roiProjection": {
-        "title": "ROI Projection – New Machine"
-      },
-      "simulator": {
-        "title": "Return on Investment (ROI) Simulator",
-        "machineCost": "Machine Cost ($)",
-        "unmetDemand": "Unmet Demand (users/month)",
-        "revenuePerUser": "Revenue per User ($)",
-        "calculate": "Calculate ROI"
-      },
-      "recommendations": {
-        "title": "Financial Recommendations",
-        "preventive": {
-          "title": "Migrate to Preventive Maintenance",
-          "description": "Implementing automatic alerts can reduce corrective costs by 60%, saving approximately $1,920/month."
-        },
-        "investment": {
-          "title": "Recommended Investment: 2 Squat Racks",
-          "description": "Analysis shows 98% occupancy during peak hours. A $10,000 investment would be recovered in ~7 months based on current demand."
-        },
-        "relocation": {
-          "title": "Relocate Underutilized Equipment",
-          "description": "3 machines with <30% usage in Surco could generate $1,200/month additional revenue if relocated to Miraflores."
-        }
-      }
     }
   },
   "financialImpact": {
@@ -653,7 +603,7 @@
       "lossInactivity": "Inactivity Loss",
       "maintenanceCost": "Maintenance Cost",
       "potentialSavings": "Potential Savings",
-      "withPredictive": "With predictive maintenance",
+      "withPredictive": "If {{count}} repairs had been preventive checks",
       "avgRoi": "Average ROI",
       "months": "months",
       "investmentRecovery": "Investment recovery",
@@ -661,6 +611,7 @@
     },
     "lossTable": {
       "title": "Equipment Inactivity Loss",
+      "subtitle": "Money lost while each machine was out of service",
       "machine": "Machine",
       "hours": "Hours",
       "ratePerHour": "$/Hour",
@@ -668,15 +619,21 @@
       "monthlyTotal": "TOTAL MONTHLY LOSS"
     },
     "costBreakdown": {
-      "title": "Maintenance Cost Breakdown"
+      "title": "Maintenance Cost Breakdown",
+      "subtitle": "Real spend from completed maintenance and spare-part quotes",
+      "total": "Total"
     },
     "costLabels": {
-      "corrective": "Corrective Maintenance (3-5x more expensive)",
-      "preventive": "Preventive Maintenance",
-      "inventory": "Spare Parts Inventory"
+      "corrective": "Corrective (repair after a failure)",
+      "preventive": "Preventive (planned check)",
+      "inventory": "Spare parts"
     },
     "roiProjection": {
-      "title": "ROI Projection – New Machine"
+      "title": "ROI Projection – New Machine",
+      "subtitle": "Cumulative result of buying one machine: its price is paid up front, then every month adds unmet demand × revenue per user. Red means still recovering the cost, green means it already paid for itself.",
+      "breakEven": "Break-even",
+      "noBreakEven": "No break-even within 8 months",
+      "month": "Month"
     },
     "simulator": {
       "title": "Return on Investment (ROI) Simulator",
@@ -1082,6 +1039,14 @@
       "addFailed": "Could not add DNI. Please try again.",
       "duplicate": "This DNI is already in the whitelist.",
       "invalidFormat": "DNI must be exactly 8 digits."
+    }
+  },
+  "shared": {
+    "paginator": {
+      "rowsPerPage": "Rows",
+      "of": "of",
+      "previous": "Previous page",
+      "next": "Next page"
     }
   }
 }

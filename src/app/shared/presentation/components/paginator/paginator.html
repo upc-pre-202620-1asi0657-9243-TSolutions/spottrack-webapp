@@ -1,0 +1,25 @@
+<div class="pager">
+  <label class="pager__size">
+    <span>{{ 'shared.paginator.rowsPerPage' | translate }}</span>
+    <select [value]="pageSize()" (change)="setPageSize($any($event.target).value)">
+      @for (option of pageSizeOptions(); track option) {
+        <option [value]="option" [selected]="option === pageSize()">{{ option }}</option>
+      }
+    </select>
+  </label>
+
+  <span class="pager__range">
+    {{ rangeStart() }}–{{ rangeEnd() }} {{ 'shared.paginator.of' | translate }} {{ total() }}
+  </span>
+
+  <div class="pager__nav">
+    <button type="button" (click)="previous()" [disabled]="page() === 0"
+            [attr.aria-label]="'shared.paginator.previous' | translate">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <button type="button" (click)="next()" [disabled]="page() >= pageCount() - 1"
+            [attr.aria-label]="'shared.paginator.next' | translate">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+</div>
