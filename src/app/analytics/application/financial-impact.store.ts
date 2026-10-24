@@ -85,9 +85,9 @@ export class FinancialImpactStore {
 
     const total = corrective + preventive + inventory || 1;
     return [
-      { label: 'financialImpact.costLabels.corrective', amount: corrective, pct: Math.round((corrective / total) * 100), color: '#fb2c36' },
-      { label: 'financialImpact.costLabels.preventive', amount: preventive, pct: Math.round((preventive / total) * 100), color: '#00c950' },
-      { label: 'financialImpact.costLabels.inventory',  amount: inventory,  pct: Math.round((inventory  / total) * 100), color: '#f5bc36' },
+      { label: 'financialImpact.costLabels.corrective', amount: corrective, pct: Math.round((corrective / total) * 100), color: 'var(--danger)' },
+      { label: 'financialImpact.costLabels.preventive', amount: preventive, pct: Math.round((preventive / total) * 100), color: 'var(--success)' },
+      { label: 'financialImpact.costLabels.inventory',  amount: inventory,  pct: Math.round((inventory  / total) * 100), color: 'var(--accent)' },
     ];
   });
 
@@ -118,7 +118,7 @@ export class FinancialImpactStore {
 
   financialPieGradient(): string {
     const types = this.maintenanceTypes();
-    if (types.every(t => t.pct === 0)) return '#2a2a2a 0% 100%';
+    if (types.every(t => t.pct === 0)) return 'var(--surface-3) 0% 100%';
     let cursor = 0;
     return types
       .map((t, i) => {

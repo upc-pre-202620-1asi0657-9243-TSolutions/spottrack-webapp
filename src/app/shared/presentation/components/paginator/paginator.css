@@ -4,7 +4,7 @@
   justify-content: flex-end;
   gap: 16px;
   font-size: 0.8rem;
-  color: #9ca3af;
+  color: var(--text-muted);
 }
 
 .pager__size {
@@ -14,10 +14,10 @@
 }
 
 .pager__size select {
-  background: #252525;
-  color: #e0e0e0;
-  border: 1px solid #333333;
-  border-radius: 6px;
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   padding: 4px 8px;
   font-size: 0.8rem;
   cursor: pointer;
@@ -25,7 +25,8 @@
 
 .pager__size select:focus {
   outline: none;
-  border-color: #f5bc36;
+  border-color: var(--accent);
+  box-shadow: var(--focus-ring);
 }
 
 .pager__range {
@@ -44,16 +45,22 @@
   width: 30px;
   height: 30px;
   padding: 0;
-  background: transparent;
-  color: #e0e0e0;
-  border: 1px solid #333333;
-  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   cursor: pointer;
 }
 
+.pager__nav button:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
 .pager__nav button:hover:not(:disabled) {
-  border-color: #f5bc36;
-  color: #f5bc36;
+  background: var(--surface-hover);
+  border-color: var(--border-strong);
+  color: var(--text);
 }
 
 .pager__nav button:disabled {

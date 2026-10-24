@@ -4,10 +4,10 @@
   margin: 0;
   padding: 4px 0;
   list-style: none;
-  background: #1e1e1e;
-  border: 1px solid #2a2a2a;
-  border-radius: 8px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.65);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
   min-width: 185px;
   animation: ctx-in 0.08s ease;
   user-select: none;
@@ -24,32 +24,32 @@
   gap: 10px;
   padding: 8px 14px;
   font-size: 0.83rem;
-  color: #e0e0e0;
+  color: var(--text);
   cursor: pointer;
   transition: background 0.1s, color 0.1s;
 }
 
 .ctx-item:hover {
-  background: #2a2a2a;
-  color: #fff;
+  background: var(--surface-hover);
+  color: var(--text);
 }
 
 .ctx-item:hover .ctx-item__icon {
-  color: #f5c518;
+  color: var(--accent-text);
 }
 
 .ctx-item__icon {
   font-size: 16px;
   width: 16px;
   height: 16px;
-  color: #888;
+  color: var(--text-muted);
   flex-shrink: 0;
   transition: color 0.1s;
 }
 
 .ctx-sep {
   height: 1px;
-  background: #2a2a2a;
+  background: var(--border);
   margin: 3px 0;
   pointer-events: none;
 }

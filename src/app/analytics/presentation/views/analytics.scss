@@ -1,16 +1,17 @@
-@use 'sass:color';
-
 // ── Variables ─────────────────────────────────────────────────────────────────
-$bg-page : #121212;
-$bg-card : #1e1e1e;
-$border  : #333333;
-$text    : #e0e0e0;
-$muted   : #9ca3af;
-$accent  : #f5bc36;
-$amber   : #f0b100;
-$red     : #fb2c36;
-$green   : #00c950;
-$blue    : #4fc3f7;
+// Aliases onto the global design tokens (src/styles.css) — light/dark aware.
+$bg-page    : var(--bg);
+$bg-card    : var(--surface);
+$bg-inner   : var(--surface-2);
+$border     : var(--border);
+$text       : var(--text);
+$muted      : var(--text-muted);
+$accent     : var(--accent);
+$accent-text: var(--accent-text);
+$amber      : var(--warning);
+$red        : var(--danger);
+$green      : var(--success);
+$blue       : var(--info);
 
 // ── Page ─────────────────────────────────────────────────────────────────────
 .analytics-page {
@@ -34,7 +35,7 @@ $blue    : #4fc3f7;
   margin: 0;
   font-size: 1.875rem;
   font-weight: 700;
-  color: #fff;
+  color: $text;
 }
 
 .page-subtitle {
@@ -54,11 +55,11 @@ $blue    : #4fc3f7;
   align-items: center;
   gap: 6px;
   padding: 8px 16px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   font-weight: 700;
   font-size: 0.875rem;
   cursor: pointer;
-  transition: opacity 0.15s;
+  transition: background 0.15s, border-color 0.15s;
 
   mat-icon {
     font-size: 16px;
@@ -70,23 +71,24 @@ $blue    : #4fc3f7;
 .btn-accent {
   @extend %btn-base;
   background: $accent;
-  border: none;
-  color: #000;
+  border: 1px solid $accent;
+  color: var(--accent-contrast);
 
   &:hover {
-    opacity: 0.85;
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
   }
 }
 
 .btn-outline {
   @extend %btn-base;
-  background: $bg-page;
+  background: $bg-card;
   border: 1px solid $border;
   color: $text;
 
   &:hover {
-    border-color: #555;
-    color: #fff;
+    background: var(--surface-hover);
+    border-color: var(--border-strong);
   }
 
   &--sm {
@@ -102,7 +104,8 @@ $blue    : #4fc3f7;
   gap: 12px;
   background: $bg-card;
   border: 1px solid $border;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   padding: 12px 16px;
 }
 
@@ -199,7 +202,8 @@ $blue    : #4fc3f7;
   justify-content: space-between;
   background: $bg-card;
   border: 1px solid $border;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   padding: 24px;
 
   &__info {
@@ -218,7 +222,7 @@ $blue    : #4fc3f7;
     margin: 0;
     font-size: 1.875rem;
     font-weight: 700;
-    color: #fff;
+    color: $text;
 
     &--red   { color: $red   !important; }
     &--green { color: $green !important; }
@@ -264,7 +268,8 @@ $blue    : #4fc3f7;
 .chart-card {
   background: $bg-card;
   border: 1px solid $border;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   padding: 24px;
   display: flex;
   flex-direction: column;
@@ -284,7 +289,7 @@ $blue    : #4fc3f7;
   &__title {
     font-size: 1rem;
     font-weight: 700;
-    color: #fff;
+    color: $text;
   }
 
   &__subtitle {
@@ -296,13 +301,13 @@ $blue    : #4fc3f7;
 
 // ── Badge count ───────────────────────────────────────────────────────────────
 .badge-count {
-  background: rgba(245, 188, 54, 0.15);
-  border: 1px solid rgba(245, 188, 54, 0.4);
+  background: var(--accent-soft);
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
   border-radius: 20px;
   padding: 3px 12px;
   font-size: 0.75rem;
   font-weight: 700;
-  color: $accent;
+  color: $accent-text;
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -346,7 +351,7 @@ $blue    : #4fc3f7;
 .grid-line {
   width: 100%;
   height: 1px;
-  background: $border;
+  background: var(--chart-grid);
 }
 
 .capacity-line {
@@ -354,7 +359,7 @@ $blue    : #4fc3f7;
   left: 0;
   right: 0;
   height: 0;
-  border-top: 2px dashed rgba(255, 255, 255, 0.3);
+  border-top: 2px dashed var(--border-strong);
   pointer-events: none;
 }
 
@@ -403,7 +408,7 @@ $blue    : #4fc3f7;
   transition: height 0.3s ease;
 
   &--current { background: $accent; }
-  &--prev    { background: rgba(245, 188, 54, 0.35); }
+  &--prev    { background: color-mix(in srgb, var(--accent) 35%, transparent); }
 
   &--roi {
     width: 60%;
@@ -418,7 +423,7 @@ $blue    : #4fc3f7;
   }
 
   &--roi-neg {
-    background: rgba(251, 44, 54, 0.45);
+    background: color-mix(in srgb, var(--danger) 45%, transparent);
     border-radius: 0 0 4px 4px;
     align-self: flex-start;
   }
@@ -450,13 +455,13 @@ $blue    : #4fc3f7;
   border-radius: 50%;
 
   &--current { background: $accent; }
-  &--prev    { background: rgba(245, 188, 54, 0.35); }
+  &--prev    { background: color-mix(in srgb, var(--accent) 35%, transparent); }
 }
 
 .legend-line {
   width: 18px;
   height: 0;
-  border-top: 2px dashed rgba(255, 255, 255, 0.3);
+  border-top: 2px dashed var(--border-strong);
 }
 
 // ── Pie chart ─────────────────────────────────────────────────────────────────
@@ -506,7 +511,7 @@ $blue    : #4fc3f7;
     color: $text;
 
     strong {
-      color: #fff;
+      color: $text;
     }
   }
 }
@@ -562,13 +567,13 @@ $blue    : #4fc3f7;
   align-items: center;
   gap: 16px;
   padding: 16px;
-  background: $bg-page;
+  background: $bg-inner;
   border: 1px solid $border;
   border-radius: 10px;
   flex-wrap: wrap;
 
   &:hover {
-    border-color: #444;
+    border-color: var(--border-strong);
   }
 }
 
@@ -583,9 +588,9 @@ $blue    : #4fc3f7;
   white-space: nowrap;
   flex-shrink: 0;
 
-  &--high   { background: rgba(251, 44,  54,  0.12); border: 1px solid $red;   color: $red;   }
-  &--medium { background: rgba(240, 177, 0,   0.12); border: 1px solid $amber; color: $amber; }
-  &--low    { background: rgba(79,  195, 247, 0.12); border: 1px solid $blue;  color: $blue;  }
+  &--high   { background: var(--danger-soft);  border: 1px solid $red;   color: $red;   }
+  &--medium { background: var(--warning-soft); border: 1px solid $amber; color: $amber; }
+  &--low    { background: var(--info-soft);    border: 1px solid $blue;  color: $blue;  }
 }
 
 .reloc-machine {
@@ -594,7 +599,7 @@ $blue    : #4fc3f7;
   gap: 8px;
   min-width: 160px;
   font-weight: 600;
-  color: #fff;
+  color: $text;
   font-size: 0.875rem;
   flex-shrink: 0;
 
@@ -622,7 +627,7 @@ $blue    : #4fc3f7;
 
 .occ-bar {
   height: 6px;
-  background: #2a2a2a;
+  background: var(--surface-3);
   border-radius: 3px;
   overflow: hidden;
 
@@ -680,10 +685,10 @@ $blue    : #4fc3f7;
   gap: 6px;
   margin-left: auto;
   padding: 7px 14px;
-  background: rgba(245, 188, 54, 0.12);
-  border: 1px solid rgba(245, 188, 54, 0.4);
-  border-radius: 6px;
-  color: $accent;
+  background: var(--accent-soft);
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  border-radius: var(--radius-sm);
+  color: $accent-text;
   font-weight: 700;
   font-size: 0.8125rem;
   cursor: pointer;
@@ -698,7 +703,7 @@ $blue    : #4fc3f7;
   }
 
   &:hover {
-    background: rgba(245, 188, 54, 0.2);
+    background: color-mix(in srgb, var(--accent) 24%, transparent);
   }
 }
 
@@ -718,9 +723,9 @@ $blue    : #4fc3f7;
   border-width: 1px;
   border-style: solid;
 
-  &--green { background: rgba(0,   201, 80,  0.08); border-color: $green; }
-  &--red   { background: rgba(251, 44,  54,  0.08); border-color: $red;   }
-  &--amber { background: rgba(240, 177, 0,   0.08); border-color: $amber; }
+  &--green { background: var(--success-soft); border-color: color-mix(in srgb, var(--success) 40%, transparent); }
+  &--red   { background: var(--danger-soft);  border-color: color-mix(in srgb, var(--danger) 40%, transparent);  }
+  &--amber { background: var(--warning-soft); border-color: color-mix(in srgb, var(--warning) 40%, transparent); }
 
   &__icon {
     font-size: 20px;
@@ -747,7 +752,7 @@ $blue    : #4fc3f7;
 
     &--green { color: $green; }
     &--red   { color: $red;   }
-    &--amber { color: color.adjust($amber, $lightness: -10%); }
+    &--amber { color: $amber; }
   }
 
   &__desc {
@@ -772,7 +777,7 @@ $blue    : #4fc3f7;
   margin: 0;
   font-size: 1.5rem;
   font-weight: 700;
-  color: #fff;
+  color: $text;
 }
 
 .fin-subtitle {
@@ -799,6 +804,7 @@ $blue    : #4fc3f7;
   }
 
   th {
+    background: $bg-inner;
     color: $muted;
     font-weight: 600;
     font-size: 0.75rem;
@@ -811,13 +817,13 @@ $blue    : #4fc3f7;
   }
 
   tbody tr:hover {
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--surface-hover);
   }
 
   &__footer td {
     color: $text;
     font-weight: 700;
-    border-top: 1px solid #444;
+    border-top: 1px solid var(--border-strong);
     border-bottom: none;
   }
 }
@@ -826,7 +832,7 @@ $blue    : #4fc3f7;
   display: inline-block;
   padding: 2px 8px;
   border-radius: 4px;
-  background: rgba(251, 44, 54, 0.18);
+  background: var(--danger-soft);
   color: $red;
   font-weight: 700;
   font-size: 0.8rem;
@@ -851,7 +857,7 @@ $blue    : #4fc3f7;
   gap: 12px;
   padding: 10px 12px;
   border-left: 3px solid transparent;
-  background: rgba(255, 255, 255, 0.02);
+  background: $bg-inner;
   border-radius: 0 6px 6px 0;
 
   &__label {
@@ -897,7 +903,7 @@ $blue    : #4fc3f7;
   left: 0;
   right: 0;
   height: 0;
-  border-top: 1.5px solid #555;
+  border-top: 1.5px solid var(--text-faint);
   pointer-events: none;
 }
 
@@ -909,7 +915,7 @@ $blue    : #4fc3f7;
 }
 
 .fin-section-icon {
-  color: $accent;
+  color: $accent-text;
   font-size: 22px;
   width: 22px;
   height: 22px;
@@ -935,9 +941,9 @@ $blue    : #4fc3f7;
 }
 
 .roi-sim-input {
-  background: $bg-page;
+  background: $bg-inner;
   border: 1px solid $border;
-  border-radius: 8px;
+  border-radius: var(--radius);
   padding: 10px 14px;
   color: $text;
   font-size: 1rem;
@@ -948,6 +954,7 @@ $blue    : #4fc3f7;
 
   &:focus {
     border-color: $accent;
+    box-shadow: var(--focus-ring);
   }
 
   &::-webkit-inner-spin-button,
@@ -1057,7 +1064,7 @@ $blue    : #4fc3f7;
   align-items:     center;
   gap:             12px;
   padding:         40px 0;
-  color:           #888;
+  color:           $muted;
   font-size:       0.9rem;
 }
 
@@ -1065,11 +1072,11 @@ $blue    : #4fc3f7;
   display:          flex;
   align-items:      center;
   gap:              8px;
-  background:       rgba(251, 44, 54, 0.1);
-  border:           1px solid rgba(251, 44, 54, 0.4);
+  background:       var(--danger-soft);
+  border:           1px solid color-mix(in srgb, var(--danger) 40%, transparent);
   border-radius:    8px;
   padding:          12px 16px;
-  color:            #fb2c36;
+  color:            $red;
   font-size:        0.875rem;
   margin-bottom:    16px;
 
