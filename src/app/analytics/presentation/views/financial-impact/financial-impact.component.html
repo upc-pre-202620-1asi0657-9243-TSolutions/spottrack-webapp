@@ -45,7 +45,9 @@
       <div class="stat-card__info">
         <p class="stat-card__label">{{ 'financialImpact.stats.potentialSavings' | translate }}</p>
         <p class="stat-card__value stat-card__value--green">${{ stats.potentialSavings | number:'1.0-0' }}</p>
-        <p class="stat-card__change stat-card__change--muted">{{ 'financialImpact.stats.withPredictive' | translate }}</p>
+        <p class="stat-card__change stat-card__change--muted">
+          {{ 'financialImpact.stats.withPredictive' | translate: { count: preventiveSavings().repairs } }}
+        </p>
       </div>
       <mat-icon class="stat-card__icon stat-card__icon--green">trending_up</mat-icon>
     </div>
@@ -67,7 +69,10 @@
     <!-- Inactivity loss table -->
     <div class="chart-card">
       <div class="chart-card__header">
-        <span class="chart-card__title">{{ 'financialImpact.lossTable.title' | translate }}</span>
+        <div>
+          <span class="chart-card__title">{{ 'financialImpact.lossTable.title' | translate }}</span>
+          <p class="chart-card__subtitle">{{ 'financialImpact.lossTable.subtitle' | translate }}</p>
+        </div>
       </div>
       <div class="fin-table-wrap">
         <table class="fin-table">
@@ -108,19 +113,25 @@
     <!-- Maintenance cost breakdown -->
     <div class="chart-card">
       <div class="chart-card__header">
-        <span class="chart-card__title">{{ 'financialImpact.costBreakdown.title' | translate }}</span>
+        <div>
+          <span class="chart-card__title">{{ 'financialImpact.costBreakdown.title' | translate }}</span>
+          <p class="chart-card__subtitle">{{ 'financialImpact.costBreakdown.subtitle' | translate }}</p>
+        </div>
       </div>
 
       <!-- Pie donut — labels are hardcoded (not translatable, per design) -->
       <div class="pie-container">
         <div class="pie-donut" [style.background]="'conic-gradient(' + maintenancePieGradient() + ')'">
-          <div class="pie-donut__hole"></div>
+          <div class="pie-donut__hole">
+            <span class="pie-donut__total-label">{{ 'financialImpact.costBreakdown.total' | translate }}</span>
+            <span class="pie-donut__total">${{ maintenanceTotal() | number:'1.0-0' }}</span>
+          </div>
         </div>
         <div class="pie-legend">
           @for (t of maintenanceTypes; track t.label) {
             <div class="pie-legend__item">
               <span class="pie-legend__dot" [style.background]="t.color"></span>
-              <span class="pie-legend__label">{{ t.label | translate }}: <strong>${{ t.amount | number:'1.0-0' }}</strong></span>            </div>
+              <span class="pie-legend__label">{{ t.label | translate }}: <strong>${{ t.amount | number:'1.0-0' }}</strong> ({{ t.pct }}%)</span>            </div>
           }
         </div>
       </div>
@@ -143,7 +154,10 @@
   <!-- ── ROI Projection bar chart ───────────────────────────────────────────── -->
   <div class="chart-card chart-card--full">
     <div class="chart-card__header">
-      <span class="chart-card__title">{{ 'financialImpact.roiProjection.title' | translate }}</span>
+      <div>
+        <span class="chart-card__title">{{ 'financialImpact.roiProjection.title' | translate }}</span>
+        <p class="chart-card__subtitle">{{ 'financialImpact.roiProjection.subtitle' | translate }}</p>
+      </div>
       <span class="roi-break-even" [class.roi-break-even--none]="!breakEvenMonth()">
         @if (breakEvenMonth(); as month) {
           {{ 'financialImpact.roiProjection.breakEven' | translate }}: {{ 'financialImpact.roiProjection.month' | translate }} {{ month }}

@@ -50,6 +50,9 @@ export class FinancialImpactComponent implements OnInit {
 
   get maintenanceTypes() { return this.store.maintenanceTypes(); }
 
+  readonly preventiveSavings = this.store.preventiveSavings;
+  readonly maintenanceTotal  = computed(() => this.store.maintenanceTypes().reduce((s, t) => s + t.amount, 0));
+
   maintenancePieGradient(): string { return this.store.financialPieGradient(); }
 
   readonly pendingMachineCost    = signal(5000);

@@ -205,6 +205,14 @@ $blue    : #4fc3f7;
     font-weight: 700;
     color: #fff;
   }
+
+  &__subtitle {
+    margin: 4px 0 0;
+    max-width: 640px;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    color: $muted;
+  }
 }
 
 // ── Inactivity loss table ─────────────────────────────────────────────────────
@@ -284,6 +292,24 @@ $blue    : #4fc3f7;
     inset: 30%;
     background: $bg-card;
     border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+  }
+
+  &__total-label {
+    font-size: 0.7rem;
+    color: $muted;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  &__total {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #fff;
   }
 }
 

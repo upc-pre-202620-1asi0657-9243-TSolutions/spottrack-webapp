@@ -17,6 +17,14 @@ export interface FinancialStats     {
   roiMonths:        number;
 }
 
+/** What the completed corrective repairs cost versus the same number of preventive checks. */
+export interface PreventiveSavings {
+  savings:          number;
+  repairs:          number;
+  avgRepairCost:    number;
+  avgPreventiveCost: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class FinancialImpactStore {
 
@@ -83,17 +91,49 @@ export class FinancialImpactStore {
     ];
   });
 
+  /**
+   * Corrective repairs happen after a failure; preventive checks are planned and cheaper.
+   * Savings = what the completed repairs cost minus what the same number of preventive
+   * checks costs at the average preventive price from the logs. 0 when there is no
+   * preventive history to compare against.
+   */
+  readonly preventiveSavings = computed<PreventiveSavings>(() => {
+    const tickets = this._tickets();
+    const logs    = this._logs();
+    const costsOf = (type: string) => tickets
+      .filter(t => t.type === type)
+      .map(t => logs.filter(l => l.ticketId === t.id).reduce((s, l) => s + l.cost, 0))
+      .filter(cost => cost > 0);
+
+    const repairs    = costsOf('CORRECTIVE');
+    const preventive = costsOf('PREVENTIVE');
+    const avg = (xs: number[]) => (xs.length ? xs.reduce((s, x) => s + x, 0) / xs.length : 0);
+    const avgRepairCost     = Math.round(avg(repairs));
+    const avgPreventiveCost = Math.round(avg(preventive));
+    const savings = preventive.length
+      ? Math.max(0, Math.round(repairs.reduce((s, x) => s + x, 0) - repairs.length * avgPreventiveCost))
+      : 0;
+    return { savings, repairs: repairs.length, avgRepairCost, avgPreventiveCost };
+  });
+
   financialPieGradient(): string {
+    const types = this.maintenanceTypes();
+    if (types.every(t => t.pct === 0)) return '#2a2a2a 0% 100%';
     let cursor = 0;
-    return this.maintenanceTypes()
-      .map(t => { const from = cursor; cursor += t.pct; return `${t.color} ${from}% ${cursor}%`; })
+    return types
+      .map((t, i) => {
+        // Rounded percentages can sum to 99 or 101; the last slice always closes the circle.
+        const from = cursor;
+        cursor = i === types.length - 1 ? 100 : cursor + t.pct;
+        return `${t.color} ${from}% ${cursor}%`;
+      })
       .join(', ');
   }
 
   readonly financialStats = computed<FinancialStats>(() => {
     const lossInactivity   = this.totalMonthlyLoss();
     const maintenanceCost  = this.maintenanceTypes().reduce((s, t) => s + t.amount, 0);
-    const potentialSavings = Math.round((lossInactivity + maintenanceCost) * 0.30);
+    const potentialSavings = this.preventiveSavings().savings;
     const monthlyBenefit   = Math.max(1, Math.round((lossInactivity * 0.3 + maintenanceCost * 0.05)));
     const sysImplCost      = Math.round(maintenanceCost * 0.6);
     const roiMonths        = Math.round((sysImplCost / monthlyBenefit) * 10) / 10;

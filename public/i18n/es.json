@@ -603,7 +603,7 @@
       "lossInactivity": "Pérdida por Inactividad",
       "maintenanceCost": "Costo Mantenimiento",
       "potentialSavings": "Ahorro Potencial",
-      "withPredictive": "Con mantenimiento predictivo",
+      "withPredictive": "Si {{count}} reparaciones hubieran sido revisiones preventivas",
       "avgRoi": "ROI Promedio",
       "months": "meses",
       "investmentRecovery": "Recuperación de inversión",
@@ -611,6 +611,7 @@
     },
     "lossTable": {
       "title": "Pérdida por Inactividad de Equipos",
+      "subtitle": "Dinero perdido mientras cada máquina estuvo fuera de servicio",
       "machine": "Máquina",
       "hours": "Horas",
       "ratePerHour": "$/Hora",
@@ -618,15 +619,18 @@
       "monthlyTotal": "TOTAL PÉRDIDA MENSUAL"
     },
     "costBreakdown": {
-      "title": "Desglose de Costos de Mantenimiento"
+      "title": "Desglose de Costos de Mantenimiento",
+      "subtitle": "Gasto real de mantenimientos completados y cotizaciones de repuestos",
+      "total": "Total"
     },
     "costLabels": {
-      "corrective": "Mantenimiento Correctivo (3-5x más caro)",
-      "preventive": "Mantenimiento Preventivo",
-      "inventory": "Inventario de Repuestos"
+      "corrective": "Correctivo (reparación tras una falla)",
+      "preventive": "Preventivo (revisión planificada)",
+      "inventory": "Repuestos"
     },
     "roiProjection": {
       "title": "Proyección de ROI – Nueva Máquina",
+      "subtitle": "Resultado acumulado de comprar una máquina: su precio se paga al inicio y cada mes suma demanda insatisfecha × ingreso por usuario. Rojo: aún recuperando el costo; verde: ya se pagó sola.",
       "breakEven": "Punto de equilibrio",
       "noBreakEven": "Sin punto de equilibrio en 8 meses",
       "month": "Mes"

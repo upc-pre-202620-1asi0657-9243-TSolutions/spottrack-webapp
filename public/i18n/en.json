@@ -603,7 +603,7 @@
       "lossInactivity": "Inactivity Loss",
       "maintenanceCost": "Maintenance Cost",
       "potentialSavings": "Potential Savings",
-      "withPredictive": "With predictive maintenance",
+      "withPredictive": "If {{count}} repairs had been preventive checks",
       "avgRoi": "Average ROI",
       "months": "months",
       "investmentRecovery": "Investment recovery",
@@ -611,6 +611,7 @@
     },
     "lossTable": {
       "title": "Equipment Inactivity Loss",
+      "subtitle": "Money lost while each machine was out of service",
       "machine": "Machine",
       "hours": "Hours",
       "ratePerHour": "$/Hour",
@@ -618,15 +619,18 @@
       "monthlyTotal": "TOTAL MONTHLY LOSS"
     },
     "costBreakdown": {
-      "title": "Maintenance Cost Breakdown"
+      "title": "Maintenance Cost Breakdown",
+      "subtitle": "Real spend from completed maintenance and spare-part quotes",
+      "total": "Total"
     },
     "costLabels": {
-      "corrective": "Corrective Maintenance (3-5x more expensive)",
-      "preventive": "Preventive Maintenance",
-      "inventory": "Spare Parts Inventory"
+      "corrective": "Corrective (repair after a failure)",
+      "preventive": "Preventive (planned check)",
+      "inventory": "Spare parts"
     },
     "roiProjection": {
       "title": "ROI Projection – New Machine",
+      "subtitle": "Cumulative result of buying one machine: its price is paid up front, then every month adds unmet demand × revenue per user. Red means still recovering the cost, green means it already paid for itself.",
       "breakEven": "Break-even",
       "noBreakEven": "No break-even within 8 months",
       "month": "Month"
