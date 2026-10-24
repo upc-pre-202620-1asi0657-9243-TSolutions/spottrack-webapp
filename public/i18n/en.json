@@ -1083,5 +1083,13 @@
       "duplicate": "This DNI is already in the whitelist.",
       "invalidFormat": "DNI must be exactly 8 digits."
     }
+  },
+  "shared": {
+    "paginator": {
+      "rowsPerPage": "Rows",
+      "of": "of",
+      "previous": "Previous page",
+      "next": "Next page"
+    }
   }
 }

@@ -1083,5 +1083,13 @@
       "duplicate": "Este DNI ya está en la whitelist.",
       "invalidFormat": "El DNI debe tener exactamente 8 dígitos."
     }
+  },
+  "shared": {
+    "paginator": {
+      "rowsPerPage": "Filas",
+      "of": "de",
+      "previous": "Página anterior",
+      "next": "Página siguiente"
+    }
   }
 }

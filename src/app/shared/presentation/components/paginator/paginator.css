@@ -1,0 +1,76 @@
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+.pager__size {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pager__size select {
+  background: #252525;
+  color: #e0e0e0;
+  border: 1px solid #333333;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.pager__size select:focus {
+  outline: none;
+  border-color: #f5bc36;
+}
+
+.pager__range {
+  font-variant-numeric: tabular-nums;
+}
+
+.pager__nav {
+  display: flex;
+  gap: 4px;
+}
+
+.pager__nav button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  background: transparent;
+  color: #e0e0e0;
+  border: 1px solid #333333;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.pager__nav button:hover:not(:disabled) {
+  border-color: #f5bc36;
+  color: #f5bc36;
+}
+
+.pager__nav button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.pager__nav mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+@media (max-width: 480px) {
+  .pager { flex-wrap: wrap; gap: 10px; }
+}
+
+@media print {
+  .pager { display: none; }
+}
