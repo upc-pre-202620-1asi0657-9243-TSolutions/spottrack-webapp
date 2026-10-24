@@ -238,6 +238,10 @@
   min-height: 4px;
 }
 
+.bar-col {
+  min-width: 0;
+}
+
 .bar-col__label {
   font-size: 0.75rem;
   color: var(--muted);
@@ -245,7 +249,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 60px;
+  max-width: 100%;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -342,6 +346,10 @@
 }
 
 .kanban-col__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
   margin: 0 0 10px;
   font-size: 0.78rem;
   font-weight: 600;
@@ -350,10 +358,26 @@
   letter-spacing: 0.05em;
 }
 
+.kanban-col__count {
+  min-width: 22px;
+  padding: 1px 7px;
+  border-radius: 10px;
+  background: var(--bg-card2);
+  color: var(--text);
+  font-size: 0.72rem;
+  text-align: center;
+}
+
+/* A busy gym has dozens of tickets per column: scroll inside the card instead of stretching the page. */
 .kanban-col__items {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  max-height: 420px;
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
 }
 
 .kanban-empty {

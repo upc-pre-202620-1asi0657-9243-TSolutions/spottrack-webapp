@@ -51,6 +51,8 @@ export class DashboardStore {
       .sort((a, b) => parseInt(a.hour) - parseInt(b.hour));
   });
 
+  static readonly MAX_USAGE_BARS = 10;
+
   private readonly SVG_W = 680;
   private readonly SVG_H = 160;
 
@@ -87,8 +89,12 @@ export class DashboardStore {
     const stats = this.usageStats();
     if (!stats.length) return [];
 
-    const maxHours = Math.max(...stats.map(s => s.totalUsageHours), 1);
-    return stats.map(s => ({
+    // Only the busiest machines fit as bars; a big gym has hundreds.
+    const top = [...stats]
+      .sort((a, b) => b.totalUsageHours - a.totalUsageHours)
+      .slice(0, DashboardStore.MAX_USAGE_BARS);
+    const maxHours = Math.max(...top.map(s => s.totalUsageHours), 1);
+    return top.map(s => ({
       name:  s.equipmentName,
       hours: s.totalUsageHours,
       pct:   (s.totalUsageHours / maxHours) * 100,
@@ -96,7 +102,7 @@ export class DashboardStore {
   });
 
   readonly maxBarHours = computed(() =>
-    Math.max(...this.machineUsageBars().map(b => b.hours), 600)
+    Math.max(...this.machineUsageBars().map(b => b.hours), 1)
   );
 
   // ── Equipos Subutilizados ─────────────────────────────────────────────────
@@ -105,6 +111,7 @@ export class DashboardStore {
 
     return stats
       .filter(s => s.totalUsageHours < 130)
+      .sort((a, b) => a.totalUsageHours - b.totalUsageHours)
       .map(s => {
         const roi: 'Bajo' | 'Medio' | 'Alto' =
           s.totalUsageHours < 80  ? 'Bajo'  :

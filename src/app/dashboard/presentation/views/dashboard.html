@@ -132,7 +132,7 @@
         <div class="bar-chart-wrap">
           <div class="bar-chart">
             @for (bar of store.machineUsageBars(); track bar.name) {
-              <div class="bar-col">
+              <div class="bar-col" [title]="bar.name + ' · ' + bar.hours + 'h'">
                 <span class="bar-col__hours">{{ bar.hours }}h</span>
                 <div class="bar-col__track">
                   <div
@@ -178,7 +178,7 @@
               </td>
             </tr>
           } @else {
-            @for (row of store.underutilizedEquipment(); track row.machineId) {
+            @for (row of pagedUnderutilized(); track row.machineId) {
               <tr [appContextMenu]="tableMenu">
                 <td class="cell--id">{{ row.machineId }}</td>
                 <td>{{ row.location }}</td>
@@ -193,6 +193,13 @@
           }
         </tbody>
       </table>
+
+      @if (store.underutilizedEquipment().length > 0) {
+        <app-paginator
+          [total]="store.underutilizedEquipment().length"
+          [(page)]="tablePage"
+          [(pageSize)]="tablePageSize" />
+      }
     </div>
 
     <div class="kanban-card">
@@ -201,7 +208,10 @@
       <div class="kanban-board">
 
         <div class="kanban-col">
-          <p class="kanban-col__header">{{ 'dashboardAdmin.maintenanceCenter.columns.todo' | translate }}</p>
+          <p class="kanban-col__header">
+            {{ 'dashboardAdmin.maintenanceCenter.columns.todo' | translate }}
+            <span class="kanban-col__count">{{ store.pendingTickets().length }}</span>
+          </p>
           <div class="kanban-col__items">
             @if (store.pendingTickets().length === 0) {
               <p class="kanban-empty">{{ 'dashboardAdmin.maintenanceCenter.empty' | translate }}</p>
@@ -220,7 +230,10 @@
         </div>
 
         <div class="kanban-col">
-          <p class="kanban-col__header">{{ 'dashboardAdmin.maintenanceCenter.columns.inProgress' | translate }}</p>
+          <p class="kanban-col__header">
+            {{ 'dashboardAdmin.maintenanceCenter.columns.inProgress' | translate }}
+            <span class="kanban-col__count">{{ store.inProgressTickets().length }}</span>
+          </p>
           <div class="kanban-col__items">
             @if (store.inProgressTickets().length === 0) {
               <p class="kanban-empty">{{ 'dashboardAdmin.maintenanceCenter.empty' | translate }}</p>
@@ -239,7 +252,10 @@
         </div>
 
         <div class="kanban-col">
-          <p class="kanban-col__header">{{ 'dashboardAdmin.maintenanceCenter.columns.completed' | translate }}</p>
+          <p class="kanban-col__header">
+            {{ 'dashboardAdmin.maintenanceCenter.columns.completed' | translate }}
+            <span class="kanban-col__count">{{ store.resolvedTickets().length }}</span>
+          </p>
           <div class="kanban-col__items">
             @if (store.resolvedTickets().length === 0) {
               <p class="kanban-empty">{{ 'dashboardAdmin.maintenanceCenter.empty' | translate }}</p>
