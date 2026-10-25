@@ -297,7 +297,8 @@
       "option20m": "20 minutos",
       "cancel": "Cancelar",
       "create": "Crear Reserva",
-      "confirm": "Reservar"
+      "confirm": "Reservar",
+      "availableHint": "{{count}} máquinas disponibles"
     },
     "error": {
       "alreadyActive": "Ya tienes una reserva activa. Cancélala o espera a que expire antes de crear una nueva.",
@@ -313,7 +314,37 @@
         "status": "Estado",
         "started": "Inicio",
         "window": "Ventana horaria"
-      }
+      },
+      "refresh": "Actualizar"
+    },
+    "stats": {
+      "available": "Máquinas disponibles ahora",
+      "total": "Reservas totales",
+      "completed": "Completadas",
+      "missed": "Canceladas o expiradas"
+    },
+    "current": {
+      "title": "Reserva actual",
+      "machine": "Máquina reservada",
+      "inUse": "En uso",
+      "duration": "Duración",
+      "minutes": "{{count}} min",
+      "cancel": "Cancelar reserva",
+      "emptyTitle": "No tienes una reserva activa",
+      "emptyDesc": "Reserva una máquina disponible y haz check-in con su código QR al llegar.",
+      "quickPick": "Disponibles ahora"
+    },
+    "scan": {
+      "button": "Escanear QR para check-in",
+      "ok": "¡Check-in confirmado! Tu reserva está activa.",
+      "noReservation": "No tienes una reserva pendiente para esa máquina."
+    },
+    "status": {
+      "ALL": "Todas",
+      "ACTIVE": "Activa",
+      "ENDED": "Completada",
+      "CANCELLED": "Cancelada",
+      "EXPIRED": "Expirada"
     }
   },
   "clientAlerts": {

@@ -2,16 +2,17 @@ import { Component, computed, effect, inject, OnInit, signal } from '@angular/co
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
-import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { TranslateModule } from '@ngx-translate/core';
 import { ReservationStore } from '../../../application/reservation.store';
+import { ReservationResource } from '../../../infrastructure/reservation-response';
 import { ContextMenuDirective } from '../../../../shared/presentation/directives/context-menu.directive';
 import { ContextMenuItem } from '../../../../shared/application/context-menu.service';
 import { QrScannerComponent } from '../../../../shared/presentation/components/qr-scanner/qr-scanner.component';
+import { PaginatorComponent, paginate } from '../../../../shared/presentation/components/paginator/paginator';
+
+export type HistoryFilter = 'ALL' | 'ACTIVE' | 'ENDED' | 'CANCELLED' | 'EXPIRED';
 
 @Component({
   selector: 'app-reservation-list',
@@ -19,14 +20,12 @@ import { QrScannerComponent } from '../../../../shared/presentation/components/q
   imports: [
     CommonModule,
     FormsModule,
-    MatCardModule,
-    MatDividerModule,
     MatIconModule,
-    MatButtonModule,
     MatSelectModule,
     TranslateModule,
     ContextMenuDirective,
     QrScannerComponent,
+    PaginatorComponent,
     RouterLink,
   ],
   templateUrl: './reservation-list.component.html',
@@ -44,17 +43,43 @@ export class ReservationListComponent implements OnInit {
   readonly creating             = this.store.creating;
   readonly hasActiveReservation = this.store.hasActiveReservation;
 
-  readonly pageSize  = 5;
-  readonly pageIndex = signal(0);
+  // ── History table ─────────────────────────────────────────────────────────
+  readonly historyFilters: HistoryFilter[] = ['ALL', 'ACTIVE', 'ENDED', 'CANCELLED', 'EXPIRED'];
+  readonly historyFilter   = signal<HistoryFilter>('ALL');
+  readonly historyPage     = signal(0);
+  readonly historyPageSize = signal(5);
 
-  readonly totalPages = computed(() =>
-    Math.max(1, Math.ceil(this.history().length / this.pageSize))
+  readonly sortedHistory = computed(() =>
+    [...this.history()].sort((a, b) => (b.startedAt ?? '').localeCompare(a.startedAt ?? ''))
   );
 
-  readonly paginatedHistory = computed(() => {
-    const start = this.pageIndex() * this.pageSize;
-    return this.history().slice(start, start + this.pageSize);
+  readonly filteredHistory = computed(() => {
+    const f = this.historyFilter();
+    return f === 'ALL' ? this.sortedHistory() : this.sortedHistory().filter(r => r.status === f);
   });
+
+  readonly pagedHistory = computed(() =>
+    paginate(this.filteredHistory(), this.historyPage(), this.historyPageSize())
+  );
+
+  readonly statusCount = computed(() => {
+    const counts: Record<HistoryFilter, number> = { ALL: 0, ACTIVE: 0, ENDED: 0, CANCELLED: 0, EXPIRED: 0 };
+    for (const r of this.history()) {
+      counts.ALL++;
+      if (r.status in counts) counts[r.status as HistoryFilter]++;
+    }
+    return counts;
+  });
+
+  /** Machines the empty state offers as one-click shortcuts into the booking modal. */
+  readonly quickPicks = computed(() => this.availableEquipment().slice(0, 6));
+
+  readonly steps = [
+    { icon: 'event_available', key: 'item1' },
+    { icon: 'qr_code_scanner', key: 'item2' },
+    { icon: 'timer',           key: 'item3' },
+    { icon: 'event_busy',      key: 'item4' },
+  ];
 
   durations = [
     { seconds: 10,        labelKey: 'reservation.modal.option10s' },
@@ -65,7 +90,7 @@ export class ReservationListComponent implements OnInit {
 
   readonly showModal              = signal(false);
   readonly showScanner            = signal(false);
-  readonly scanFeedback           = signal<{ ok: boolean; msg: string } | null>(null);
+  readonly scanFeedback           = signal<{ ok: boolean; msgKey: string } | null>(null);
   selectedMachineId: string | null = null;
   selectedDurationSeconds          = 15 * 60;
 
@@ -80,6 +105,9 @@ export class ReservationListComponent implements OnInit {
         }
       }
     }, { allowSignalWrites: true });
+
+    // A new filter starts on the first page.
+    effect(() => { this.historyFilter(); this.historyPage.set(0); }, { allowSignalWrites: true });
   }
 
   ngOnInit(): void {
@@ -96,22 +124,36 @@ export class ReservationListComponent implements OnInit {
     return this.store.timeRemainingSeconds(reservationId, timerExpiry);
   }
 
+  /** Booked length from the HH:mm:ss window; a window past midnight wraps around. */
+  durationSeconds(r: ReservationResource): number {
+    const toSecs = (t: string) => {
+      const [h = 0, m = 0, s = 0] = (t ?? '').split(':').map(Number);
+      return h * 3600 + m * 60 + s;
+    };
+    let diff = toSecs(r.endTime) - toSecs(r.startTime);
+    if (diff <= 0) diff += 24 * 3600;
+    return diff;
+  }
+
+  remainingPct(r: ReservationResource): number {
+    const total = this.durationSeconds(r);
+    return total ? Math.min(100, (this.timeRemaining(r.id, r.timerExpiry) / total) * 100) : 0;
+  }
+
   openScanner(): void  { this.scanFeedback.set(null); this.showScanner.set(true); }
   closeScanner(): void { this.showScanner.set(false); }
 
   onQrScanned(uuid: string): void {
     this.showScanner.set(false);
     const result = this.store.scanAndActivate(uuid);
-    if (result === 'activated') {
-      this.scanFeedback.set({ ok: true,  msg: '¡Check-in confirmado! Tu reserva está activa.' });
-    } else {
-      this.scanFeedback.set({ ok: false, msg: 'No tienes una reserva pendiente para esa máquina.' });
-    }
+    this.scanFeedback.set(result === 'activated'
+      ? { ok: true,  msgKey: 'reservation.scan.ok' }
+      : { ok: false, msgKey: 'reservation.scan.noReservation' });
     setTimeout(() => this.scanFeedback.set(null), 4000);
   }
 
-  openModal(): void {
-    this.selectedMachineId = null;
+  openModal(machineId: string | null = null): void {
+    this.selectedMachineId = machineId;
     this.selectedDurationSeconds = 15 * 60;
     this.store.clearError();
     this.showModal.set(true);
@@ -128,11 +170,8 @@ export class ReservationListComponent implements OnInit {
     this.store.createReservation(this.selectedMachineId, this.selectedDurationSeconds);
   }
 
-  prevPage(): void { this.pageIndex.update(i => Math.max(0, i - 1)); }
-  nextPage(): void { this.pageIndex.update(i => Math.min(this.totalPages() - 1, i + 1)); }
-
   refreshHistory(): void {
-    this.pageIndex.set(0);
+    this.historyPage.set(0);
     this.store.loadHistory();
   }
 
@@ -144,16 +183,6 @@ export class ReservationListComponent implements OnInit {
     ];
   }
 
-  statusClass(status: string): string {
-    switch (status) {
-      case 'ACTIVE':    return 'status-active';
-      case 'EXPIRED':   return 'status-expired';
-      case 'CANCELLED': return 'status-cancelled';
-      case 'ENDED':     return 'status-ended';
-      default:          return '';
-    }
-  }
-
   formatDate(iso: string): string {
     if (!iso) return '—';
     const d = new Date(iso);
@@ -162,6 +191,6 @@ export class ReservationListComponent implements OnInit {
   }
 
   trimTime(t: string): string {
-    return t ? t.slice(0, 8) : '—';
+    return t ? t.slice(0, 5) : '—';
   }
 }
