@@ -16,7 +16,7 @@
   padding: 18px 22px 0;
   box-sizing: border-box;
   background: var(--bg);
-  font-family: var(--font-sans);
+  font-family: 'Segoe UI', system-ui, sans-serif;
   gap: 14px;
   overflow: hidden;
 }
@@ -41,8 +41,8 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  background: var(--success-soft);
-  border: 1px solid color-mix(in srgb, var(--success) 30%, transparent);
+  background: rgba(76, 175, 80, 0.12);
+  border: 1px solid rgba(76, 175, 80, 0.3);
   border-radius: 20px;
   padding: 4px 10px;
   flex-shrink: 0;
@@ -52,14 +52,14 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--success);
+  background: #4caf50;
   animation: live-blink 1.6s ease-in-out infinite;
 }
 
 .live-text {
   font-size: 10px;
   font-weight: 700;
-  color: var(--success);
+  color: #4caf50;
   letter-spacing: 1.5px;
 }
 
@@ -85,14 +85,13 @@
   align-items: center;
   gap: 6px;
   background: var(--surface);
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 6px 12px;
   transition: border-color 0.2s;
 }
-.gym-selector:hover { border-color: var(--text-faint); }
-.gym-selector:focus-within { border-color: var(--accent); box-shadow: var(--focus-ring); }
-.gym-sel-icon { color: var(--accent-text); font-size: 17px; width: 17px; height: 17px; }
+.gym-selector:hover { border-color: var(--border-strong); }
+.gym-sel-icon { color: #f5c518; font-size: 17px; width: 17px; height: 17px; }
 .gym-select { color: var(--text); font-size: 13px; font-weight: 500; background: transparent; border: none; outline: none; min-width: 130px; }
 .gym-select .mat-mdc-select-trigger { color: var(--text); }
 .gym-select .mat-mdc-select-arrow   { color: var(--text-muted); }
@@ -101,7 +100,7 @@
 .view-tabs {
   display: flex;
   gap: 4px;
-  background: var(--surface-2);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 3px;
@@ -123,9 +122,9 @@
   white-space: nowrap;
 }
 .view-tab mat-icon { font-size: 15px; width: 15px; height: 15px; }
-.view-tab:hover { background: var(--surface-hover); color: var(--text); }
-.view-tab.active { background: var(--accent); color: var(--accent-contrast); }
-.view-tab.active mat-icon { color: var(--accent-contrast); }
+.view-tab:hover { background: var(--surface-hover); color: var(--text-2); }
+.view-tab.active { background: #f5c518; color: #000; }
+.view-tab.active mat-icon { color: #000; }
 
 /* ── STATS BAR ────────────────────────────────────────────────── */
 .stats-bar {
@@ -149,10 +148,10 @@
 .stat-num { font-size: 15px; font-weight: 700; }
 .stat-lbl { color: inherit; opacity: 0.75; font-weight: 500; }
 
-.stat-green  { background: var(--success-soft); border-color: color-mix(in srgb, var(--success) 25%, transparent); color: var(--success); }
-.stat-red    { background: var(--danger-soft);  border-color: color-mix(in srgb, var(--danger) 25%, transparent);  color: var(--danger); }
-.stat-yellow { background: var(--accent-soft);  border-color: color-mix(in srgb, var(--accent) 35%, transparent);  color: var(--accent-text); }
-.stat-util   { background: var(--info-soft);    border-color: color-mix(in srgb, var(--info) 25%, transparent);    color: var(--info); }
+.stat-green  { background: rgba(76,175,80,0.1);  border-color: rgba(76,175,80,0.25);  color: #4caf50; }
+.stat-red    { background: rgba(244,67,54,0.1);  border-color: rgba(244,67,54,0.25);  color: #f44336; }
+.stat-yellow { background: rgba(245,197,24,0.1); border-color: rgba(245,197,24,0.25); color: #f5c518; }
+.stat-util   { background: rgba(33,150,243,0.1); border-color: rgba(33,150,243,0.25); color: #64b5f6; }
 
 @keyframes pill-in {
   from { opacity: 0; transform: translateY(-6px); }
@@ -174,13 +173,13 @@
   font-weight: 600;
   border: 1px solid var(--border);
   cursor: pointer;
-  background: var(--surface);
+  background: transparent;
   color: var(--text-muted);
   transition: all 0.18s;
   letter-spacing: 0.3px;
 }
-.filter-chip:hover { border-color: var(--border-strong); background: var(--surface-hover); color: var(--text); }
-.filter-chip.active { background: var(--accent); border-color: var(--accent); color: var(--accent-contrast); }
+.filter-chip:hover { border-color: var(--border-strong); color: var(--text); }
+.filter-chip.active { background: #f5c518; border-color: #f5c518; color: #000; }
 
 /* ── HEATMAP LEGEND BAR ───────────────────────────────────────── */
 .heat-legend-bar {
@@ -199,7 +198,7 @@
 }
 .heat-lbl-note { font-size: 11px; color: var(--text-faint); margin-left: auto; }
 
-/* ── FLOOR PLAN WRAP ──────────────────────────────────────────── */
+/* ── FLOOR PLAN WRAP ──────────────────────────────────────── */
 .floor-plan-wrap {
   flex: 1;
   display: flex;
@@ -208,120 +207,382 @@
   overflow: hidden;
 }
 
-.floor-plan {
+/* ═══════════════════════════════════════════════════════════
+   GYM BLUEPRINT — Reference-accurate architectural floor plan
+   ═══════════════════════════════════════════════════════════ */
+.gym-blueprint {
   position: relative;
   flex: 1;
   min-height: 0;
-  background: var(--surface);
-  /* Chamfered corners — 45° structural wall cuts like the reference drawing */
-  clip-path: polygon(
-    18px 0%, calc(100% - 18px) 0%,
-    100% 18px, 100% calc(100% - 18px),
-    calc(100% - 18px) 100%, 18px 100%,
-    0% calc(100% - 18px), 0% 18px
-  );
-  /* Inset shadow acts as border and follows the clip-path shape */
-  box-shadow: inset 0 0 0 1px var(--border-strong), inset 0 0 0 5px var(--surface-2);
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  border-radius: 12px 12px 0 0;
   overflow: hidden;
+  box-shadow: inset 0 0 80px rgba(0,0,0,0.15);
 }
 
-/* Animated scan line — decorative, hidden in the flat design */
-.scan-line {
-  display: none;
+/* Subtle dot-grid overlay — more blueprint-like than line grid */
+.blueprint-grid {
   position: absolute;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: color-mix(in srgb, var(--accent) 30%, transparent);
-  animation: scan-move 8s linear infinite;
+  inset: 0;
+  background-image: radial-gradient(circle, var(--border-strong) 1px, transparent 1px);
+  background-size: 28px 28px;
   pointer-events: none;
-  z-index: 2;
+  z-index: 0;
+  opacity: 0.5;
 }
 
+/* Animated scan line */
+.scan-line {
+  position: absolute;
+  left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(245,197,24,0.12) 30%,
+    rgba(245,197,24,0.28) 50%,
+    rgba(245,197,24,0.12) 70%,
+    transparent 100%);
+  animation: scan-move 10s linear infinite;
+  pointer-events: none;
+  z-index: 30;
+}
 @keyframes scan-move {
   0%   { top: -2px; opacity: 0; }
-  4%   { opacity: 1; }
-  94%  { opacity: 0.7; }
+  3%   { opacity: 1; }
+  96%  { opacity: 0.5; }
   100% { top: 100%; opacity: 0; }
 }
 
-/* ── Schematic structural elements (app-palette version) ────── */
-
-/* Inner perimeter wall (like the double-line outer wall in the reference) */
-.bp-inner-perim {
-  position: absolute;
-  inset: 6px;
-  border: 1px solid var(--border);
-  pointer-events: none;
+/* ══ MAIN OUTER GRID  ─  Training Studio | Support Block ══════ */
+.floor-outer {
+  position: relative;
   z-index: 1;
+  display: grid;
+  grid-template-columns: 62fr 38fr;
+  flex: 1;
+  min-height: 0;
 }
 
-/* Partition walls */
-.bp-wall-v,
-.bp-wall-h {
-  position: absolute;
-  background: var(--border);
-  pointer-events: none;
-  z-index: 1;
+/* ── LEFT: TRAINING STUDIO BLOCK ─────────────────────────────── */
+.training-block {
+  display: flex;
+  flex-direction: column;
+  border-right: 2px solid var(--border);
 }
-.bp-wall-v { width: 1px; }
-.bp-wall-h { height: 1px; }
 
-/* Structural column dot — filled circles at wall intersections like the reference */
-.bp-col {
-  position: absolute;
+/* Row 1 – Cardio: takes up top ~33% */
+.training-zone.zone-cardio {
+  flex: 1.1;
+  background: rgba(245,197,24,0.012);
+  border-bottom: 1px solid var(--border);
+}
+
+/* Row 2 – Middle split: Free Weights | Studio open area */
+.training-middle-row {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 55fr 45fr;
+  border-bottom: 1px solid var(--border);
+}
+
+.training-zone.zone-free-weights {
+  background: var(--surface-3);
+  border-right: 1px dashed var(--border);
+}
+
+/* Studio open area — decorative watermark only */
+.studio-open-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background: rgba(245,197,24,0.006);
+}
+.studio-watermark {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(245,197,24,0.15);
+  text-align: center;
+  line-height: 1.6;
+  user-select: none;
+}
+
+/* Row 3 – Bottom split: Upper Body | Lower Body */
+.training-bottom-row {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.training-zone.zone-upper-body {
+  background: var(--surface-3);
+  border-right: 1px dashed var(--border);
+}
+
+.training-zone.zone-lower-body {
+  background: var(--surface-2);
+}
+
+/* ── Generic training zone shell ─────────────────────────────── */
+.training-zone {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 10px 6px;
+  overflow: hidden;
+  transition: background 0.22s;
+}
+.training-zone:hover { background: rgba(255,255,255,0.01) !important; }
+
+/* Zone label tag (dot + name) */
+.zone-label-tag {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+  padding-bottom: 7px;
+  border-bottom: 1px solid var(--border);
+}
+.zone-accent-dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: var(--border-strong);
-  transform: translate(-50%, -50%);
-  z-index: 3;
-  pointer-events: none;
+  flex-shrink: 0;
 }
+.zone-cardio    .zone-accent-dot { background: #f5c518; box-shadow: 0 0 6px rgba(245,197,24,0.55); }
+.zone-free-weights .zone-accent-dot { background: #b0b0b0; box-shadow: 0 0 6px rgba(176,176,176,0.35); }
+.zone-upper-body   .zone-accent-dot { background: #64b5f6; box-shadow: 0 0 6px rgba(100,181,246,0.45); }
+.zone-lower-body   .zone-accent-dot { background: #66bb6a; box-shadow: 0 0 6px rgba(102,187,106,0.45); }
 
-/* Support room box */
-.bp-support-room {
-  position: absolute;
-  border: 1px solid var(--border);
-  pointer-events: none;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.bp-room-lbl {
-  font-size: 7px;
+.zone-name-text {
+  font-size: 9px;
   font-weight: 700;
-  letter-spacing: 1.8px;
-  color: var(--text-faint);
+  letter-spacing: 1.5px;
   text-transform: uppercase;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Entrance gap (open side = no bottom border) */
-.bp-entrance {
-  position: absolute;
-  border: 1px solid var(--border);
-  border-bottom: none;
-  pointer-events: none;
-  z-index: 1;
+/* Equipment grid inside each training zone */
+.zone-equipment-grid {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 12px 8px;
+  padding: 4px 2px;
+  overflow: hidden;
+}
+
+/* Empty zone hint */
+.zone-empty-hint {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 10px;
+  opacity: 0.09;
+  padding: 16px 4px;
+  width: 100%;
+}
+.zone-empty-hint mat-icon {
+  font-size: 22px; width: 22px; height: 22px; color: var(--text);
 }
 
-/* Zone labels — barely-there like architectural room labels */
-.zone-label {
-  position: absolute;
+/* ── RIGHT: SUPPORT / AMENITIES BLOCK ───────────────────────── */
+.support-block {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-2);
+}
+
+/* Top row: Office + Reception */
+.support-top-row {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+  border-bottom: 2px solid var(--border);
+}
+
+/* Shared support room shell */
+.support-room {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 8px;
+  overflow: hidden;
+}
+
+.room-office {
+  background: var(--surface-3);
+  border-right: 1px solid var(--border);
+}
+.room-reception {
+  background: var(--surface-3);
+}
+.room-locker-womens {
+  flex: 1.1;
+  background: var(--surface-3);
+  border-bottom: 2px solid var(--border);
+}
+.room-locker-mens {
+  flex: 1;
+  background: var(--surface-2);
+}
+
+.support-room-icon {
+  font-size: 15px; width: 15px; height: 15px;
+  margin-bottom: 3px;
+}
+.room-office          .support-room-icon { color: rgba(245,197,24,0.5); }
+.room-reception       .support-room-icon { color: rgba(100,181,246,0.5); }
+.room-locker-womens   .support-room-icon { color: rgba(206,147,216,0.5); }
+.room-locker-mens     .support-room-icon { color: rgba(100,181,246,0.45); }
+
+.support-room-label {
   font-size: 8px;
   font-weight: 700;
-  letter-spacing: 3px;
-  color: var(--text-faint);
-  pointer-events: none;
-  z-index: 1;
+  letter-spacing: 1.5px;
   text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: 8px;
 }
 
-/* ── MACHINE PINS ─────────────────────────────────────────────── */
+/* Office furniture */
+.office-furniture {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+.office-desk-elem {
+  width: 34px; height: 20px;
+  border-radius: 3px;
+  background: rgba(245,197,24,0.07);
+  border: 1px solid rgba(245,197,24,0.16);
+}
+.office-chair-elem {
+  width: 13px; height: 13px;
+  border-radius: 50%;
+  background: rgba(245,197,24,0.04);
+  border: 1px solid rgba(245,197,24,0.12);
+}
+
+/* Reception counter */
+.reception-counter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  width: 85%;
+}
+.counter-desk {
+  width: 100%; height: 12px;
+  border-radius: 2px;
+  background: rgba(100,181,246,0.07);
+  border: 1px solid rgba(100,181,246,0.18);
+}
+.counter-chairs {
+  display: flex;
+  gap: 8px;
+}
+.counter-chair {
+  width: 11px; height: 11px;
+  border-radius: 50%;
+  background: rgba(100,181,246,0.06);
+  border: 1px solid rgba(100,181,246,0.15);
+}
+
+/* Locker rows */
+.locker-row {
+  display: flex;
+  gap: 5px;
+  margin-top: 4px;
+}
+.locker-unit {
+  width: 15px; height: 24px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.04);
+}
+.room-locker-womens .locker-unit {
+  border: 1px solid rgba(206,147,216,0.18);
+  background: rgba(206,147,216,0.04);
+}
+.room-locker-mens .locker-unit {
+  border: 1px solid rgba(100,181,246,0.18);
+  background: rgba(100,181,246,0.04);
+}
+
+/* ── ZONE PIN  (in-flow machine pin within training zones) ──── */
+.zone-pin {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  width: 58px;
+  transform: none;
+  animation: zone-pin-appear 0.38s ease both;
+}
+/* Rings escape positioned parent in flow layout — suppress them */
+.zone-pin .pin-ring { display: none; }
+
+/* Compact pin body for zone layout */
+.zone-pin .pin-body {
+  width: 40px; height: 40px;
+}
+.zone-pin .pin-icon {
+  font-size: 17px; width: 17px; height: 17px;
+}
+
+/* Status-specific pulsing glow (replaces rings) */
+.zone-pin.pin-available .pin-body { animation: z-glow-available 2.4s ease-in-out infinite; }
+.zone-pin.pin-in-use    .pin-body { animation: z-glow-in-use   1.4s ease-in-out infinite; }
+.zone-pin.pin-reserved  .pin-body { animation: z-glow-reserved 1.8s ease-in-out infinite; }
+
+@keyframes z-glow-available {
+  0%, 100% { box-shadow: 0 0 8px rgba(76,175,80,0.35); }
+  50%       { box-shadow: 0 0 20px rgba(76,175,80,0.72); }
+}
+@keyframes z-glow-in-use {
+  0%, 100% { box-shadow: 0 0 8px rgba(244,67,54,0.35); }
+  50%       { box-shadow: 0 0 20px rgba(244,67,54,0.72); }
+}
+@keyframes z-glow-reserved {
+  0%, 100% { box-shadow: 0 0 8px rgba(245,197,24,0.35); }
+  50%       { box-shadow: 0 0 20px rgba(245,197,24,0.72); }
+}
+
+.zone-pin:hover  .pin-body { transform: scale(1.1); }
+.zone-pin:active .pin-body { transform: scale(0.92); }
+
+@keyframes zone-pin-appear {
+  from { opacity: 0; transform: scale(0.55); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* ── Legacy class stubs (kept to avoid dead-CSS errors) ──────── */
+/* These classes are no longer used in the MAP view but may be     */
+/* referenced in stale snapshots or dev-mode; kept as inert stubs. */
+.training-floor, .gym-zone, .zone-pesas, .zone-estiramiento,
+.zone-header-strip, .zone-accent-bar, .zone-name-label,
+.zone-corner, .zone-pin-grid, .stretch-mats-area, .stretch-mat,
+.stretch-mat-icon, .bp-wall-h--full, .support-rooms-row,
+.support-room-inner, .room-locker, .room-lobby,
+.locker-grid, .lobby-furniture, .lobby-seat, .lobby-table,
+.office-desk, .office-desk-icon { /* intentionally empty — layout replaced */ }
+
+
+/* ── MACHINE PINS  (heatmap view / absolute-positioned context) ── */
 .machine-pin {
   position: absolute;
   transform: translate(-50%, -50%);
@@ -341,6 +602,41 @@
 
 .machine-pin:hover .pin-body  { transform: scale(1.12); }
 .machine-pin:active .pin-body { transform: scale(0.95); }
+
+/* ─────────────────────────────────────────────────────────────────
+   BLUEPRINT PIN  — Independent pin style for architectural layout.
+   ───────────────────────────────────────────────────────────────── */
+.blueprint-pin {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  width: 58px;
+  animation: zone-pin-appear 0.38s ease both;
+  z-index: 10;
+}
+
+/* Compact pin body for zone grid */
+.blueprint-pin .pin-body {
+  width: 40px;
+  height: 40px;
+}
+.blueprint-pin .pin-icon {
+  font-size: 17px;
+  width: 17px;
+  height: 17px;
+}
+
+/* Status glow animations (replaces rings) */
+.blueprint-pin.pin-available .pin-body { animation: z-glow-available 2.4s ease-in-out infinite; }
+.blueprint-pin.pin-in-use    .pin-body { animation: z-glow-in-use   1.4s ease-in-out infinite; }
+.blueprint-pin.pin-reserved  .pin-body { animation: z-glow-reserved 1.8s ease-in-out infinite; }
+
+.blueprint-pin:hover  .pin-body { transform: scale(1.1); }
+.blueprint-pin:active .pin-body { transform: scale(0.92); }
+
 
 /* Dual pulsing rings */
 .pin-ring {
@@ -372,7 +668,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--surface);
+  background: var(--surface-2);
   border: 2px solid transparent;
   transition: transform 0.15s, box-shadow 0.15s;
 }
@@ -381,36 +677,39 @@
   font-size: 20px;
   width: 20px;
   height: 20px;
-  color: var(--text-muted);
+  color: var(--text-2);
 }
 
 /* Status colours */
-.pin-available .pin-body { border-color: var(--success); background: var(--success-soft); box-shadow: 0 0 0 3px color-mix(in srgb, var(--success) 18%, transparent); }
-.pin-available .pin-icon { color: var(--success); }
-.pin-available .pin-ring { border-color: color-mix(in srgb, var(--success) 45%, transparent); }
+.pin-available .pin-body { border-color: #4caf50; background: #0d1f0e; box-shadow: 0 0 18px rgba(76,175,80,0.45); }
+.pin-available .pin-icon { color: #4caf50; }
+.pin-available .pin-ring { border-color: rgba(76,175,80,0.6); }
 
-.pin-in-use .pin-body    { border-color: var(--danger); background: var(--danger-soft); box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 18%, transparent); }
-.pin-in-use .pin-icon    { color: var(--danger); }
-.pin-in-use .pin-ring    { border-color: color-mix(in srgb, var(--danger) 45%, transparent); animation-duration: 1.4s; }
+.pin-in-use .pin-body    { border-color: #f44336; background: #1f0d0d; box-shadow: 0 0 18px rgba(244,67,54,0.45); }
+.pin-in-use .pin-icon    { color: #f44336; }
+.pin-in-use .pin-ring    { border-color: rgba(244,67,54,0.6); animation-duration: 1.4s; }
 
-.pin-reserved .pin-body  { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent); }
-.pin-reserved .pin-icon  { color: var(--accent-text); }
-.pin-reserved .pin-ring  { border-color: color-mix(in srgb, var(--accent) 50%, transparent); animation-duration: 1.8s; }
+.pin-reserved .pin-body  { border-color: #f5c518; background: #1e1a0d; box-shadow: 0 0 18px rgba(245,197,24,0.45); }
+.pin-reserved .pin-icon  { color: #f5c518; }
+.pin-reserved .pin-ring  { border-color: rgba(245,197,24,0.6); animation-duration: 1.8s; }
 
-.pin-pending .pin-body   { border-color: var(--info); background: var(--info-soft); box-shadow: 0 0 0 3px color-mix(in srgb, var(--info) 18%, transparent); }
-.pin-pending .pin-icon   { color: var(--info); }
-.pin-pending .pin-ring   { border-color: color-mix(in srgb, var(--info) 40%, transparent); }
+.pin-pending .pin-body   { border-color: #9c27b0; background: #150d1f; box-shadow: 0 0 14px rgba(156,39,176,0.4); }
+.pin-pending .pin-icon   { color: #ce93d8; }
+.pin-pending .pin-ring   { border-color: rgba(156,39,176,0.5); }
 
 /* Pin label */
 .pin-label {
   font-size: 10px;
+  font-weight: 500;
   color: var(--text-muted);
   text-align: center;
   white-space: nowrap;
-  max-width: 76px;
+  max-width: 82px;
   overflow: hidden;
   text-overflow: ellipsis;
   pointer-events: none;
+  text-shadow: 0 1px 3px var(--shadow-sm);
+  letter-spacing: 0.2px;
 }
 
 /* ── FLOOR LEGEND (below the map) ────────────────────────────── */
@@ -420,63 +719,240 @@
   align-items: center;
   padding: 11px 16px;
   border-top: 1px solid var(--border);
-  background: var(--surface-2);
-  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  background: var(--surface);
+  border-radius: 0 0 14px 14px;
   flex-shrink: 0;
 }
 .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); }
 .ldot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
-.ldot-green  { background: var(--success); }
-.ldot-red    { background: var(--danger); }
-.ldot-yellow { background: var(--accent); }
+.ldot-green  { background: #4caf50; }
+.ldot-red    { background: #f44336; }
+.ldot-yellow { background: #f5c518; }
 
-/* ── HEATMAP VIEW ─────────────────────────────────────────────── */
-.heat-mode {
-  background: var(--surface);
+/* ══════════════════════════════════════════════════════════════════
+   HEAT MODE — Blueprint-based thermal overlay system
+   ══════════════════════════════════════════════════════════════════ */
+
+/* The gym-blueprint in heat mode: pitch dark so screen-blended
+   colours pop at maximum vibrancy.                                  */
+.heat-blueprint {
+  background: #03050a !important;
+  border-color: #12122a !important;
 }
 
-.heat-canvas {
+/* Faint blueprint grid is still visible in heat mode */
+.heat-blueprint .blueprint-grid {
+  opacity: 0.25;
+}
+
+/* Zone borders become subtle glowing blue lines                     */
+.heat-blueprint .training-zone,
+.heat-blueprint .training-middle-row,
+.heat-blueprint .training-bottom-row {
+  border-color: rgba(60, 80, 200, 0.30) !important;
+}
+.heat-blueprint .training-block {
+  border-right-color: rgba(60, 80, 200, 0.30) !important;
+}
+
+/* ── Full-blueprint heat overlay ──────────────────────────────── */
+/* Sits BELOW the floor-outer (which is position:relative z-index:1).
+   Uses mix-blend-mode:screen on EACH blob so overlapping blobs
+   additively fuse — exactly like the reference thermal map image.  */
+.heat-overlay-full {
   position: absolute;
   inset: 0;
-  z-index: 3;
-  animation: heat-breathe 4s ease-in-out infinite alternate;
-}
-@keyframes heat-breathe {
-  0%   { opacity: 0.85; }
-  100% { opacity: 1; }
+  z-index: 0;           /* below floor-outer at z-index: 1          */
+  pointer-events: none;
 }
 
-/* Ghost pins in heatmap mode */
-.pin-ghost {
+/* Individual heat blob — each blob screen-blends with the dark bg
+   AND with other overlapping blobs via CSS compositing order.       */
+.heat-blob-full {
   position: absolute;
   transform: translate(-50%, -50%);
+  border-radius: 50%;
+  mix-blend-mode: screen;     /* additive fusion with dark background */
+  filter: blur(55px);         /* increased blur for full zone coverage */
+  animation: heat-pulse 3.5s ease-in-out infinite alternate;
+  will-change: opacity, transform;
+  transition:
+    background  0.8s ease,
+    width       0.6s ease,
+    height      0.6s ease;
+}
+
+/* ── Layer 1: Continuous cold base (covers entire training block) ── */
+/* This is the "background radiation" of the reference thermal image.
+   Even with 0 machines in use, the training area glows teal/blue.  */
+.heat-base-training {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 63%;       /* training block = 62fr of 100fr total         */
+  height: 100%;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 55% at 25% 30%,
+      rgba(0, 180, 220, 0.38) 0%,
+      rgba(0, 110, 190, 0.22) 45%,
+      rgba(0, 60, 140, 0.10)  75%,
+      transparent             100%
+    ),
+    radial-gradient(ellipse 70% 60% at 45% 70%,
+      rgba(0, 150, 200, 0.30) 0%,
+      rgba(0,  80, 160, 0.16) 50%,
+      transparent             100%
+    ),
+    radial-gradient(ellipse 50% 40% at 15% 85%,
+      rgba(20, 60, 180, 0.22) 0%,
+      transparent             100%
+    );
+  filter: blur(18px);
+}
+
+/* ── Layer 2: Zone ambient blobs (one per training zone) ─────── */
+/* Each covers its respective zone area with a large, diffuse blob.
+   Colour is driven by zoneAmbient() based on avg zone utilisation. */
+.heat-zone-ambient {
+  position: absolute;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  /* Very heavy blur = smooth coverage, no hard edges               */
+  filter: blur(80px);
+  animation: heat-pulse 4.2s ease-in-out infinite alternate;
+  transition: background 0.9s ease;
+  border-radius: 50%;
+}
+
+/* Cardio zone — top row, full training width                      */
+.zone-ambient-cardio {
+  top: 17.75%;       /* centre of 0–35.5%  */
+  left: 31%;         /* centre of 0–62%    */
+  width: 70%;
+  height: 44%;
+  transform: translate(-50%, -50%);
+}
+
+/* Free Weights — middle-left                                      */
+.zone-ambient-weights {
+  top: 51.6%;        /* centre of 35.5–67.7% */
+  left: 18%;         /* centre of 0–34%      */
+  width: 44%;
+  height: 40%;
+  transform: translate(-50%, -50%);
+}
+
+/* Upper Body — bottom-left                                        */
+.zone-ambient-upper {
+  top: 83.85%;       /* centre of 67.7–100% */
+  left: 15.5%;       /* centre of 0–31%     */
+  width: 38%;
+  height: 38%;
+  transform: translate(-50%, -50%);
+}
+
+/* Lower Body — bottom-right (training half)                       */
+.zone-ambient-lower {
+  top: 83.85%;       /* centre of 67.7–100% */
+  left: 46.5%;       /* centre of 31–62%    */
+  width: 38%;
+  height: 38%;
+  transform: translate(-50%, -50%);
+}
+
+
+@keyframes heat-pulse {
+  0%   { opacity: 0.80; transform: translate(-50%, -50%) scale(1.00); }
+  50%  { opacity: 0.95; transform: translate(-50%, -50%) scale(1.07); }
+  100% { opacity: 0.85; transform: translate(-50%, -50%) scale(0.97); }
+}
+
+/* ── Floor structure in heat mode ────────────────────────────── */
+/* The floor-outer is ABOVE the heat overlay (z-index: 1 from base
+   styles). Making zone backgrounds transparent lets the heat blobs
+   shine through the zone grid.                                      */
+.heat-floor-outer {
+  position: relative;
+  z-index: 2;  /* explicitly above heat-overlay-full at z-index: 0  */
+}
+
+/* All training zones become transparent in heat mode               */
+.heat-zone {
+  background: transparent !important;
+}
+
+/* Zone accent dots match the heat palette instead of yellow        */
+.heat-zone .zone-accent-dot {
+  background: rgba(0, 200, 255, 0.7) !important;
+}
+
+/* Zone name text brightened for contrast over heat colours          */
+.heat-zone .zone-name-text {
+  color: rgba(220, 230, 255, 0.90);
+  text-shadow: 0 0 12px rgba(0, 120, 255, 0.6), 0 1px 2px rgba(0,0,0,0.9);
+}
+
+/* Studio open area transparent in heat mode                         */
+.heat-blueprint .studio-open-area {
+  background: transparent !important;
+}
+
+.heat-blueprint .studio-watermark {
+  color: rgba(100, 120, 200, 0.25);
+}
+
+/* ── Ghost pins in heat map zone view ────────────────────────── */
+.heat-ghost-pin {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  z-index: 10;
-  pointer-events: none;
+  cursor: pointer;
+  width: 58px;
+  animation: zone-pin-appear 0.38s ease both;
 }
-.ghost-body {
-  width: 20px;
-  height: 20px;
+
+.heat-ghost-pin .ghost-body {
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--surface);
-  border: 1px solid var(--border-strong);
+  background: rgba(5, 5, 16, 0.85);
+  border: 1.5px solid;        /* colour driven by heatBorderColor()  */
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.08);
+  transition: border-color 0.5s ease, box-shadow 0.5s ease;
 }
-.ghost-icon { font-size: 10px; width: 10px; height: 10px; color: var(--text-muted); }
-.usage-chip {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--accent-text);
-  padding: 1px 6px;
-  line-height: 1.4;
+
+.heat-ghost-pin .ghost-icon {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+  color: rgba(200, 220, 255, 0.65);
+}
+
+.heat-ghost-pin:hover .ghost-body {
+  transform: scale(1.12);
+  box-shadow: 0 0 18px rgba(255,255,255,0.18);
+}
+
+/* Pin labels in heat mode: bright with glow for readability        */
+.heat-pin-label {
+  color: rgba(210, 225, 255, 0.80);
+  font-size: 9.5px;
+  text-align: center;
+  white-space: nowrap;
+  max-width: 70px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow:
+    0 0 8px rgba(0, 0, 0, 1),
+    0 0 4px rgba(0, 0, 0, 0.9),
+    0 1px 3px rgba(0,0,0,0.9);
 }
 
 /* ── ALL GYMS VIEW ───────────────────────────────────────────── */
@@ -503,8 +979,7 @@
 .gym-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
+  border-radius: 14px;
   overflow: hidden;
   cursor: pointer;
   transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
@@ -523,8 +998,8 @@
   box-shadow: var(--shadow-md);
 }
 .gym-card--active {
-  border-color: var(--accent);
-  box-shadow: var(--shadow-sm);
+  border-color: rgba(245,197,24,0.5);
+  box-shadow: 0 0 20px rgba(245,197,24,0.1);
 }
 
 .gym-card-top {
@@ -534,13 +1009,13 @@
   padding: 14px 14px 10px;
 }
 .gym-card-name { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: var(--text); }
-.gym-card-icon { font-size: 16px; width: 16px; height: 16px; color: var(--accent-text); }
+.gym-card-icon { font-size: 16px; width: 16px; height: 16px; color: #f5c518; }
 .util-badge {
   font-size: 12px;
   font-weight: 700;
-  background: var(--accent-soft);
-  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
-  color: var(--accent-text);
+  background: rgba(245,197,24,0.12);
+  border: 1px solid rgba(245,197,24,0.25);
+  color: #f5c518;
   padding: 2px 9px;
   border-radius: 12px;
 }
@@ -549,7 +1024,7 @@
 .mini-map {
   position: relative;
   height: 110px;
-  background: var(--surface-2);
+  background: var(--surface-3);
   overflow: hidden;
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
@@ -588,12 +1063,42 @@
   color: var(--text-muted);
 }
 .gym-stat-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.gym-stat--fire { color: #ff7043; }
+.gym-stat-fire-icon { font-size: 13px; width: 13px; height: 13px; color: #ff7043; }
+
+/* Service CTA */
+.service-cta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 18px;
+  flex-shrink: 0;
+}
+.cta-icon { color: var(--text-faint); font-size: 28px; width: 28px; height: 28px; flex-shrink: 0; }
+.cta-text { flex: 1; }
+.cta-title { font-size: 14px; font-weight: 600; color: var(--text); margin: 0 0 3px; }
+.cta-desc  { font-size: 12px; color: var(--text-muted); margin: 0; }
+.cta-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  background: var(--surface-3);
+  border: 1px solid var(--border);
+  color: var(--text-faint);
+  padding: 4px 10px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
 
 /* ── MACHINE DETAIL POPUP ─────────────────────────────────────── */
 .detail-backdrop {
   position: fixed;
   inset: 0;
-  background: var(--overlay);
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(2px);
   z-index: 1500;
   display: flex;
   align-items: center;
@@ -604,7 +1109,7 @@
 .detail-popup {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border-radius: 16px;
   width: 100%;
   max-width: 400px;
   box-shadow: var(--shadow-lg);
@@ -637,24 +1142,24 @@
   border: 1px solid var(--border);
   flex-shrink: 0;
 }
-.detail-icon-wrap.detail-icon--available { background: var(--success-soft); border-color: color-mix(in srgb, var(--success) 30%, transparent); }
-.detail-icon-wrap.detail-icon--in-use    { background: var(--danger-soft); border-color: color-mix(in srgb, var(--danger) 30%, transparent); }
-.detail-icon-wrap.detail-icon--reserved  { background: var(--accent-soft); border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
-.detail-icon { font-size: 22px; width: 22px; height: 22px; color: var(--text-muted); }
-.detail-icon-wrap.detail-icon--available .detail-icon { color: var(--success); }
-.detail-icon-wrap.detail-icon--in-use    .detail-icon { color: var(--danger); }
-.detail-icon-wrap.detail-icon--reserved  .detail-icon { color: var(--accent-text); }
+.detail-icon-wrap.detail-icon--available { background: rgba(76,175,80,0.15); border-color: rgba(76,175,80,0.3); }
+.detail-icon-wrap.detail-icon--in-use    { background: rgba(244,67,54,0.15); border-color: rgba(244,67,54,0.3); }
+.detail-icon-wrap.detail-icon--reserved  { background: rgba(245,197,24,0.15); border-color: rgba(245,197,24,0.3); }
+.detail-icon { font-size: 22px; width: 22px; height: 22px; color: var(--text-2); }
+.detail-icon-wrap.detail-icon--available .detail-icon { color: #4caf50; }
+.detail-icon-wrap.detail-icon--in-use    .detail-icon { color: #f44336; }
+.detail-icon-wrap.detail-icon--reserved  .detail-icon { color: #f5c518; }
 
 .detail-name { font-size: 17px; font-weight: 700; color: var(--text); margin: 0 0 3px; }
 .detail-status-row { font-size: 12px; color: var(--text-muted); margin: 0; }
-.status-available { color: var(--success); font-weight: 600; }
-.status-in-use    { color: var(--danger); font-weight: 600; }
-.status-reserved  { color: var(--accent-text); font-weight: 600; }
+.status-available { color: #4caf50; font-weight: 600; }
+.status-in-use    { color: #f44336; font-weight: 600; }
+.status-reserved  { color: #f5c518; font-weight: 600; }
 
 .detail-close {
   background: transparent;
   border: none;
-  color: var(--text-muted);
+  color: var(--text-faint);
   cursor: pointer;
   padding: 2px;
   display: flex;
@@ -673,6 +1178,14 @@
   text-align: center;
 }
 .reserved-msg { font-size: 12px; color: var(--text-muted); margin: 0 0 14px; }
+.reserved-timer {
+  font-size: 40px;
+  font-weight: 700;
+  color: #f5c518;
+  letter-spacing: 4px;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 20px rgba(245,197,24,0.4);
+}
 
 /* Action buttons */
 .detail-actions {
@@ -699,13 +1212,13 @@
   font-size: 19px; width: 19px; height: 19px;
 }
 
-.btn-action-yellow { background: var(--accent); color: var(--accent-contrast); }
-.btn-action-yellow:hover { background: var(--accent-hover); }
+.btn-action-yellow { background: #f5c518; color: #000; }
+.btn-action-yellow:hover { background: #e0b214; }
 
-.btn-action-cyan { background: var(--info-soft); border: 1px solid color-mix(in srgb, var(--info) 35%, transparent); color: var(--info); }
-.btn-action-cyan:hover { background: color-mix(in srgb, var(--info) 22%, transparent); }
+.btn-action-cyan { background: rgba(0,188,212,0.2); border: 1px solid rgba(0,188,212,0.35); color: #00bcd4; }
+.btn-action-cyan:hover { background: rgba(0,188,212,0.3); }
 
-.btn-action-dark { background: var(--surface); border: 1px solid var(--border); color: var(--text); }
+.btn-action-dark { background: var(--surface-2); border: 1px solid var(--border); color: var(--text); }
 .btn-action-dark:hover { background: var(--surface-hover); }
 .btn-action-dark mat-icon { color: var(--text-muted); }
 
@@ -733,21 +1246,45 @@
 .alt-name { font-size: 13px; font-weight: 600; color: var(--text); }
 .alt-group { font-size: 11px; color: var(--text-muted); }
 .alt-status { display: flex; align-items: center; gap: 5px; }
-.alt-free-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); flex-shrink: 0; }
-.alt-free-txt { font-size: 12px; color: var(--success); font-weight: 500; }
+.alt-free-dot { width: 7px; height: 7px; border-radius: 50%; background: #4caf50; flex-shrink: 0; }
+.alt-free-txt { font-size: 12px; color: #4caf50; font-weight: 500; }
 
 .alt-footer { padding: 0 18px 18px; }
 
 /* ── Responsive ───────────────────────────────────────────────── */
 @media (max-width: 640px) {
-  .map-root     { padding: 12px 12px 0; gap: 10px; }
-  .map-title    { font-size: 17px; }
-  .view-tab     { padding: 5px 8px; font-size: 11px; }
-  .pin-body     { width: 38px; height: 38px; }
-  .pin-icon     { font-size: 16px; width: 16px; height: 16px; }
-  .ring-a       { width: 52px; height: 52px; }
-  .ring-b       { width: 44px; height: 44px; }
+  .map-root       { padding: 12px 12px 0; gap: 10px; }
+  .map-title      { font-size: 17px; }
+  .view-tab       { padding: 5px 8px; font-size: 11px; }
+  .pin-body       { width: 38px; height: 38px; }
+  .pin-icon       { font-size: 16px; width: 16px; height: 16px; }
+  .ring-a         { width: 52px; height: 52px; }
+  .ring-b         { width: 44px; height: 44px; }
   .gym-cards-grid { grid-template-columns: 1fr; }
+
+  /* Blueprint: stack training zones vertically on mobile */
+  .training-floor {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+  }
+  .gym-zone {
+    border-right: none;
+    border-bottom: 1px solid #1c1c1c;
+    min-height: 120px;
+  }
+  .gym-zone:last-child { border-bottom: none; }
+
+  /* Support rooms stack vertically */
+  .support-rooms-row {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  .support-room {
+    border-right: none;
+    border-bottom: 1px solid #1c1c1c;
+    height: 70px;
+  }
+  .support-room:last-child { border-bottom: none; }
 }
 
 .error-state {
@@ -755,10 +1292,10 @@
   align-items: center;
   gap: 12px;
   padding: 32px 24px;
-  color: var(--danger);
-  background: var(--danger-soft);
-  border: 1px solid color-mix(in srgb, var(--danger) 25%, transparent);
-  border-radius: var(--radius-lg);
+  color: #ef9a9a;
+  background: rgba(229, 57, 53, 0.08);
+  border: 1px solid rgba(229, 57, 53, 0.25);
+  border-radius: 12px;
 }
 
 .error-state mat-icon { font-size: 22px; width: 22px; height: 22px; flex-shrink: 0; }
