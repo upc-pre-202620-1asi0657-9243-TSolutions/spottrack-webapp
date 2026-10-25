@@ -1,7 +1,7 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { TechnicianStore } from '../../../../settings/application/technician.store';
@@ -12,6 +12,9 @@ import { PaginatorComponent, paginate } from '../../../../shared/presentation/co
 
 export type WorkloadFilter = 'all' | 'available' | 'assigned' | 'busy';
 export type TechnicianSort = 'name' | 'workload' | 'completed';
+export type TechnicianView = 'grid' | 'list';
+
+const VIEW_STORAGE_KEY = 'spottrack.technicians.view';
 
 /** A technician plus the workload derived from the ticket board. */
 interface TechnicianRow {
@@ -33,6 +36,7 @@ interface TechnicianRow {
   styleUrl: './technicians.scss',
 })
 export class TechniciansComponent {
+  private readonly router  = inject(Router);
   readonly technicianStore = inject(TechnicianStore);
   readonly maintenanceStore = inject(MaintenanceStore);
   readonly equipmentStore   = inject(EquipmentStore);
@@ -43,6 +47,8 @@ export class TechniciansComponent {
   readonly search = signal('');
   readonly filter = signal<WorkloadFilter>('all');
   readonly sort   = signal<TechnicianSort>('name');
+
+  readonly view = signal<TechnicianView>(this.readStoredView());
 
   readonly page     = signal(0);
   readonly pageSize = signal(12);
@@ -151,7 +157,18 @@ export class TechniciansComponent {
     this.technicianStore.createTechnician(name);
   }
 
+  openTechnician(id: string): void { this.router.navigate(['/technicians', id]); }
+
   copyId(id: string): void { navigator.clipboard.writeText(id); }
+
+  setView(view: TechnicianView): void {
+    this.view.set(view);
+    try { localStorage.setItem(VIEW_STORAGE_KEY, view); } catch { /* storage blocked: keep it for this visit */ }
+  }
+
+  private readStoredView(): TechnicianView {
+    try { return localStorage.getItem(VIEW_STORAGE_KEY) === 'list' ? 'list' : 'grid'; } catch { return 'grid'; }
+  }
 
   private initials(name: string): string {
     return name.split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('') || '?';

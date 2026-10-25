@@ -1436,7 +1436,8 @@
       "completed": "Completados",
       "currentWork": "Trabajo actual",
       "free": "Sin tickets abiertos",
-      "more": "+{{count}} más"
+      "more": "+{{count}} más",
+      "viewAll": "Ver todos los tickets"
     },
     "empty": {
       "title": "Aún no hay técnicos",
@@ -1474,6 +1475,15 @@
       "resolvedOf": "{{done}} de {{total}} tickets resueltos",
       "machines": "Máquinas atendidas",
       "notFound": "Este técnico no existe."
+    },
+    "view": {
+      "label": "Vista de técnicos",
+      "grid": "Tarjetas",
+      "list": "Lista"
+    },
+    "list": {
+      "technician": "Técnico",
+      "state": "Estado"
     }
   },
   "shared": {

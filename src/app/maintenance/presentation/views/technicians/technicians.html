@@ -72,6 +72,17 @@
       }
     </div>
 
+    <div class="tc-view" role="tablist" [attr.aria-label]="'technicians.view.label' | translate">
+      <button type="button" role="tab" [class.tc-view__on]="view() === 'grid'" [attr.aria-selected]="view() === 'grid'"
+              [title]="'technicians.view.grid' | translate" (click)="setView('grid')">
+        <mat-icon>grid_view</mat-icon>
+      </button>
+      <button type="button" role="tab" [class.tc-view__on]="view() === 'list'" [attr.aria-selected]="view() === 'list'"
+              [title]="'technicians.view.list' | translate" (click)="setView('list')">
+        <mat-icon>view_list</mat-icon>
+      </button>
+    </div>
+
     <label class="tc-sort">
       <mat-icon>sort</mat-icon>
       <select [ngModel]="sort()" (ngModelChange)="sort.set($event)" [attr.aria-label]="'technicians.sort.label' | translate">
@@ -111,46 +122,110 @@
       </button>
     </div>
   } @else {
-    <div class="tc-grid">
-      @for (r of pagedRows(); track r.id) {
-        <article class="tc-card tc-tech">
-          <div class="tc-tech__head">
-            <span class="tc-avatar" [style.--hue]="r.hue">{{ r.initials }}</span>
-            <div class="tc-tech__title">
-              <h3>{{ r.name }}</h3>
-              <button type="button" class="tc-id" (click)="copyId(r.id)" [title]="'technicians.copyId' | translate">
-                {{ r.id.slice(0, 8) }} <mat-icon>content_copy</mat-icon>
-              </button>
+    @if (view() === 'grid') {
+      <div class="tc-grid">
+        @for (r of pagedRows(); track r.id) {
+          <article class="tc-card tc-tech">
+            <div class="tc-tech__head">
+              <span class="tc-avatar" [style.--hue]="r.hue">{{ r.initials }}</span>
+              <div class="tc-tech__title">
+                <h3><a class="tc-tech__link" [routerLink]="['/technicians', r.id]">{{ r.name }}</a></h3>
+                <button type="button" class="tc-id" (click)="copyId(r.id)" [title]="'technicians.copyId' | translate">
+                  {{ r.id.slice(0, 8) }} <mat-icon>content_copy</mat-icon>
+                </button>
+              </div>
+              <span class="tc-state-chip tc-state-chip--{{ r.state }}">
+                <i></i>{{ 'technicians.filter.' + r.state | translate }}
+              </span>
             </div>
-            <span class="tc-state-chip tc-state-chip--{{ r.state }}">
-              <i></i>{{ 'technicians.filter.' + r.state | translate }}
-            </span>
-          </div>
 
-          <dl class="tc-tech__stats">
-            <div><dt>{{ 'technicians.card.pending' | translate }}</dt><dd>{{ r.pending.length }}</dd></div>
-            <div><dt>{{ 'technicians.card.inProgress' | translate }}</dt><dd>{{ r.inProgress.length }}</dd></div>
-            <div><dt>{{ 'technicians.card.completed' | translate }}</dt><dd>{{ r.completed }}</dd></div>
-          </dl>
+            <dl class="tc-tech__stats">
+              <div><dt>{{ 'technicians.card.pending' | translate }}</dt><dd>{{ r.pending.length }}</dd></div>
+              <div><dt>{{ 'technicians.card.inProgress' | translate }}</dt><dd>{{ r.inProgress.length }}</dd></div>
+              <div><dt>{{ 'technicians.card.completed' | translate }}</dt><dd>{{ r.completed }}</dd></div>
+            </dl>
 
-          <div class="tc-tech__work">
-            <p class="tc-tech__label">{{ 'technicians.card.currentWork' | translate }}</p>
-            @for (t of r.inProgress.concat(r.pending).slice(0, 3); track t.id) {
-              <a class="tc-ticket" [routerLink]="['/maintenance']" [queryParams]="{ ticket: t.id }">
-                <i class="tc-ticket__dot tc-ticket__dot--{{ t.status.toLowerCase() }}"></i>
-                <span class="tc-ticket__name">{{ equipmentName(t.equipmentId) }}</span>
-                <span class="tc-ticket__status">{{ 'maintenance.status.' + t.status | translate }}</span>
-              </a>
-            } @empty {
-              <p class="tc-tech__free">{{ 'technicians.card.free' | translate }}</p>
-            }
-            @if (r.inProgress.length + r.pending.length > 3) {
-              <p class="tc-tech__more">{{ 'technicians.card.more' | translate: { count: r.inProgress.length + r.pending.length - 3 } }}</p>
-            }
-          </div>
-        </article>
-      }
-    </div>
+            <div class="tc-tech__work">
+              <p class="tc-tech__label">{{ 'technicians.card.currentWork' | translate }}</p>
+              @for (t of r.inProgress.concat(r.pending).slice(0, 3); track t.id) {
+                <a class="tc-ticket" [routerLink]="['/maintenance']" [queryParams]="{ ticket: t.id }">
+                  <i class="tc-ticket__dot tc-ticket__dot--{{ t.status.toLowerCase() }}"></i>
+                  <span class="tc-ticket__name">{{ equipmentName(t.equipmentId) }}</span>
+                  <span class="tc-ticket__status">{{ 'maintenance.status.' + t.status | translate }}</span>
+                </a>
+              } @empty {
+                <p class="tc-tech__free">{{ 'technicians.card.free' | translate }}</p>
+              }
+              @if (r.inProgress.length + r.pending.length > 3) {
+                <p class="tc-tech__more">{{ 'technicians.card.more' | translate: { count: r.inProgress.length + r.pending.length - 3 } }}</p>
+              }
+            </div>
+
+            <a class="tc-tech__all" [routerLink]="['/technicians', r.id]">
+              {{ 'technicians.card.viewAll' | translate }}
+              <mat-icon>arrow_forward</mat-icon>
+            </a>
+          </article>
+        }
+      </div>
+    } @else {
+      <div class="tc-card tc-table-card">
+        <div class="tc-table-wrap">
+          <table class="tc-table">
+            <thead>
+              <tr>
+                <th>{{ 'technicians.list.technician' | translate }}</th>
+                <th>{{ 'technicians.list.state' | translate }}</th>
+                <th class="num">{{ 'technicians.card.pending' | translate }}</th>
+                <th class="num">{{ 'technicians.card.inProgress' | translate }}</th>
+                <th class="num">{{ 'technicians.card.completed' | translate }}</th>
+                <th>{{ 'technicians.card.currentWork' | translate }}</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (r of pagedRows(); track r.id) {
+                <tr tabindex="0" (click)="openTechnician(r.id)" (keydown.enter)="openTechnician(r.id)">
+                  <td>
+                    <span class="tc-table__who">
+                      <span class="tc-avatar tc-avatar--sm" [style.--hue]="r.hue">{{ r.initials }}</span>
+                      <span>
+                        <strong>{{ r.name }}</strong>
+                        <button type="button" class="tc-id" (click)="copyId(r.id); $event.stopPropagation()" [title]="'technicians.copyId' | translate">
+                          {{ r.id.slice(0, 8) }} <mat-icon>content_copy</mat-icon>
+                        </button>
+                      </span>
+                    </span>
+                  </td>
+                  <td>
+                    <span class="tc-state-chip tc-state-chip--{{ r.state }}"><i></i>{{ 'technicians.filter.' + r.state | translate }}</span>
+                  </td>
+                  <td class="num">{{ r.pending.length }}</td>
+                  <td class="num">{{ r.inProgress.length }}</td>
+                  <td class="num">{{ r.completed }}</td>
+                  <td class="tc-table__work">
+                    @if (r.inProgress.concat(r.pending)[0]; as t) {
+                      <a class="tc-ticket" [routerLink]="['/maintenance']" [queryParams]="{ ticket: t.id }" (click)="$event.stopPropagation()">
+                        <i class="tc-ticket__dot tc-ticket__dot--{{ t.status.toLowerCase() }}"></i>
+                        <span class="tc-ticket__name">{{ equipmentName(t.equipmentId) }}</span>
+                      </a>
+                      @if (r.inProgress.length + r.pending.length > 1) {
+                        <span class="tc-table__more">+{{ r.inProgress.length + r.pending.length - 1 }}</span>
+                      }
+                    } @else {
+                      <span class="tc-tech__free">{{ 'technicians.card.free' | translate }}</span>
+                    }
+                  </td>
+                  <td class="tc-table__end">
+                    <mat-icon>chevron_right</mat-icon>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    }
 
     <div class="tc-pager">
       <app-paginator [total]="visibleRows().length" [pageSizeOptions]="[12, 24, 48]" [(page)]="page" [(pageSize)]="pageSize" />

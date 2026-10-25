@@ -1436,7 +1436,8 @@
       "completed": "Completed",
       "currentWork": "Current work",
       "free": "No open tickets",
-      "more": "+{{count}} more"
+      "more": "+{{count}} more",
+      "viewAll": "View all tickets"
     },
     "empty": {
       "title": "No technicians yet",
@@ -1474,6 +1475,15 @@
       "resolvedOf": "{{done}} of {{total}} tickets resolved",
       "machines": "Machines worked on",
       "notFound": "This technician doesn't exist."
+    },
+    "view": {
+      "label": "Technician view",
+      "grid": "Cards",
+      "list": "List"
+    },
+    "list": {
+      "technician": "Technician",
+      "state": "State"
     }
   },
   "shared": {

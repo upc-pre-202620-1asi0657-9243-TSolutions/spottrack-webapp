@@ -222,6 +222,32 @@
   }
 }
 
+.tc-view {
+  display: inline-flex;
+  padding: 3px;
+  background: var(--surface-3);
+  border-radius: var(--radius);
+
+  button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+
+    mat-icon { font-size: 18px; width: 18px; height: 18px; }
+    &:hover { color: var(--text); }
+    &:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+  }
+
+  .tc-view__on { background: var(--surface); color: var(--text); box-shadow: var(--shadow-sm); }
+}
+
 // ── States ───────────────────────────────────────────────────────────────────
 .tc-state {
   display: flex;
@@ -322,6 +348,28 @@
   }
 
   &__free { margin: 0; font-size: 13px; color: var(--text-faint); font-style: italic; }
+
+  &__link {
+    color: inherit;
+    text-decoration: none;
+    &:hover { color: var(--accent-text); text-decoration: underline; }
+  }
+
+  &__all {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    align-self: flex-start;
+    margin-top: auto;
+    padding-top: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent-text);
+    text-decoration: none;
+
+    mat-icon { font-size: 16px; width: 16px; height: 16px; transition: transform .15s; }
+    &:hover mat-icon { transform: translateX(3px); }
+  }
   &__more { margin: 2px 0 0; font-size: 12px; color: var(--text-muted); }
 }
 
@@ -414,6 +462,70 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
 }
+
+// ── List view ────────────────────────────────────────────────────────────────
+.tc-table-card { overflow: hidden; }
+.tc-table-wrap { overflow-x: auto; }
+
+.tc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+
+  th {
+    padding: 10px 16px;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 600;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+
+  tbody tr { cursor: pointer; transition: background .15s; }
+  tbody tr:focus-visible { outline: none; box-shadow: inset var(--focus-ring); }
+  tbody tr:hover { background: var(--surface-hover); }
+  tbody tr:last-child td { border-bottom: none; }
+
+  .num { text-align: right; font-variant-numeric: tabular-nums; }
+  td.num { font-weight: 600; }
+
+  &__who {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    > span:last-child { display: flex; flex-direction: column; min-width: 0; }
+    strong { white-space: nowrap; }
+  }
+
+  &__work {
+    max-width: 260px;
+
+    .tc-ticket { display: inline-flex; max-width: calc(100% - 36px); margin: 0; vertical-align: middle; }
+  }
+
+  &__more {
+    margin-left: 4px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: var(--surface-3);
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  &__end { width: 1%; color: var(--text-faint); }
+}
+
+.tc-avatar--sm { width: 32px; height: 32px; font-size: 12px; }
 
 // ── Buttons ──────────────────────────────────────────────────────────────────
 .btn {
