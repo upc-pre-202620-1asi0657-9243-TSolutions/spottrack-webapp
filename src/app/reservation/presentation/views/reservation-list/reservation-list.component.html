@@ -1,168 +1,214 @@
-<div class="booking-container">
+<div class="rv-page">
 
-  <!-- ===== HEADER ===== -->
-  <header class="booking-header">
-    <div class="header-info">
-      <h1 class="booking-title">{{ 'reservation.title' | translate }}</h1>
-      <p class="booking-subtitle">{{ 'reservation.subtitle' | translate }}</p>
+  <!-- ── Header ──────────────────────────────────────────────────────────── -->
+  <header class="rv-header">
+    <div>
+      <h1 class="rv-header__title">{{ 'reservation.title' | translate }}</h1>
+      <p class="rv-header__subtitle">{{ 'reservation.subtitle' | translate }}</p>
     </div>
-    <div class="booking-header__actions">
-      <button class="new-booking-btn" (click)="openModal()" [disabled]="hasActiveReservation()">
-        <mat-icon>add</mat-icon>
-        {{ 'reservation.newReservation' | translate }}
-      </button>
-      <a class="report-issue-btn" routerLink="/anomalies/report">
+    <div class="rv-header__actions">
+      <a class="btn btn--secondary" routerLink="/anomalies/report">
         <mat-icon>warning_amber</mat-icon>
         {{ 'reservation.reportIssue' | translate }}
       </a>
+      <button class="btn btn--primary" (click)="openModal()" [disabled]="hasActiveReservation()">
+        <mat-icon>add</mat-icon>
+        {{ 'reservation.newReservation' | translate }}
+      </button>
     </div>
   </header>
 
-  <!-- ===== RESERVATION CARDS (real-time from backend) ===== -->
-  <!-- ===== SCAN FEEDBACK ===== -->
-  @if (scanFeedback()) {
-    <div class="scan-feedback" [class.scan-feedback--ok]="scanFeedback()!.ok" [class.scan-feedback--err]="!scanFeedback()!.ok">
-      <mat-icon>{{ scanFeedback()!.ok ? 'check_circle' : 'error_outline' }}</mat-icon>
-      <span>{{ scanFeedback()!.msg }}</span>
+  @if (scanFeedback(); as fb) {
+    <div class="rv-notice" [class.rv-notice--success]="fb.ok" [class.rv-notice--danger]="!fb.ok">
+      <mat-icon>{{ fb.ok ? 'check_circle' : 'error_outline' }}</mat-icon>
+      <span>{{ fb.msgKey | translate }}</span>
     </div>
   }
 
-  <div class="booking-list">
+  <!-- ── KPIs ────────────────────────────────────────────────────────────── -->
+  <div class="rv-kpis">
+    <div class="rv-kpi">
+      <span class="rv-kpi__icon rv-kpi__icon--green"><mat-icon>check_circle</mat-icon></span>
+      <div>
+        <p class="rv-kpi__label">{{ 'reservation.stats.available' | translate }}</p>
+        <p class="rv-kpi__value">{{ availableEquipment().length }}</p>
+      </div>
+    </div>
+    <div class="rv-kpi">
+      <span class="rv-kpi__icon rv-kpi__icon--amber"><mat-icon>event_note</mat-icon></span>
+      <div>
+        <p class="rv-kpi__label">{{ 'reservation.stats.total' | translate }}</p>
+        <p class="rv-kpi__value">{{ statusCount().ALL }}</p>
+      </div>
+    </div>
+    <div class="rv-kpi">
+      <span class="rv-kpi__icon rv-kpi__icon--blue"><mat-icon>task_alt</mat-icon></span>
+      <div>
+        <p class="rv-kpi__label">{{ 'reservation.stats.completed' | translate }}</p>
+        <p class="rv-kpi__value">{{ statusCount().ENDED }}</p>
+      </div>
+    </div>
+    <div class="rv-kpi">
+      <span class="rv-kpi__icon rv-kpi__icon--red"><mat-icon>event_busy</mat-icon></span>
+      <div>
+        <p class="rv-kpi__label">{{ 'reservation.stats.missed' | translate }}</p>
+        <p class="rv-kpi__value">{{ statusCount().CANCELLED + statusCount().EXPIRED }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Current reservation ─────────────────────────────────────────────── -->
+  <section>
+    <div class="rv-section-head">
+      <h2 class="rv-section-title">{{ 'reservation.current.title' | translate }}</h2>
+    </div>
 
     @for (r of activeReservations(); track r.id) {
-      <mat-card class="booking-card" [class.pending]="!r.timerExpiry" [appContextMenu]="reservationMenu(r.id)">
-        <mat-card-content class="card-content">
-
-          <div class="card-top">
-            <div class="machine-info">
-              <div class="machine-icon-wrap">
-                <mat-icon class="machine-icon">fitness_center</mat-icon>
-              </div>
-              <div class="machine-details">
-                <span class="machine-name">{{ equipmentName(r.equipmentId) }}</span>
-                <span class="machine-zone">{{ trimTime(r.startTime) }} – {{ trimTime(r.endTime) }}</span>
-              </div>
+      <article class="rv-card rv-active" [class.rv-active--pending]="!r.timerExpiry" [appContextMenu]="reservationMenu(r.id)">
+        <div class="rv-active__main">
+          <div class="rv-active__machine">
+            <span class="rv-active__icon"><mat-icon>fitness_center</mat-icon></span>
+            <div>
+              <p class="rv-eyebrow">{{ 'reservation.current.machine' | translate }}</p>
+              <h3 class="rv-active__name">{{ equipmentName(r.equipmentId) }}</h3>
+              <span class="rv-badge" [class.rv-badge--live]="r.timerExpiry" [class.rv-badge--pending]="!r.timerExpiry">
+                <i class="rv-pulse"></i>
+                {{ (r.timerExpiry ? 'reservation.current.inUse' : 'reservation.pending.title') | translate }}
+              </span>
             </div>
-            <button mat-icon-button class="cancel-btn" (click)="cancelReservation(r.id)">
-              <mat-icon>close</mat-icon>
-            </button>
           </div>
 
-          <mat-divider class="card-divider"></mat-divider>
-
-          <div class="card-bottom">
-            <div class="timer-label">
-              <mat-icon class="clock-icon">{{ r.timerExpiry ? 'schedule' : 'hourglass_empty' }}</mat-icon>
-              <span>{{ (r.timerExpiry ? 'reservation.timeRemaining' : 'reservation.activationWindow') | translate }}</span>
+          @if (r.timerExpiry) {
+            <div class="rv-timer">
+              <span class="rv-timer__label">{{ 'reservation.timeRemaining' | translate }}</span>
+              <span class="rv-timer__value">{{ formatTimer(timeRemaining(r.id, r.timerExpiry)) }}</span>
             </div>
-            <span class="timer-value">
-              {{ r.timerExpiry ? formatTimer(timeRemaining(r.id, r.timerExpiry)) : (trimTime(r.startTime) + ' – ' + trimTime(r.endTime)) }}
-            </span>
-          </div>
-
-        </mat-card-content>
-
-        @if (!r.timerExpiry) {
-          <div class="pending-banner">
-            <div class="pending-banner-info">
-              <span class="pending-title">{{ 'reservation.pending.title' | translate }}</span>
-              <span class="pending-subtitle">{{ 'reservation.pending.subtitle' | translate }}</span>
-            </div>
-            <div class="pending-actions">
-              <button class="btn-scan-qr" (click)="openScanner()">
+          } @else {
+            <div class="rv-active__cta">
+              <button class="btn btn--primary btn--lg" (click)="openScanner()">
                 <mat-icon>qr_code_scanner</mat-icon>
-                Escanear QR
+                {{ 'reservation.scan.button' | translate }}
               </button>
             </div>
+          }
+        </div>
+
+        @if (r.timerExpiry) {
+          <div class="rv-active__progress">
+            <span class="rv-meter"><span class="rv-meter__fill" [style.width.%]="remainingPct(r)"></span></span>
+          </div>
+        } @else {
+          <div class="rv-notice rv-notice--warning rv-active__notice">
+            <mat-icon>hourglass_top</mat-icon>
+            <span>{{ 'reservation.pending.subtitle' | translate }}</span>
           </div>
         }
-      </mat-card>
+
+        <dl class="rv-facts">
+          <div class="rv-fact">
+            <dt>{{ 'reservation.activationWindow' | translate }}</dt>
+            <dd>{{ trimTime(r.startTime) }} – {{ trimTime(r.endTime) }}</dd>
+          </div>
+          <div class="rv-fact">
+            <dt>{{ 'reservation.current.duration' | translate }}</dt>
+            <dd>{{ 'reservation.current.minutes' | translate: { count: (durationSeconds(r) / 60 | number: '1.0-1') } }}</dd>
+          </div>
+          <div class="rv-fact rv-fact--action">
+            <button class="btn btn--danger-outline btn--sm" (click)="cancelReservation(r.id)">
+              <mat-icon>close</mat-icon>
+              {{ 'reservation.current.cancel' | translate }}
+            </button>
+          </div>
+        </dl>
+      </article>
+    } @empty {
+      <div class="rv-card rv-idle">
+        <div class="rv-idle__text">
+          <span class="rv-idle__icon"><mat-icon>event_available</mat-icon></span>
+          <div>
+            <h3>{{ 'reservation.current.emptyTitle' | translate }}</h3>
+            <p>{{ 'reservation.current.emptyDesc' | translate }}</p>
+          </div>
+        </div>
+        @if (quickPicks().length) {
+          <p class="rv-idle__label">{{ 'reservation.current.quickPick' | translate }}</p>
+          <div class="rv-picks">
+            @for (eq of quickPicks(); track eq.uuid) {
+              <button class="rv-pick" (click)="openModal(eq.uuid)">
+                <i class="rv-pick__dot"></i>
+                {{ eq.name }}
+                <mat-icon>add</mat-icon>
+              </button>
+            }
+          </div>
+        }
+      </div>
     }
 
     <!-- Expired cards kept from session state so user can dismiss them -->
     @for (expired of expiredReservations(); track expired.machineId) {
-      <mat-card class="booking-card expired">
-        <mat-card-content class="card-content">
-
-          <div class="card-top">
-            <div class="machine-info">
-              <div class="machine-icon-wrap">
-                <mat-icon class="machine-icon">{{ expired.icon }}</mat-icon>
-              </div>
-              <div class="machine-details">
-                <span class="machine-name">{{ 'machines.names.' + expired.nameKey | translate }}</span>
-                <span class="machine-zone">{{ 'machines.zones.' + getZoneKey(expired.category) | translate }}</span>
-              </div>
-            </div>
-            <button mat-icon-button class="cancel-btn" (click)="dismissExpired(expired.machineId)">
-              <mat-icon>delete_outline</mat-icon>
-            </button>
-          </div>
-
-          <mat-divider class="card-divider"></mat-divider>
-
-          <div class="card-bottom">
-            <div class="timer-label">
-              <mat-icon class="clock-icon">schedule</mat-icon>
-              <span>{{ 'reservation.timeRemaining' | translate }}</span>
-            </div>
-            <span class="timer-value">00:00</span>
-          </div>
-
-        </mat-card-content>
-
-        <div class="expired-banner">
-          <span class="expired-title">{{ 'reservation.expired.title' | translate }}</span>
-          <span class="expired-subtitle">{{ 'reservation.expired.subtitle' | translate }}</span>
+      <div class="rv-notice rv-notice--neutral rv-expired">
+        <mat-icon>{{ expired.icon }}</mat-icon>
+        <div class="rv-expired__text">
+          <strong>{{ 'reservation.expired.title' | translate }} · {{ 'machines.names.' + expired.nameKey | translate }}</strong>
+          <span>{{ 'reservation.expired.subtitle' | translate }}</span>
         </div>
-      </mat-card>
+        <button class="btn btn--ghost btn--sm" (click)="dismissExpired(expired.machineId)">
+          <mat-icon>delete_outline</mat-icon>
+        </button>
+      </div>
     }
+  </section>
 
-  </div>
+  <!-- ── How it works ────────────────────────────────────────────────────── -->
+  <section class="rv-card rv-how">
+    <h2 class="rv-section-title">{{ 'reservation.how.title' | translate }}</h2>
+    <ol class="rv-steps">
+      @for (step of steps; track step.key; let i = $index) {
+        <li class="rv-step">
+          <span class="rv-step__icon"><mat-icon>{{ step.icon }}</mat-icon></span>
+          <span class="rv-step__num">{{ i + 1 }}</span>
+          <p>{{ 'reservation.how.' + step.key | translate }}</p>
+        </li>
+      }
+    </ol>
+  </section>
 
-  <!-- ===== INFO BOX ===== -->
-  <mat-card class="info-card">
-    <mat-card-content class="info-content">
-      <div class="info-header">
-        <mat-icon class="info-icon">info</mat-icon>
-        <span class="info-title">{{ 'reservation.how.title' | translate }}</span>
-      </div>
-      <ul class="info-list">
-        <li>{{ 'reservation.how.item1' | translate }}</li>
-        <li>{{ 'reservation.how.item2' | translate }}</li>
-        <li>{{ 'reservation.how.item3' | translate }}</li>
-        <li>{{ 'reservation.how.item4' | translate }}</li>
-      </ul>
-    </mat-card-content>
-  </mat-card>
-
-  <!-- ===== RESERVATION HISTORY ===== -->
-  <div class="history-section">
-
-    <div class="history-header">
+  <!-- ── History ─────────────────────────────────────────────────────────── -->
+  <section class="rv-card rv-history">
+    <div class="rv-history__head">
       <div>
-        <h2 class="history-title">{{ 'reservation.history.title' | translate }}</h2>
-        <p class="history-subtitle">{{ 'reservation.history.subtitle' | translate }}</p>
+        <h2 class="rv-section-title">{{ 'reservation.history.title' | translate }}</h2>
+        <p class="rv-section-subtitle">{{ 'reservation.history.subtitle' | translate }}</p>
       </div>
-      <button class="history-refresh-btn" (click)="refreshHistory()" [disabled]="historyLoading()">
-        <mat-icon [class.spinning]="historyLoading()">refresh</mat-icon>
+      <button class="btn btn--secondary btn--sm" (click)="refreshHistory()" [disabled]="historyLoading()">
+        <mat-icon [class.spin]="historyLoading()">refresh</mat-icon>
+        {{ 'reservation.history.refresh' | translate }}
       </button>
     </div>
 
-    @if (historyLoading()) {
-      <div class="history-loading">
-        <mat-icon class="spinning">sync</mat-icon>
+    <div class="rv-tabs" role="tablist">
+      @for (f of historyFilters; track f) {
+        <button class="rv-tab" role="tab" [class.rv-tab--active]="historyFilter() === f" (click)="historyFilter.set(f)">
+          {{ 'reservation.status.' + f | translate }}
+          <span class="rv-tab__count">{{ statusCount()[f] }}</span>
+        </button>
+      }
+    </div>
+
+    @if (historyLoading() && history().length === 0) {
+      <div class="rv-state">
+        <mat-icon class="spin">autorenew</mat-icon>
         <span>{{ 'reservation.history.loading' | translate }}</span>
       </div>
-    } @else if (history().length === 0) {
-      <div class="history-empty">
+    } @else if (filteredHistory().length === 0) {
+      <div class="rv-state">
         <mat-icon>history</mat-icon>
         <span>{{ 'reservation.history.empty' | translate }}</span>
       </div>
     } @else {
-
-      <div class="history-table-wrap">
-        <table class="history-table">
+      <div class="rv-table-wrap">
+        <table class="rv-table">
           <thead>
             <tr>
               <th>{{ 'reservation.history.col.equipment' | translate }}</th>
@@ -172,43 +218,34 @@
             </tr>
           </thead>
           <tbody>
-            @for (r of paginatedHistory(); track r.id) {
+            @for (r of pagedHistory(); track r.id) {
               <tr>
-                <td class="col-equipment">
-                  <mat-icon class="row-icon">fitness_center</mat-icon>
-                  <span>{{ equipmentName(r.equipmentId) }}</span>
-                </td>
                 <td>
-                  <span class="status-badge" [ngClass]="statusClass(r.status)">
-                    {{ r.status }}
+                  <span class="rv-table__machine">
+                    <span class="rv-table__icon"><mat-icon>fitness_center</mat-icon></span>
+                    {{ equipmentName(r.equipmentId) }}
                   </span>
                 </td>
-                <td class="col-date">{{ formatDate(r.startedAt) }}</td>
-                <td class="col-window">{{ trimTime(r.startTime) }} – {{ trimTime(r.endTime) }}</td>
+                <td>
+                  <span class="rv-status rv-status--{{ r.status.toLowerCase() }}">
+                    <i></i>{{ 'reservation.status.' + r.status | translate }}
+                  </span>
+                </td>
+                <td class="rv-table__muted">{{ formatDate(r.startedAt) }}</td>
+                <td class="rv-table__mono">{{ trimTime(r.startTime) }} – {{ trimTime(r.endTime) }}</td>
               </tr>
             }
           </tbody>
         </table>
       </div>
 
-      <!-- Pagination -->
-      <div class="history-pagination">
-        <button class="page-btn" (click)="prevPage()" [disabled]="pageIndex() === 0">
-          <mat-icon>chevron_left</mat-icon>
-        </button>
-        <span class="page-info">{{ pageIndex() + 1 }} / {{ totalPages() }}</span>
-        <button class="page-btn" (click)="nextPage()" [disabled]="pageIndex() >= totalPages() - 1">
-          <mat-icon>chevron_right</mat-icon>
-        </button>
-      </div>
-
+      <app-paginator [total]="filteredHistory().length" [(page)]="historyPage" [(pageSize)]="historyPageSize" />
     }
-
-  </div>
+  </section>
 
 </div>
 
-<!-- ===== QR SCANNER MODAL ===== -->
+<!-- ── QR scanner ────────────────────────────────────────────────────────── -->
 @if (showScanner()) {
   <app-qr-scanner
     (scanned)="onQrScanned($event)"
@@ -216,25 +253,25 @@
   ></app-qr-scanner>
 }
 
-<!-- ===== NEW RESERVATION MODAL ===== -->
+<!-- ── New reservation modal ─────────────────────────────────────────────── -->
 @if (showModal()) {
   <div class="modal-backdrop" (click)="closeModal()">
-    <mat-card class="modal-card" (click)="$event.stopPropagation()">
-      <mat-card-content class="modal-content">
+    <div class="modal-card" (click)="$event.stopPropagation()">
 
-        <div class="modal-header">
-          <div>
-            <h2 class="modal-title">{{ 'reservation.modal.title' | translate }}</h2>
-            <p class="modal-subtitle">{{ 'reservation.modal.subtitle' | translate }}</p>
-          </div>
-          <button mat-icon-button class="modal-close" (click)="closeModal()">
-            <mat-icon>close</mat-icon>
-          </button>
+      <div class="modal-header">
+        <span class="modal-header__icon"><mat-icon>event_available</mat-icon></span>
+        <div class="modal-header__text">
+          <h2 class="modal-title">{{ 'reservation.modal.title' | translate }}</h2>
+          <p class="modal-subtitle">{{ 'reservation.modal.subtitle' | translate }}</p>
         </div>
+        <button class="modal-close-btn" (click)="closeModal()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
 
-        <!-- Machine field -->
+      <div class="modal-body">
         <div class="field-group">
-          <label class="field-label">{{ 'reservation.modal.machine' | translate }}</label>
+          <span class="field-label">{{ 'reservation.modal.machine' | translate }}</span>
           <div class="select-box">
             <mat-select
               [(ngModel)]="selectedMachineId"
@@ -248,58 +285,46 @@
               }
             </mat-select>
           </div>
+          <span class="field-hint">{{ 'reservation.modal.availableHint' | translate: { count: availableEquipment().length } }}</span>
         </div>
 
-        <!-- Duration field -->
         <div class="field-group">
-          <label class="field-label">{{ 'reservation.modal.duration' | translate }}</label>
-          <div class="select-box">
-            <mat-select
-              [(ngModel)]="selectedDurationSeconds"
-              class="booking-select"
-              panelClass="booking-select-panel"
-              disableRipple
-            >
-              @for (d of durations; track d.seconds) {
-                <mat-option [value]="d.seconds">{{ d.labelKey | translate }}</mat-option>
-              }
-            </mat-select>
+          <span class="field-label">{{ 'reservation.modal.duration' | translate }}</span>
+          <div class="duration-picker">
+            @for (d of durations; track d.seconds) {
+              <button type="button" class="duration-option" [class.duration-option--on]="selectedDurationSeconds === d.seconds"
+                      (click)="selectedDurationSeconds = d.seconds">
+                {{ d.labelKey | translate }}
+              </button>
+            }
           </div>
         </div>
 
-        <!-- Warning -->
-        <div class="warning-box">
-          <mat-icon class="warning-icon">warning</mat-icon>
-          <p class="warning-text">{{ 'reservation.modal.warning' | translate }}</p>
+        <div class="rv-notice rv-notice--warning">
+          <mat-icon>schedule</mat-icon>
+          <span>{{ 'reservation.modal.warning' | translate }}</span>
         </div>
 
-        <!-- Conflict error -->
         @if (reservationError()) {
-          <div class="modal-error">
-            <mat-icon class="modal-error-icon">error_outline</mat-icon>
+          <div class="rv-notice rv-notice--danger">
+            <mat-icon>error_outline</mat-icon>
             <span>{{ reservationError()! | translate }}</span>
           </div>
         }
+      </div>
 
-        <!-- Footer -->
-        <div class="modal-footer">
-          <button class="btn-cancel" (click)="closeModal()">
-            {{ 'reservation.modal.cancel' | translate }}
-          </button>
-          <button
-            class="btn-create"
-            [disabled]="!selectedMachineId || creating()"
-            (click)="createReservation()"
-          >
-            @if (creating()) {
-              <mat-icon class="spinning">sync</mat-icon>
-            } @else {
-              {{ 'reservation.modal.create' | translate }}
-            }
-          </button>
-        </div>
+      <div class="modal-footer">
+        <button class="btn btn--secondary" (click)="closeModal()">
+          {{ 'reservation.modal.cancel' | translate }}
+        </button>
+        <button class="btn btn--primary" [disabled]="!selectedMachineId || creating()" (click)="createReservation()">
+          @if (creating()) {
+            <mat-icon class="spin">autorenew</mat-icon>
+          }
+          {{ 'reservation.modal.create' | translate }}
+        </button>
+      </div>
 
-      </mat-card-content>
-    </mat-card>
+    </div>
   </div>
 }

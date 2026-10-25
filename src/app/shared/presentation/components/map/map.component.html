@@ -425,7 +425,7 @@
               <div class="training-block">
 
                 <!-- Cardio -->
-                <div class="training-zone zone-cardio heat-zone">
+                <div class="training-zone zone-cardio heat-zone" [style.--zone-heat]="zoneAmbient(cardioEquipment)">
                   <header class="zone-label-tag">
                     <span class="zone-accent-dot"></span>
                     <span class="zone-name-text">Cardio</span>
@@ -435,7 +435,8 @@
                       <div class="heat-ghost-pin"
                            (click)="openEquipmentDetail(item.eq.uuid, $event)">
                         <div class="ghost-body"
-                             [style.border-color]="heatBorderColor(item.eq.uuid)">
+                             [style.border-color]="heatBorderColor(item.eq.uuid)"
+                             [style.--pin-heat]="heatBorderColor(item.eq.uuid)">
                           <mat-icon class="ghost-icon">{{ item.icon }}</mat-icon>
                         </div>
                         <span class="pin-label heat-pin-label">{{ item.eq.name }}</span>
@@ -452,7 +453,7 @@
 
                 <!-- Middle row -->
                 <div class="training-middle-row">
-                  <div class="training-zone zone-free-weights heat-zone">
+                  <div class="training-zone zone-free-weights heat-zone" [style.--zone-heat]="zoneAmbient(freeWeightsEquipment)">
                     <header class="zone-label-tag">
                       <span class="zone-accent-dot"></span>
                       <span class="zone-name-text">Lifting + Free Weights</span>
@@ -462,7 +463,8 @@
                         <div class="heat-ghost-pin"
                              (click)="openEquipmentDetail(item.eq.uuid, $event)">
                           <div class="ghost-body"
-                               [style.border-color]="heatBorderColor(item.eq.uuid)">
+                               [style.border-color]="heatBorderColor(item.eq.uuid)"
+                               [style.--pin-heat]="heatBorderColor(item.eq.uuid)">
                             <mat-icon class="ghost-icon">{{ item.icon }}</mat-icon>
                           </div>
                           <span class="pin-label heat-pin-label">{{ item.eq.name }}</span>
@@ -477,7 +479,7 @@
 
                 <!-- Bottom row -->
                 <div class="training-bottom-row">
-                  <div class="training-zone zone-upper-body heat-zone">
+                  <div class="training-zone zone-upper-body heat-zone" [style.--zone-heat]="zoneAmbient(upperBodyEquipment)">
                     <header class="zone-label-tag">
                       <span class="zone-accent-dot"></span>
                       <span class="zone-name-text">Training (Upper Body)</span>
@@ -487,7 +489,8 @@
                         <div class="heat-ghost-pin"
                              (click)="openEquipmentDetail(item.eq.uuid, $event)">
                           <div class="ghost-body"
-                               [style.border-color]="heatBorderColor(item.eq.uuid)">
+                               [style.border-color]="heatBorderColor(item.eq.uuid)"
+                               [style.--pin-heat]="heatBorderColor(item.eq.uuid)">
                             <mat-icon class="ghost-icon">{{ item.icon }}</mat-icon>
                           </div>
                           <span class="pin-label heat-pin-label">{{ item.eq.name }}</span>
@@ -495,7 +498,7 @@
                       }
                     </div>
                   </div>
-                  <div class="training-zone zone-lower-body heat-zone">
+                  <div class="training-zone zone-lower-body heat-zone" [style.--zone-heat]="zoneAmbient(lowerBodyEquipment)">
                     <header class="zone-label-tag">
                       <span class="zone-accent-dot"></span>
                       <span class="zone-name-text">Training (Lower Body)</span>
@@ -505,7 +508,8 @@
                         <div class="heat-ghost-pin"
                              (click)="openEquipmentDetail(item.eq.uuid, $event)">
                           <div class="ghost-body"
-                               [style.border-color]="heatBorderColor(item.eq.uuid)">
+                               [style.border-color]="heatBorderColor(item.eq.uuid)"
+                               [style.--pin-heat]="heatBorderColor(item.eq.uuid)">
                             <mat-icon class="ghost-icon">{{ item.icon }}</mat-icon>
                           </div>
                           <span class="pin-label heat-pin-label">{{ item.eq.name }}</span>

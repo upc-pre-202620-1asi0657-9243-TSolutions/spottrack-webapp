@@ -1,86 +1,209 @@
-<div class="monitoring-page">
+<div class="ar-page">
 
-  <div class="page-header">
+  <button class="ar-back" type="button" (click)="back()">
+    <mat-icon>arrow_back</mat-icon>
+    {{ (isAdmin() ? 'monitoring.anomalyReport.backAdmin' : 'monitoring.anomalyReport.back') | translate }}
+  </button>
+
+  <header class="ar-header">
+    <span class="ar-header__icon"><mat-icon>report</mat-icon></span>
     <div>
-      <button class="btn-back" type="button" (click)="back()">
-        <mat-icon>arrow_back</mat-icon>
-      </button>
-      <h1 class="page-title">{{ 'monitoring.anomalyReport.title' | translate }}</h1>
-      <p class="page-subtitle">{{ 'monitoring.anomalyReport.subtitle' | translate }}</p>
+      <h1 class="ar-header__title">{{ 'monitoring.anomalyReport.title' | translate }}</h1>
+      <p class="ar-header__subtitle">{{ 'monitoring.anomalyReport.subtitle' | translate }}</p>
     </div>
-  </div>
+  </header>
 
-  @if (error()) {
-    <div class="error-state">
-      <mat-icon>error_outline</mat-icon>
-      <p>{{ error() }}</p>
+  @if (submitted()) {
+    <div class="ar-notice ar-notice--success">
+      <mat-icon>check_circle</mat-icon>
+      <span>{{ 'monitoring.anomalyReport.success' | translate }}</span>
     </div>
   }
 
-  <div class="layout-grid">
+  @if (error()) {
+    <div class="ar-notice ar-notice--danger">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ error() }}</span>
+    </div>
+  }
 
-    <div class="section-card">
-      <div class="section-header">
-        <mat-icon class="icon-red">warning_amber</mat-icon>
-        <h2>{{ 'monitoring.anomalyReport.formTitle' | translate }}</h2>
-      </div>
-      <form class="reg-form" (ngSubmit)="submit()">
-        <div class="field">
-          <label class="field__label">{{ 'monitoring.anomalyReport.reservation' | translate }} *</label>
-          <mat-form-field appearance="outline" class="field__mat">
-            <mat-select [(ngModel)]="form.reservationId" name="reservationId" required [disabled]="reservationsLoading">
-              @for (r of reservations; track r.id) {
-                <mat-option [value]="r.id">{{ reservationLabel(r) }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-          @if (!reservationsLoading && reservations.length === 0) {
-            <p class="field__hint">{{ 'monitoring.anomalyReport.noReservations' | translate }}</p>
+  <div class="ar-columns">
+
+    <!-- ── Form ────────────────────────────────────────────────────────── -->
+    <form class="ar-card ar-form" (ngSubmit)="submit()">
+
+      <!-- Step 1: reservation -->
+      <fieldset class="ar-step" [disabled]="loading()">
+        <legend class="ar-step__head">
+          <span class="ar-step__num" [class.ar-step__num--done]="selectedReservation()">
+            @if (selectedReservation()) { <mat-icon>check</mat-icon> } @else { 1 }
+          </span>
+          <span>
+            <strong>{{ 'monitoring.anomalyReport.reservation' | translate }}</strong>
+            <small>{{ 'monitoring.anomalyReport.reservationHint' | translate }}</small>
+          </span>
+        </legend>
+
+        @if (reservationsLoading()) {
+          <div class="ar-state">
+            <mat-icon class="spin">autorenew</mat-icon>
+          </div>
+        } @else if (reservations().length === 0) {
+          <div class="ar-state">
+            <mat-icon>event_busy</mat-icon>
+            <p>{{ 'monitoring.anomalyReport.noReservations' | translate }}</p>
+            @if (!isAdmin()) {
+              <a class="btn btn--secondary btn--sm" routerLink="/bookings">{{ 'monitoring.anomalyReport.goToBookings' | translate }}</a>
+            }
+          </div>
+        } @else {
+          <div class="ar-reservations" role="radiogroup">
+            @for (r of visibleReservations(); track r.id) {
+              <button type="button" role="radio" class="ar-res"
+                      [class.ar-res--on]="reservationId() === r.id"
+                      [attr.aria-checked]="reservationId() === r.id"
+                      (click)="selectReservation(r.id)">
+                <span class="ar-res__icon"><mat-icon>fitness_center</mat-icon></span>
+                <span class="ar-res__body">
+                  <span class="ar-res__name">{{ equipmentName(r.equipmentId) }}</span>
+                  <span class="ar-res__meta">
+                    {{ r.startedAt | date: 'd MMM' }} · {{ trimTime(r.startTime) }} – {{ trimTime(r.endTime) }}
+                  </span>
+                </span>
+                <span class="ar-status ar-status--{{ r.status.toLowerCase() }}">{{ 'reservation.status.' + r.status | translate }}</span>
+                <span class="ar-res__radio"></span>
+              </button>
+            }
+          </div>
+          @if (hiddenCount() > 0) {
+            <button type="button" class="ar-more" (click)="showAll.set(!showAll())">
+              <mat-icon>{{ showAll() ? 'expand_less' : 'expand_more' }}</mat-icon>
+              {{ (showAll() ? 'monitoring.anomalyReport.showLess' : 'monitoring.anomalyReport.showMore') | translate: { count: hiddenCount() } }}
+            </button>
+          }
+        }
+      </fieldset>
+
+      <!-- Step 2: issue type -->
+      <fieldset class="ar-step" [disabled]="loading()">
+        <legend class="ar-step__head">
+          <span class="ar-step__num" [class.ar-step__num--done]="category()">
+            @if (category()) { <mat-icon>check</mat-icon> } @else { 2 }
+          </span>
+          <span>
+            <strong>{{ 'monitoring.anomalyReport.categoryTitle' | translate }}</strong>
+            <small>{{ 'monitoring.anomalyReport.categoryHint' | translate }}</small>
+          </span>
+        </legend>
+
+        <div class="ar-categories" role="radiogroup">
+          @for (c of categories; track c.key) {
+            <button type="button" role="radio" class="ar-cat"
+                    [class.ar-cat--on]="category() === c.key"
+                    [attr.aria-checked]="category() === c.key"
+                    (click)="category.set(c.key)">
+              <mat-icon>{{ c.icon }}</mat-icon>
+              {{ 'monitoring.anomalyReport.category.' + c.key | translate }}
+            </button>
           }
         </div>
+      </fieldset>
 
-        <div class="field">
-          <label class="field__label">{{ 'monitoring.anomalyReport.description' | translate }} *</label>
-          <mat-form-field appearance="outline" class="field__mat">
-            <textarea matInput rows="3" [(ngModel)]="form.anomalyDescription" name="anomalyDescription"
-                      [placeholder]="'monitoring.anomalyReport.descriptionPlaceholder' | translate" required></textarea>
-          </mat-form-field>
-        </div>
+      <!-- Step 3: description -->
+      <fieldset class="ar-step" [disabled]="loading()">
+        <legend class="ar-step__head">
+          <span class="ar-step__num" [class.ar-step__num--done]="description().trim()">
+            @if (description().trim()) { <mat-icon>check</mat-icon> } @else { 3 }
+          </span>
+          <span>
+            <strong>{{ 'monitoring.anomalyReport.description' | translate }}</strong>
+            <small>{{ 'monitoring.anomalyReport.descriptionHint' | translate }}</small>
+          </span>
+        </legend>
 
-        <button type="submit" class="btn-submit" [disabled]="loading() || !isValid">
-          {{ 'monitoring.anomalyReport.submit' | translate }}
-        </button>
-      </form>
-    </div>
+        <textarea class="ar-textarea" rows="4" name="anomalyDescription"
+                  [maxlength]="descriptionMax"
+                  [ngModel]="description()" (ngModelChange)="description.set($event)"
+                  [placeholder]="'monitoring.anomalyReport.descriptionPlaceholder' | translate"></textarea>
+        <span class="ar-counter" [class.ar-counter--warn]="description().length > descriptionMax * 0.9">
+          {{ description().length }} / {{ descriptionMax }}
+        </span>
+      </fieldset>
 
-    <div class="section-card">
-      <div class="section-header">
-        <mat-icon>list_alt</mat-icon>
-        <h2>{{ 'monitoring.anomalyReport.listTitle' | translate }}</h2>
-        <span class="count-badge count-badge--red">{{ anomalyReports().length }}</span>
-      </div>
-      @if (anomalyReports().length === 0) {
-        <p class="empty-msg">{{ 'monitoring.anomalyReport.noneReported' | translate }}</p>
-      } @else {
-        <div class="reports-list">
-          @for (a of anomalyReports(); track a.anomalyId) {
-            <div class="report-row">
-              <div class="report-row__head">
-                <mat-icon class="icon-red">warning_amber</mat-icon>
-                <span class="mono">{{ a.anomalyId }}</span>
-                <span class="tag">{{ a.emissionDate }}</span>
-              </div>
-              <p class="report-row__desc">{{ a.anomalyDescription }}</p>
-              <div class="report-row__meta">
-                <span>{{ equipmentName(a.equipmentId) }}</span>
-                <span>{{ 'monitoring.anomalyReport.zoneId' | translate }}: {{ a.zoneId }}</span>
-              </div>
-            </div>
+      <!-- Summary + submit -->
+      <div class="ar-form__footer">
+        <p class="ar-summary">
+          @if (selectedReservation(); as r) {
+            <mat-icon>fitness_center</mat-icon>
+            <span>{{ 'monitoring.anomalyReport.summary' | translate: { machine: equipmentName(r.equipmentId) } }}</span>
+          } @else {
+            <span>{{ 'monitoring.anomalyReport.summaryEmpty' | translate }}</span>
           }
+        </p>
+        <div class="ar-form__actions">
+          <button type="button" class="btn btn--secondary" (click)="reset()" [disabled]="loading()">
+            {{ 'monitoring.anomalyReport.clear' | translate }}
+          </button>
+          <button type="submit" class="btn btn--danger" [disabled]="loading() || !isValid()">
+            <mat-icon [class.spin]="loading()">{{ loading() ? 'autorenew' : 'send' }}</mat-icon>
+            {{ 'monitoring.anomalyReport.submit' | translate }}
+          </button>
         </div>
-      }
-    </div>
+      </div>
+    </form>
 
+    <aside class="ar-side">
+
+      <!-- ── Tips ───────────────────────────────────────────────────────── -->
+      <section class="ar-card ar-tips">
+        <h2 class="ar-section-title">
+          <mat-icon>tips_and_updates</mat-icon>
+          {{ 'monitoring.anomalyReport.tips.title' | translate }}
+        </h2>
+        <ul>
+          <li>{{ 'monitoring.anomalyReport.tips.item1' | translate }}</li>
+          <li>{{ 'monitoring.anomalyReport.tips.item2' | translate }}</li>
+          <li>{{ 'monitoring.anomalyReport.tips.item3' | translate }}</li>
+        </ul>
+        <div class="ar-notice ar-notice--danger ar-tips__safety">
+          <mat-icon>health_and_safety</mat-icon>
+          <span>{{ 'monitoring.anomalyReport.tips.safety' | translate }}</span>
+        </div>
+      </section>
+
+      <!-- ── Reported ───────────────────────────────────────────────────── -->
+      <section class="ar-card ar-reports">
+        <div class="ar-reports__head">
+          <h2 class="ar-section-title">{{ 'monitoring.anomalyReport.listTitle' | translate }}</h2>
+          <span class="ar-count">{{ anomalyReports().length }}</span>
+        </div>
+        <p class="ar-section-subtitle">{{ 'monitoring.anomalyReport.listSubtitle' | translate }}</p>
+
+        @if (anomalyReports().length === 0) {
+          <div class="ar-state ar-state--compact">
+            <mat-icon>inbox</mat-icon>
+            <p>{{ 'monitoring.anomalyReport.noneReported' | translate }}</p>
+          </div>
+        } @else {
+          <ul class="ar-report-list">
+            @for (a of anomalyReports(); track a.anomalyId) {
+              <li class="ar-report">
+                <div class="ar-report__head">
+                  <span class="ar-report__machine">{{ equipmentName(a.equipmentId) }}</span>
+                  <span class="ar-chip">{{ 'monitoring.anomalyReport.sent' | translate }}</span>
+                </div>
+                <p class="ar-report__desc">{{ a.anomalyDescription }}</p>
+                <span class="ar-report__meta">
+                  <span class="mono">#{{ a.anomalyId.slice(0, 8) }}</span>
+                  · {{ a.emissionDate | date: 'mediumDate' }}
+                </span>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+
+    </aside>
   </div>
 
 </div>

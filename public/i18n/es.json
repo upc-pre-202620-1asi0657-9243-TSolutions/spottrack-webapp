@@ -297,7 +297,8 @@
       "option20m": "20 minutos",
       "cancel": "Cancelar",
       "create": "Crear Reserva",
-      "confirm": "Reservar"
+      "confirm": "Reservar",
+      "availableHint": "{{count}} máquinas disponibles"
     },
     "error": {
       "alreadyActive": "Ya tienes una reserva activa. Cancélala o espera a que expire antes de crear una nueva.",
@@ -313,7 +314,37 @@
         "status": "Estado",
         "started": "Inicio",
         "window": "Ventana horaria"
-      }
+      },
+      "refresh": "Actualizar"
+    },
+    "stats": {
+      "available": "Máquinas disponibles ahora",
+      "total": "Reservas totales",
+      "completed": "Completadas",
+      "missed": "Canceladas o expiradas"
+    },
+    "current": {
+      "title": "Reserva actual",
+      "machine": "Máquina reservada",
+      "inUse": "En uso",
+      "duration": "Duración",
+      "minutes": "{{count}} min",
+      "cancel": "Cancelar reserva",
+      "emptyTitle": "No tienes una reserva activa",
+      "emptyDesc": "Reserva una máquina disponible y haz check-in con su código QR al llegar.",
+      "quickPick": "Disponibles ahora"
+    },
+    "scan": {
+      "button": "Escanear QR para check-in",
+      "ok": "¡Check-in confirmado! Tu reserva está activa.",
+      "noReservation": "No tienes una reserva pendiente para esa máquina."
+    },
+    "status": {
+      "ALL": "Todas",
+      "ACTIVE": "Activa",
+      "ENDED": "Completada",
+      "CANCELLED": "Cancelada",
+      "EXPIRED": "Expirada"
     }
   },
   "clientAlerts": {
@@ -420,16 +451,46 @@
     },
     "anomalyReport": {
       "title": "Reportar Anomalía",
-      "subtitle": "Reporta manualmente un problema detectado en un equipo",
+      "subtitle": "Avisa al gimnasio de un problema en una máquina para que el personal lo resuelva rápido",
       "formTitle": "Nuevo Reporte",
       "reservation": "Reserva",
       "noReservations": "No tienes reservas para reportar una anomalía.",
       "zoneId": "ID de Zona",
       "description": "Descripción",
-      "descriptionPlaceholder": "Describe la anomalía observada...",
-      "submit": "Reportar Anomalía",
+      "descriptionPlaceholder": "Ej. La palanca del asiento está trabada y el cable chirría al jalarlo.",
+      "submit": "Enviar reporte",
       "listTitle": "Anomalías Reportadas",
-      "noneReported": "Aún no se ha reportado ninguna anomalía."
+      "noneReported": "Aún no se ha reportado ninguna anomalía.",
+      "back": "Volver a mis reservas",
+      "backAdmin": "Volver a monitoreo",
+      "success": "¡Gracias! Tu reporte fue enviado al personal del gimnasio.",
+      "reservationHint": "Elige la reserva en la que notaste el problema",
+      "goToBookings": "Ir a mis reservas",
+      "showMore": "Ver {{count}} anteriores",
+      "showLess": "Ver menos",
+      "categoryTitle": "¿Qué tipo de problema?",
+      "categoryHint": "Ayuda al personal a priorizar el reporte",
+      "category": {
+        "broken": "Rota o trabada",
+        "noise": "Ruido extraño",
+        "sensor": "El sensor no detecta",
+        "hygiene": "Necesita limpieza",
+        "safety": "Riesgo de seguridad",
+        "other": "Otro"
+      },
+      "descriptionHint": "¿Qué pasó y en qué parte de la máquina?",
+      "summary": "Reportando un problema en {{machine}}",
+      "summaryEmpty": "Completa los tres pasos para enviar tu reporte",
+      "clear": "Limpiar",
+      "tips": {
+        "title": "Consejos para un buen reporte",
+        "item1": "Indica qué parte falla: asiento, cable, pantalla, pesas…",
+        "item2": "Menciona cuándo ocurre: siempre o solo con carga.",
+        "item3": "Un reporte por máquina facilita el seguimiento.",
+        "safety": "Si la máquina no es segura, deja de usarla y avisa al personal de inmediato."
+      },
+      "listSubtitle": "Reportes que enviaste en esta visita",
+      "sent": "Enviado"
     }
   },
   "dashboard": {
@@ -779,7 +840,14 @@
     "loading": "Cargando...",
     "empty": "Aún no tienes rutinas — crea la primera.",
     "card": {
-      "exercises": "ejercicios"
+      "exercises": "ejercicios",
+      "new": "Nueva",
+      "progress": "Progreso de la sesión",
+      "sessions": "Sesiones completadas",
+      "lastTrained": "Último entreno",
+      "never": "Nunca",
+      "open": "Ver rutina",
+      "continue": "Continuar sesión"
     },
     "session": {
       "start": "Iniciar Rutina",
@@ -813,7 +881,20 @@
         "reps": "Repeticiones",
         "setsAbbrev": "series",
         "repsAbbrev": "reps",
-        "submit": "Agregar"
+        "submit": "Agregar",
+        "subtitle": "Será el ejercicio #{{order}} de esta rutina",
+        "namePlaceholder": "Ej. Press de banca",
+        "error": "No se pudo agregar el ejercicio. Inténtalo de nuevo."
+      },
+      "eyebrow": "Rutina",
+      "blocksSubtitle": "Ejercicios en el orden en que los realizas",
+      "breakdownTitle": "Mezcla de ejercicios",
+      "progress": "{{done}} de {{total}} ejercicios hechos",
+      "progressHint": "Marca cada ejercicio al terminarlo y luego completa la sesión.",
+      "exercisesDone": "{{count}} ejercicios hechos",
+      "facts": {
+        "exercises": "Ejercicios",
+        "volume": "Volumen total"
       }
     },
     "modal": {
@@ -822,7 +903,34 @@
       "name": "Nombre de la Rutina",
       "namePlaceholder": "Ej. Día A - Tren Superior",
       "cancel": "Cancelar",
-      "create": "Crear Rutina"
+      "create": "Crear Rutina",
+      "suggestionsLabel": "O empieza con una idea",
+      "suggestion": {
+        "upper": "Tren Superior",
+        "lower": "Tren Inferior",
+        "full": "Cuerpo Completo",
+        "cardio": "Cardio y Core"
+      }
+    },
+    "stats": {
+      "routines": "Rutinas",
+      "exercises": "Ejercicios planificados",
+      "completed": "Sesiones completadas",
+      "rate": "Tasa de cumplimiento"
+    },
+    "week": {
+      "title": "Últimos 7 días",
+      "summary": "{{sessions}} sesiones completadas en {{days}} de 7 días"
+    },
+    "filter": {
+      "all": "Todas",
+      "active": "En progreso",
+      "new": "Sin iniciar"
+    },
+    "emptyState": {
+      "title": "Aún no tienes rutinas",
+      "filteredTitle": "Sin coincidencias",
+      "filteredDesc": "Prueba otra búsqueda o filtro."
     }
   },
   "profile": {

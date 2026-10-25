@@ -297,7 +297,8 @@
       "option20m": "20 minutes",
       "cancel": "Cancel",
       "create": "Create Reservation",
-      "confirm": "Reserve"
+      "confirm": "Reserve",
+      "availableHint": "{{count}} machines available"
     },
     "error": {
       "alreadyActive": "You already have an active reservation. Cancel it or wait for it to expire before creating a new one.",
@@ -313,7 +314,37 @@
         "status": "Status",
         "started": "Started",
         "window": "Time window"
-      }
+      },
+      "refresh": "Refresh"
+    },
+    "stats": {
+      "available": "Machines available now",
+      "total": "Total reservations",
+      "completed": "Completed",
+      "missed": "Cancelled or expired"
+    },
+    "current": {
+      "title": "Current reservation",
+      "machine": "Reserved machine",
+      "inUse": "In use",
+      "duration": "Duration",
+      "minutes": "{{count}} min",
+      "cancel": "Cancel reservation",
+      "emptyTitle": "No active reservation",
+      "emptyDesc": "Book an available machine and check in with its QR code when you get there.",
+      "quickPick": "Available right now"
+    },
+    "scan": {
+      "button": "Scan QR to check in",
+      "ok": "Check-in confirmed! Your reservation is now active.",
+      "noReservation": "You have no pending reservation for that machine."
+    },
+    "status": {
+      "ALL": "All",
+      "ACTIVE": "Active",
+      "ENDED": "Completed",
+      "CANCELLED": "Cancelled",
+      "EXPIRED": "Expired"
     }
   },
   "clientAlerts": {
@@ -420,16 +451,46 @@
     },
     "anomalyReport": {
       "title": "Report Anomaly",
-      "subtitle": "Manually report an issue detected on a piece of equipment",
+      "subtitle": "Tell the gym about a machine problem so staff can fix it fast",
       "formTitle": "New Report",
       "reservation": "Reservation",
       "noReservations": "You have no reservations to report an anomaly for.",
       "zoneId": "Zone ID",
       "description": "Description",
-      "descriptionPlaceholder": "Describe the observed anomaly...",
-      "submit": "Report Anomaly",
+      "descriptionPlaceholder": "e.g. The seat lever is stuck and the cable makes a grinding sound when pulled.",
+      "submit": "Send report",
       "listTitle": "Reported Anomalies",
-      "noneReported": "No anomalies reported yet."
+      "noneReported": "No anomalies reported yet.",
+      "back": "Back to my reservations",
+      "backAdmin": "Back to monitoring",
+      "success": "Thanks! Your report was sent to the gym staff.",
+      "reservationHint": "Pick the reservation where you noticed the problem",
+      "goToBookings": "Go to my reservations",
+      "showMore": "Show {{count}} older",
+      "showLess": "Show fewer",
+      "categoryTitle": "What kind of problem?",
+      "categoryHint": "Helps staff triage the report",
+      "category": {
+        "broken": "Broken or stuck",
+        "noise": "Strange noise",
+        "sensor": "Sensor not detecting",
+        "hygiene": "Needs cleaning",
+        "safety": "Safety hazard",
+        "other": "Other"
+      },
+      "descriptionHint": "What happened, and where on the machine?",
+      "summary": "Reporting a problem on {{machine}}",
+      "summaryEmpty": "Complete the three steps to send your report",
+      "clear": "Clear",
+      "tips": {
+        "title": "Tips for a useful report",
+        "item1": "Say which part fails: seat, cable, screen, weights…",
+        "item2": "Mention when it happens — always, or only under load.",
+        "item3": "One report per machine keeps things easy to track.",
+        "safety": "If the machine is unsafe, stop using it and tell a staff member right away."
+      },
+      "listSubtitle": "Reports you sent during this visit",
+      "sent": "Sent"
     }
   },
   "dashboard": {
@@ -779,7 +840,14 @@
     "loading": "Loading...",
     "empty": "No routines yet — create your first one.",
     "card": {
-      "exercises": "exercises"
+      "exercises": "exercises",
+      "new": "New",
+      "progress": "Session progress",
+      "sessions": "Sessions completed",
+      "lastTrained": "Last trained",
+      "never": "Never",
+      "open": "View routine",
+      "continue": "Continue session"
     },
     "session": {
       "start": "Start Routine",
@@ -813,7 +881,20 @@
         "reps": "Reps",
         "setsAbbrev": "sets",
         "repsAbbrev": "reps",
-        "submit": "Add"
+        "submit": "Add",
+        "subtitle": "It will be exercise #{{order}} of this routine",
+        "namePlaceholder": "e.g. Bench Press",
+        "error": "Could not add the exercise. Please try again."
+      },
+      "eyebrow": "Routine",
+      "blocksSubtitle": "Exercises in the order you perform them",
+      "breakdownTitle": "Exercise mix",
+      "progress": "{{done}} of {{total}} exercises done",
+      "progressHint": "Tick each exercise as you finish it, then complete the session.",
+      "exercisesDone": "{{count}} exercises done",
+      "facts": {
+        "exercises": "Exercises",
+        "volume": "Total volume"
       }
     },
     "modal": {
@@ -822,7 +903,34 @@
       "name": "Routine Name",
       "namePlaceholder": "e.g. Upper Body Day A",
       "cancel": "Cancel",
-      "create": "Create Routine"
+      "create": "Create Routine",
+      "suggestionsLabel": "Or start from an idea",
+      "suggestion": {
+        "upper": "Upper Body",
+        "lower": "Lower Body",
+        "full": "Full Body",
+        "cardio": "Cardio & Core"
+      }
+    },
+    "stats": {
+      "routines": "Routines",
+      "exercises": "Exercises planned",
+      "completed": "Sessions completed",
+      "rate": "Completion rate"
+    },
+    "week": {
+      "title": "Last 7 days",
+      "summary": "{{sessions}} sessions completed on {{days}} of 7 days"
+    },
+    "filter": {
+      "all": "All",
+      "active": "In progress",
+      "new": "Not started"
+    },
+    "emptyState": {
+      "title": "No routines yet",
+      "filteredTitle": "Nothing matches",
+      "filteredDesc": "Try another search or filter."
     }
   },
   "profile": {

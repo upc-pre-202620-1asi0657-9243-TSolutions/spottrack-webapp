@@ -1251,6 +1251,77 @@
 
 .alt-footer { padding: 0 18px 18px; }
 
+/* ── Phone & small tablet: stacked floor plan ─────────────────────
+   The desktop blueprint is a fixed two-column grid that fits the
+   viewport, and every zone clips its overflow. On a narrow screen
+   the zones shrink to a sliver and most pins get clipped, so here
+   the plan stacks zone by zone and the page scrolls instead.       */
+@media (max-width: 767px) {
+  :host        { height: auto; }
+  .map-root    { height: auto; min-height: 100%; overflow: visible; padding-bottom: 16px; }
+
+  .header-controls { width: 100%; }
+  .gym-selector    { flex: 1; min-width: 0; }
+  .gym-select      { min-width: 0; }
+  .view-tabs       { width: 100%; }
+  .view-tab        { flex: 1; justify-content: center; }
+
+  .floor-plan-wrap { flex: none; overflow: visible; }
+  .gym-blueprint   { flex: none; border-radius: 12px; }
+
+  .floor-outer { grid-template-columns: 1fr; flex: none; }
+
+  .training-block { border-right: none; border-bottom: 2px solid var(--border); }
+
+  .training-middle-row,
+  .training-bottom-row { grid-template-columns: 1fr; }
+
+  .training-zone.zone-free-weights,
+  .training-zone.zone-upper-body {
+    border-right: none;
+    border-bottom: 1px dashed var(--border);
+  }
+
+  .studio-open-area { display: none; }
+
+  .training-zone { overflow: visible; min-height: 96px; padding: 10px 12px 12px; }
+
+  /* Equal columns so every pin gets a slot and nothing is clipped */
+  .zone-equipment-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(68px, 1fr));
+    justify-items: center;
+    gap: 14px 6px;
+    overflow: visible;
+  }
+  .zone-empty-hint { grid-column: 1 / -1; }
+
+  .zone-pin, .blueprint-pin, .heat-ghost-pin { width: 68px; }
+  .pin-label, .heat-pin-label { max-width: 68px; }
+
+  /* Support rooms: compact 2 × 2 tiles under the training floor */
+  .support-block {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .support-top-row { grid-column: 1 / -1; }
+  .support-room { min-height: 84px; }
+  .room-locker-womens { border-bottom: none; border-right: 1px solid var(--border); }
+
+  /* Heat map: the overlay blobs are placed in percentages of the desktop
+     grid, so they would land on the wrong zones once stacked. Each zone
+     paints its own ambient heat and each pin glows with its own level. */
+  .heat-overlay-full .heat-zone-ambient,
+  .heat-overlay-full .heat-blob-full { display: none; }
+  .heat-base-training { width: 100%; }
+
+  .heat-zone.training-zone { background: var(--zone-heat, transparent) !important; }
+  .heat-ghost-pin .ghost-body { box-shadow: 0 0 16px var(--pin-heat, transparent); }
+
+  .heat-legend-bar { flex-wrap: wrap; }
+  .heat-lbl-note   { margin-left: 0; flex-basis: 100%; }
+}
+
 /* ── Responsive ───────────────────────────────────────────────── */
 @media (max-width: 640px) {
   .map-root       { padding: 12px 12px 0; gap: 10px; }
@@ -1261,30 +1332,6 @@
   .ring-a         { width: 52px; height: 52px; }
   .ring-b         { width: 44px; height: 44px; }
   .gym-cards-grid { grid-template-columns: 1fr; }
-
-  /* Blueprint: stack training zones vertically on mobile */
-  .training-floor {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto;
-  }
-  .gym-zone {
-    border-right: none;
-    border-bottom: 1px solid #1c1c1c;
-    min-height: 120px;
-  }
-  .gym-zone:last-child { border-bottom: none; }
-
-  /* Support rooms stack vertically */
-  .support-rooms-row {
-    grid-template-columns: 1fr;
-    height: auto;
-  }
-  .support-room {
-    border-right: none;
-    border-bottom: 1px solid #1c1c1c;
-    height: 70px;
-  }
-  .support-room:last-child { border-bottom: none; }
 }
 
 .error-state {

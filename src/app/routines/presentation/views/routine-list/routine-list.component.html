@@ -1,76 +1,187 @@
-<div class="routines-container">
+<div class="rt-page">
 
-  <!-- HEADER -->
-  <header class="routines-header">
-    <div class="header-info">
-      <h1 class="routines-title">{{ 'routines.title' | translate }}</h1>
-      <p class="routines-subtitle">{{ 'routines.subtitle' | translate }}</p>
+  <!-- ── Header ──────────────────────────────────────────────────────────── -->
+  <header class="rt-header">
+    <div>
+      <h1 class="rt-header__title">{{ 'routines.title' | translate }}</h1>
+      <p class="rt-header__subtitle">{{ 'routines.subtitle' | translate }}</p>
     </div>
-    <button class="new-routine-btn" (click)="openModal()">
+    <button class="btn btn--primary" (click)="openModal()">
       <mat-icon>add</mat-icon>
       {{ 'routines.newRoutine' | translate }}
     </button>
   </header>
 
-  <!-- SEARCH BAR -->
-  <div class="search-bar">
-    <mat-icon class="search-icon">search</mat-icon>
-    <input
-      type="text"
-      class="search-input"
-      [placeholder]="'routines.search' | translate"
-      [value]="searchQuery()"
-      (input)="onSearch($event)"
-    />
+  <!-- ── KPIs ────────────────────────────────────────────────────────────── -->
+  <div class="rt-kpis">
+    <div class="rt-kpi">
+      <span class="rt-kpi__icon rt-kpi__icon--amber"><mat-icon>list_alt</mat-icon></span>
+      <div>
+        <p class="rt-kpi__label">{{ 'routines.stats.routines' | translate }}</p>
+        <p class="rt-kpi__value">{{ store.routines().length }}</p>
+      </div>
+    </div>
+    <div class="rt-kpi">
+      <span class="rt-kpi__icon rt-kpi__icon--blue"><mat-icon>fitness_center</mat-icon></span>
+      <div>
+        <p class="rt-kpi__label">{{ 'routines.stats.exercises' | translate }}</p>
+        <p class="rt-kpi__value">{{ totalExercises() }}</p>
+      </div>
+    </div>
+    <div class="rt-kpi">
+      <span class="rt-kpi__icon rt-kpi__icon--green"><mat-icon>task_alt</mat-icon></span>
+      <div>
+        <p class="rt-kpi__label">{{ 'routines.stats.completed' | translate }}</p>
+        <p class="rt-kpi__value">{{ completedSessions() }}</p>
+      </div>
+    </div>
+    <div class="rt-kpi">
+      <span class="rt-kpi__icon rt-kpi__icon--teal"><mat-icon>insights</mat-icon></span>
+      <div>
+        <p class="rt-kpi__label">{{ 'routines.stats.rate' | translate }}</p>
+        <p class="rt-kpi__value">{{ completionRate() === null ? '—' : completionRate() + '%' }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Last 7 days ─────────────────────────────────────────────────────── -->
+  <section class="rt-card rt-week">
+    <div class="rt-week__head">
+      <div>
+        <h2 class="rt-section-title">{{ 'routines.week.title' | translate }}</h2>
+        <p class="rt-section-subtitle">
+          {{ 'routines.week.summary' | translate: { sessions: weekCompleted(), days: weekActiveDays() } }}
+        </p>
+      </div>
+      <div class="rt-week__legend">
+        <span><i class="rt-dot rt-dot--done"></i>{{ 'routines.session.status.COMPLETED' | translate }}</span>
+        <span><i class="rt-dot rt-dot--missed"></i>{{ 'routines.session.status.MISSED' | translate }}</span>
+      </div>
+    </div>
+    <div class="rt-week__days">
+      @for (day of week(); track day.date.getTime()) {
+        <div class="rt-day" [class.rt-day--today]="day.isToday">
+          <span class="rt-day__name">{{ day.date | date: 'EEE' }}</span>
+          <span class="rt-day__cell"
+                [class.rt-day__cell--done]="day.completed > 0"
+                [class.rt-day__cell--missed]="day.completed === 0 && day.missed > 0">
+            @if (day.completed > 0) {
+              <mat-icon>check</mat-icon>
+            } @else if (day.missed > 0) {
+              <mat-icon>close</mat-icon>
+            }
+          </span>
+          <span class="rt-day__num">{{ day.date | date: 'd' }}</span>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- ── Toolbar ─────────────────────────────────────────────────────────── -->
+  <div class="rt-toolbar">
+    <div class="rt-search">
+      <mat-icon>search</mat-icon>
+      <input
+        type="text"
+        [placeholder]="'routines.search' | translate"
+        [value]="searchQuery()"
+        (input)="onSearch($event)"
+      />
+    </div>
+    <div class="rt-tabs" role="tablist">
+      @for (f of filters; track f) {
+        <button class="rt-tab" role="tab" [class.rt-tab--active]="filter() === f" (click)="filter.set(f)">
+          {{ 'routines.filter.' + f | translate }}
+          <span class="rt-tab__count">{{ filterCount()[f] }}</span>
+        </button>
+      }
+    </div>
   </div>
 
   @if (error()) {
-    <div class="error-banner">{{ error() }}</div>
-  }
-
-  @if (loading()) {
-    <div class="loading-state">
-      <mat-icon class="spin">refresh</mat-icon>
-      {{ 'routines.loading' | translate }}
+    <div class="rt-notice rt-notice--danger">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ error() }}</span>
     </div>
   }
 
-  <!-- ROUTINE CARDS LIST -->
-  <div class="routines-list">
-    @for (routine of routines(); track routine.id) {
-      <mat-card class="routine-card" [appContextMenu]="routineMenu(routine)" [routerLink]="['/routines', routine.id]">
-        <mat-card-content class="card-content">
+  <!-- ── Routine grid ────────────────────────────────────────────────────── -->
+  @if (loading()) {
+    <div class="rt-state">
+      <mat-icon class="spin">autorenew</mat-icon>
+      <p>{{ 'routines.loading' | translate }}</p>
+    </div>
+  } @else if (cards().length === 0) {
+    <div class="rt-card rt-empty">
+      <span class="rt-empty__icon"><mat-icon>{{ store.routines().length ? 'search_off' : 'fitness_center' }}</mat-icon></span>
+      <h3>{{ (store.routines().length ? 'routines.emptyState.filteredTitle' : 'routines.emptyState.title') | translate }}</h3>
+      <p>{{ (store.routines().length ? 'routines.emptyState.filteredDesc' : 'routines.empty') | translate }}</p>
+      @if (!store.routines().length) {
+        <button class="btn btn--primary" (click)="openModal()">
+          <mat-icon>add</mat-icon>
+          {{ 'routines.newRoutine' | translate }}
+        </button>
+      }
+    </div>
+  } @else {
+    <div class="rt-grid">
+      @for (card of cards(); track card.routine.id; let i = $index) {
+        <a class="rt-card rt-routine" [class.rt-routine--active]="card.active"
+           [routerLink]="['/routines', card.routine.id]" [appContextMenu]="routineMenu(card.routine)">
 
-          <!-- Card Top: Routine Name + Active Session Badge -->
-          <div class="card-top">
-            <div class="exercise-info">
-              <h3 class="exercise-name">{{ routine.routineName }}</h3>
-              <p class="machine-name">{{ routine.exerciseBlockCount }} {{ 'routines.card.exercises' | translate }}</p>
+          <div class="rt-routine__head">
+            <span class="rt-routine__icon rt-routine__icon--{{ tone(i) }}"><mat-icon>fitness_center</mat-icon></span>
+            <div class="rt-routine__title">
+              <h3>{{ card.routine.routineName }}</h3>
+              <p>{{ card.routine.exerciseBlockCount }} {{ 'routines.card.exercises' | translate }}</p>
             </div>
-            @if (hasActiveSession(routine)) {
-              <span class="tag tag--level">{{ 'routines.session.activeLabel' | translate }}</span>
+            @if (card.active) {
+              <span class="rt-chip rt-chip--accent"><i class="rt-pulse"></i>{{ 'routines.session.activeLabel' | translate }}</span>
+            } @else if (!card.lastTrainedAt) {
+              <span class="rt-chip">{{ 'routines.card.new' | translate }}</span>
             }
           </div>
 
-        </mat-card-content>
-      </mat-card>
-    }
+          @if (card.active) {
+            <div class="rt-routine__progress">
+              <div class="rt-routine__progress-label">
+                <span>{{ 'routines.card.progress' | translate }}</span>
+                <span>{{ card.active.completedExerciseBlockIds.length }} / {{ card.routine.exerciseBlockCount }}</span>
+              </div>
+              <span class="rt-meter"><span class="rt-meter__fill" [style.width.%]="card.progressPct"></span></span>
+            </div>
+          }
 
-    @if (!loading() && routines().length === 0) {
-      <p class="empty-msg">{{ 'routines.empty' | translate }}</p>
-    }
-  </div>
+          <dl class="rt-routine__facts">
+            <div>
+              <dt>{{ 'routines.card.sessions' | translate }}</dt>
+              <dd>{{ card.completed }}</dd>
+            </div>
+            <div>
+              <dt>{{ 'routines.card.lastTrained' | translate }}</dt>
+              <dd>{{ card.lastTrainedAt ? (card.lastTrainedAt | date: 'mediumDate') : ('routines.card.never' | translate) }}</dd>
+            </div>
+          </dl>
+
+          <span class="rt-routine__cta">
+            {{ (card.active ? 'routines.card.continue' : 'routines.card.open') | translate }}
+            <mat-icon>arrow_forward</mat-icon>
+          </span>
+        </a>
+      }
+    </div>
+  }
 
 </div>
 
-<!-- NUEVA RUTINA MODAL -->
+<!-- ── New routine modal ─────────────────────────────────────────────────── -->
 @if (showModal()) {
   <div class="modal-backdrop" (click)="closeModal()">
     <div class="modal-card" (click)="$event.stopPropagation()">
 
-      <!-- Modal Header -->
       <div class="modal-header">
-        <div>
+        <span class="modal-header__icon"><mat-icon>playlist_add</mat-icon></span>
+        <div class="modal-header__text">
           <h2 class="modal-title">{{ 'routines.modal.title' | translate }}</h2>
           <p class="modal-subtitle">{{ 'routines.modal.subtitle' | translate }}</p>
         </div>
@@ -79,35 +190,34 @@
         </button>
       </div>
 
-      <!-- Form Body -->
       <div class="modal-body">
+        <label class="field-label" for="routine-name">
+          {{ 'routines.modal.name' | translate }}
+          <span class="required">*</span>
+        </label>
+        <input
+          id="routine-name"
+          type="text"
+          class="field-input"
+          [placeholder]="'routines.modal.namePlaceholder' | translate"
+          [(ngModel)]="routineName"
+          (keyup.enter)="createRoutine()"
+        />
 
-        <!-- Nombre de la Rutina -->
-        <div class="field-group">
-          <label class="field-label">
-            {{ 'routines.modal.name' | translate }}
-            <span class="required">*</span>
-          </label>
-          <input
-            type="text"
-            class="field-input"
-            [placeholder]="'routines.modal.namePlaceholder' | translate"
-            [(ngModel)]="routineName"
-          />
+        <p class="field-hint">{{ 'routines.modal.suggestionsLabel' | translate }}</p>
+        <div class="suggestions">
+          @for (s of suggestions; track s) {
+            @let label = 'routines.modal.suggestion.' + s | translate;
+            <button type="button" class="suggestion" (click)="useSuggestion(label)">{{ label }}</button>
+          }
         </div>
-
       </div>
 
-      <!-- Footer -->
       <div class="modal-footer">
-        <button class="btn-cancel" (click)="closeModal()">
+        <button class="btn btn--secondary" (click)="closeModal()">
           {{ 'routines.modal.cancel' | translate }}
         </button>
-        <button
-          class="btn-create"
-          [disabled]="!routineName.trim()"
-          (click)="createRoutine()"
-        >
+        <button class="btn btn--primary" [disabled]="!routineName.trim()" (click)="createRoutine()">
           {{ 'routines.modal.create' | translate }}
         </button>
       </div>
@@ -115,4 +225,3 @@
     </div>
   </div>
 }
-
