@@ -198,6 +198,18 @@
       "heat": "Heat",
       "allBranches": "All Branches"
     },
+    "heat": {
+      "low": "Low",
+      "high": "High",
+      "note": "Real sensor usage, compared within the branch",
+      "loading": "Loading usage history…",
+      "empty": "No sensor usage recorded in this period",
+      "window": {
+        "today": "Today",
+        "week": "Last 7 days",
+        "month": "Last 30 days"
+      }
+    },
     "branches": {
       "allBranches": "All Branches",
       "networkOverview": "Network Overview",
