@@ -512,10 +512,10 @@ export class MapComponent implements OnInit {
     return 'fitness_center';
   }
 
+  // Derived from the sub-zone so both always agree: a machine whose category and
+  // sub-zone disagreed (e.g. "Seated Row", "Elíptica") fell out of every zone.
   private equipmentCategory(name: string): 'CARDIO' | 'STRENGTH' {
-    const n = name.toLowerCase();
-    return /treadmill|bike|cycl|elliptic|row|cardio|cinta|remo|bicicleta/.test(n)
-      ? 'CARDIO' : 'STRENGTH';
+    return this.resolveSubZone(name) === 'CARDIO' ? 'CARDIO' : 'STRENGTH';
   }
 
   /**
@@ -526,7 +526,7 @@ export class MapComponent implements OnInit {
     name: string,
   ): 'CARDIO' | 'FREE_WEIGHTS' | 'UPPER_BODY' | 'LOWER_BODY' {
     const n = name.toLowerCase();
-    if (/treadmill|cinta|running|bike|cycl|bicicleta|elliptic|el[íi]ptic|remo|rowing|cardio/.test(n))
+    if (/treadmill|cinta|running|bike|cycl|bicicleta|elliptic|el[íi]ptic|remo|rower|rowing|cardio/.test(n))
       return 'CARDIO';
     if (/leg|pierna|squat|sentadilla|leg.*curl|leg.*press|calf|pantorrilla|gl[uú]teo|abductor|aductor|lower.*body|inferior/.test(n))
       return 'LOWER_BODY';
