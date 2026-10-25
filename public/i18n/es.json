@@ -198,6 +198,18 @@
       "heat": "Calor",
       "allBranches": "Sedes"
     },
+    "heat": {
+      "low": "Bajo",
+      "high": "Alto",
+      "note": "Uso real medido por sensores, comparado dentro de la sede",
+      "loading": "Cargando historial de uso…",
+      "empty": "Sin uso registrado por sensores en este periodo",
+      "window": {
+        "today": "Hoy",
+        "week": "Últimos 7 días",
+        "month": "Últimos 30 días"
+      }
+    },
     "branches": {
       "allBranches": "Todas las Sedes",
       "networkOverview": "Vista General",

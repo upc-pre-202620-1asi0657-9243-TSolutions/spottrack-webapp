@@ -120,11 +120,27 @@
 
       <!-- ── HEATMAP LEGEND ──────────────────────────────────────── -->
       @if (viewMode() === 'HEATMAP') {
+        <div class="filter-bar heat-window-bar">
+          @for (w of usageWindows; track w) {
+            <button class="filter-chip" [class.active]="usageWindow() === w"
+              (click)="setUsageWindow(w); $event.stopPropagation()">
+              {{ 'map.heat.window.' + w | translate }}
+            </button>
+          }
+        </div>
         <div class="heat-legend-bar">
-          <span class="heat-lbl-text">Low</span>
+          <span class="heat-lbl-text">{{ 'map.heat.low' | translate }}</span>
           <div class="heat-gradient-strip"></div>
-          <span class="heat-lbl-text">High</span>
-          <span class="heat-lbl-note">Live availability</span>
+          <span class="heat-lbl-text">{{ 'map.heat.high' | translate }}</span>
+          <span class="heat-lbl-note">
+            @if (usageLoading()) {
+              {{ 'map.heat.loading' | translate }}
+            } @else if (!hasUsage()) {
+              {{ 'map.heat.empty' | translate }}
+            } @else {
+              {{ 'map.heat.note' | translate }}
+            }
+          </span>
         </div>
       }
 

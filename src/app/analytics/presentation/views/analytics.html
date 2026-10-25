@@ -69,7 +69,7 @@
         <p class="stat-card__label">{{ 'analytics.stats.occupancyRate' | translate }}</p>
         <p class="stat-card__value">{{ stats().occupancy }}%</p>
         <p class="stat-card__change stat-card__change--green">
-          +{{ stats().occupancyChange }}% {{ 'analytics.stats.vsLastMonth' | translate }}
+          {{ stats().occupancyChange > 0 ? '+' : '' }}{{ stats().occupancyChange }} pp {{ 'analytics.stats.vsLastMonth' | translate }}
         </p>
       </div>
       <mat-icon class="stat-card__icon stat-card__icon--green">people</mat-icon>

@@ -15,6 +15,7 @@ import { ZoneStore } from '../../../../gym/application/zone.store';
 import { Zone } from '../../../../gym/domain/model/zone.entity';
 import { ActiveGymStore } from '../../../../auth/application/active-gym.store';
 import { ThemeService } from '../../../application/theme.service';
+import { UsageHeatmapStore, UsageWindow } from '../../../../analytics/application/usage-heatmap.store';
 
 export type FilterTab = 'ALL' | 'STRENGTH' | 'CARDIO';
 export type ViewMode  = 'MAP' | 'HEATMAP' | 'ALL_BRANCHES';
@@ -53,6 +54,7 @@ export class MapComponent implements OnInit {
   private readonly branchStore      = inject(BranchStore);
   private readonly zoneStore        = inject(ZoneStore);
   private readonly activeGymStore   = inject(ActiveGymStore);
+  private readonly usageHeatmapStore = inject(UsageHeatmapStore);
   private readonly snackBar         = inject(MatSnackBar);
   private readonly translate        = inject(TranslateService);
   readonly themeService             = inject(ThemeService, { optional: true });
@@ -97,6 +99,7 @@ export class MapComponent implements OnInit {
     if (!gymId) return;
     this.branchStore.load(gymId);
     this.zoneStore.load(gymId);
+    this.usageHeatmapStore.load(gymId);
   }
 
   // ── Client-side join: equipment → zone → branch ──────────────────────────
@@ -276,31 +279,48 @@ export class MapComponent implements OnInit {
 
   // ── Heatmap intensity ─────────────────────────────────────────────────────
 
-  readonly usageByUuid = computed((): Record<string, number> => {
-    const counts: Record<string, number> = {};
-    for (const r of this.reservationStore.history()) {
-      if (r.equipmentId) counts[r.equipmentId] = (counts[r.equipmentId] ?? 0) + 1;
-    }
-    return counts;
-  });
+  /**
+   * Heat comes from real sensor sessions (UsageHeatmapStore): minutes of use in the
+   * selected window ÷ the busiest machine of the same branch, so every branch map
+   * spreads from cold to hot on its own. Equipment status plays no part here; the
+   * MAP view already shows live availability.
+   */
+  readonly branchHeatByUuid = computed((): Record<string, number> => {
+    const minutes = this.usageHeatmapStore.activeMinutesByUuid();
+    const zMap    = this.zoneMap();
+    const branchOf = (eq: Equipment) => zMap.get(eq.zoneId)?.branchId ?? '';
 
-  readonly liveIntensityByUuid = computed((): Record<string, number> => {
-    const pending = this.pendingUuids();
+    const busiest: Record<string, number> = {};
+    for (const eq of this.equipmentStore.equipment()) {
+      const b = branchOf(eq);
+      busiest[b] = Math.max(busiest[b] ?? 0, minutes[eq.uuid] ?? 0);
+    }
     const result: Record<string, number> = {};
     for (const eq of this.equipmentStore.equipment()) {
-      switch (eq.status) {
-        case EquipmentStatus.OCCUPIED:       result[eq.uuid] = 1.0;  break;
-        case EquipmentStatus.ACTIVE:         result[eq.uuid] = 0.8;  break;
-        case EquipmentStatus.OUT_OF_SERVICE: result[eq.uuid] = 0.55; break;
-        case EquipmentStatus.MAINTENANCE:    result[eq.uuid] = 0.45; break;
-        default: result[eq.uuid] = pending.has(eq.uuid) ? 0.65 : 0.0;
-      }
+      const max = busiest[branchOf(eq)];
+      result[eq.uuid] = max > 0 ? (minutes[eq.uuid] ?? 0) / max : 0;
     }
     return result;
   });
 
+  /** Same ratio against the busiest machine of the whole gym, so branches compare side by side. */
+  readonly gymHeatByUuid = computed((): Record<string, number> => {
+    const result: Record<string, number> = {};
+    for (const e of this.usageHeatmapStore.heatmap()?.equipment ?? []) result[e.equipmentId] = e.heat;
+    return result;
+  });
+
+  readonly usageWindows: UsageWindow[] = ['today', 'week', 'month'];
+  readonly usageWindow  = this.usageHeatmapStore.window;
+  readonly usageLoading = this.usageHeatmapStore.loading;
+  readonly hasUsage     = this.usageHeatmapStore.hasUsage;
+
+  setUsageWindow(window: UsageWindow): void {
+    this.usageHeatmapStore.setWindow(window);
+  }
+
   getBranchHeatColor(branchId: string, uuid: string): string {
-    const t = this.liveIntensityByUuid()[uuid] ?? 0;
+    const t = this.gymHeatByUuid()[uuid] ?? 0;
     // Matches the organic blob palette: teal (cold) → orange → magenta (hot)
     if (t <= 0)    return 'rgb(0,180,160)';
     if (t < 0.5)   return `rgb(255,${Math.round(160 - t * 200)},0)`;
@@ -308,7 +328,7 @@ export class MapComponent implements OnInit {
   }
 
   getBranchHeatOpacity(_branchId: string, uuid: string): number {
-    return this.liveIntensityByUuid()[uuid] ?? 0;
+    return this.gymHeatByUuid()[uuid] ?? 0;
   }
 
   // ── CSS-driven organic heatmap helpers ───────────────────────────────────
@@ -320,7 +340,7 @@ export class MapComponent implements OnInit {
    * Intensity 1 (hot/occupied)  → bright magenta-red core + wide bloom
    */
   heatGradient(uuid: string): string {
-    const t = this.liveIntensityByUuid()[uuid] ?? 0;
+    const t = this.branchHeatByUuid()[uuid] ?? 0;
 
     if (t <= 0.05) {
       // Cold machine — diffuse teal-blue whisper
@@ -361,7 +381,7 @@ export class MapComponent implements OnInit {
    * Cold machines: 120px  |  Hot machines: 340px
    */
   heatRadius(uuid: string): string {
-    const t = this.liveIntensityByUuid()[uuid] ?? 0;
+    const t = this.branchHeatByUuid()[uuid] ?? 0;
     // Larger blobs: 200px (cold) → 420px (hot) for full zone coverage
     const px = Math.round(200 + t * 220);
     return `${px}px`;
@@ -372,7 +392,7 @@ export class MapComponent implements OnInit {
    * current heat level (teal when cold, magenta when hot).
    */
   heatBorderColor(uuid: string): string {
-    const t = this.liveIntensityByUuid()[uuid] ?? 0;
+    const t = this.branchHeatByUuid()[uuid] ?? 0;
     if (t <= 0.05) return 'rgba(0,200,180,0.55)';
     if (t < 0.5)   return `rgba(255,${Math.round(160 - t * 200)},0,0.7)`;
     return `rgba(255,${Math.round(20 + (1 - t) * 60)},${Math.round(t * 20)},0.85)`;
@@ -396,7 +416,7 @@ export class MapComponent implements OnInit {
       ].join(' ');
     }
     const avgT = equipment.reduce(
-      (sum, e) => sum + (this.liveIntensityByUuid()[e.eq.uuid] ?? 0), 0
+      (sum, e) => sum + (this.branchHeatByUuid()[e.eq.uuid] ?? 0), 0
     ) / equipment.length;
 
     if (avgT <= 0.08) {
