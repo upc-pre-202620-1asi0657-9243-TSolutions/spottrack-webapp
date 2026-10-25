@@ -412,13 +412,42 @@
   },
   "monitoring": {
     "sensors": {
-      "title": "Registro de Sensores",
-      "subtitle": "Registra cámaras y sensores de movimiento para el monitoreo IoT",
+      "title": "Registrar Sensor de Movimiento",
+      "subtitle": "Asigna un sensor de movimiento a una máquina para registrar su uso automáticamente",
       "cameraTitle": "Sensor de Cámara",
       "motionTitle": "Sensor de Movimiento",
       "equipment": "Equipo",
       "registerCamera": "Registrar Cámara",
-      "registerMotion": "Registrar Sensor de Movimiento"
+      "registerMotion": "Registrar sensor",
+      "back": "Volver a monitoreo IoT",
+      "success": "Sensor de movimiento registrado para {{machine}}.",
+      "pickTitle": "Elige una máquina",
+      "pickSubtitle": "Cada sensor vigila un solo equipo",
+      "search": "Buscar por nombre, marca o modelo…",
+      "filter": {
+        "uncovered": "Sin sensor",
+        "all": "Todas las máquinas"
+      },
+      "hasSensor": "{{count}} sensor",
+      "noSensor": "Sin sensor",
+      "allCovered": "Todas las máquinas ya tienen un sensor de movimiento.",
+      "noMatch": "Ninguna máquina coincide con tu búsqueda.",
+      "summary": "Un nuevo sensor vigilará {{machine}}",
+      "summaryEmpty": "Selecciona una máquina para continuar",
+      "coverage": {
+        "title": "Cobertura de sensores",
+        "machines": "{{covered}} de {{total}} máquinas",
+        "sensors": "Sensores de movimiento",
+        "online": "En línea ahora"
+      },
+      "how": {
+        "title": "Cómo funciona",
+        "step1": "Elige la máquina donde está montado el sensor.",
+        "step2": "Se crea un ID de sensor; el dispositivo reporta movimiento con él.",
+        "step3": "Cuando llegan sus latidos aparece En línea y se registran las sesiones de uso."
+      },
+      "registeredTitle": "Sensores registrados",
+      "noneRegistered": "Aún no hay sensores de movimiento registrados."
     },
     "sessionTracking": {
       "title": "Rastreo de Sesiones",

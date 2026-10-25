@@ -412,13 +412,42 @@
   },
   "monitoring": {
     "sensors": {
-      "title": "Sensor Registration",
-      "subtitle": "Register cameras and motion sensors for IoT monitoring",
+      "title": "Register Motion Sensor",
+      "subtitle": "Attach a motion sensor to a machine so its usage is tracked automatically",
       "cameraTitle": "Camera Sensor",
       "motionTitle": "Motion Sensor",
       "equipment": "Equipment",
       "registerCamera": "Register Camera",
-      "registerMotion": "Register Motion Sensor"
+      "registerMotion": "Register sensor",
+      "back": "Back to IoT monitoring",
+      "success": "Motion sensor registered for {{machine}}.",
+      "pickTitle": "Choose a machine",
+      "pickSubtitle": "Each sensor watches one piece of equipment",
+      "search": "Search by name, brand or model…",
+      "filter": {
+        "uncovered": "Without sensor",
+        "all": "All machines"
+      },
+      "hasSensor": "{{count}} sensor",
+      "noSensor": "No sensor",
+      "allCovered": "Every machine already has a motion sensor.",
+      "noMatch": "No machines match your search.",
+      "summary": "A new sensor will watch {{machine}}",
+      "summaryEmpty": "Select a machine to continue",
+      "coverage": {
+        "title": "Sensor coverage",
+        "machines": "{{covered}} of {{total}} machines",
+        "sensors": "Motion sensors",
+        "online": "Online now"
+      },
+      "how": {
+        "title": "How it works",
+        "step1": "Pick the machine the sensor is mounted on.",
+        "step2": "A sensor ID is created; the device reports motion with it.",
+        "step3": "Once heartbeats arrive it shows Online and usage sessions are tracked."
+      },
+      "registeredTitle": "Registered sensors",
+      "noneRegistered": "No motion sensors registered yet."
     },
     "sessionTracking": {
       "title": "Session Tracking",
