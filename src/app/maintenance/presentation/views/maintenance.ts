@@ -1,7 +1,7 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -35,6 +35,9 @@ export class MaintenanceComponent {
   readonly technicianStore  = inject(TechnicianStore);
 
   readonly TicketStatus = TicketStatus;
+
+  /** ?ticket=<id> (e.g. from the Technicians page) opens that ticket once the board loads. */
+  private deepLinkTicketId: string | null = inject(ActivatedRoute).snapshot.queryParamMap.get('ticket');
 
   // ── Filters ─────────────────────────────────────────────────────────────
   readonly searchQuery    = signal('');
@@ -100,6 +103,15 @@ export class MaintenanceComponent {
       if (this.store.ticketActionLoading()) return;
       this.submitting.set(false);
       if (!this.store.ticketActionError()) this.closeModal();
+    }, { allowSignalWrites: true });
+
+    effect(() => {
+      const id = this.deepLinkTicketId;
+      const ticket = id ? this.store.tickets().find(t => t.id === id) : undefined;
+      if (ticket) {
+        this.deepLinkTicketId = null;
+        this.openDetail(ticket);
+      }
     }, { allowSignalWrites: true });
 
     // A new search or filter starts the list on its first page.
