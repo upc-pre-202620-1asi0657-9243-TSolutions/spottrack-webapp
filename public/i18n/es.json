@@ -956,6 +956,9 @@
       "ticket": "Ticket",
       "status": "Estado",
       "age": "Antigüedad"
+    },
+    "board": {
+      "dragHint": "Arrastra un ticket a otra columna para cambiar su estado."
     }
   },
   "routines": {

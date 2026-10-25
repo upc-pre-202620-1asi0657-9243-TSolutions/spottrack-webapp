@@ -956,6 +956,9 @@
       "ticket": "Ticket",
       "status": "Status",
       "age": "Age"
+    },
+    "board": {
+      "dragHint": "Drag a ticket to another column to change its status."
     }
   },
   "routines": {

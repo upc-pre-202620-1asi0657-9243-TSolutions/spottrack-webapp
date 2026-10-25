@@ -280,6 +280,102 @@ $blue:     var(--info);
   }
 }
 
+// ── Drag and drop ────────────────────────────────────────────────────────────
+.board-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: -8px 0 -6px;
+  font-size: .75rem;
+  color: $muted;
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+}
+
+.move-error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  background: var(--danger-soft);
+  color: $red;
+  font-size: .8125rem;
+
+  span { flex: 1; }
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+  button {
+    display: flex;
+    padding: 2px;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+  }
+}
+
+.ticket-list {
+  min-height: 80px;
+  transition: background .15s;
+
+  // Columns light up while a card is being dragged over the board.
+  &.cdk-drop-list-receiving { background: var(--accent-soft); }
+  &.cdk-drop-list-dragging  { background: var(--surface-hover); }
+}
+
+.ticket-card.cdk-drag {
+  cursor: grab;
+  &.cdk-drag-disabled { cursor: pointer; }
+}
+
+.ticket-card.cdk-drag-preview {
+  box-sizing: border-box;
+  border-color: var(--accent);
+  box-shadow: var(--shadow-lg);
+  transform: rotate(1.5deg);
+  cursor: grabbing;
+}
+
+.ticket-placeholder {
+  min-height: 72px;
+  border: 2px dashed var(--accent);
+  border-radius: 12px;
+  background: var(--accent-soft);
+}
+
+.cdk-drag-animating { transition: transform .2s cubic-bezier(0, 0, .2, 1); }
+
+.ticket-person {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  margin: 0 8px 0 auto;
+  overflow: hidden;
+  font-size: .75rem;
+  color: var(--text-2);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  &--empty { color: $faint; font-style: italic; }
+}
+
+.ticket-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: $accent;
+  color: var(--accent-contrast);
+  font-size: .625rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
 // ── Board / list toggle ──────────────────────────────────────────────────────
 .view-toggle {
   display: inline-flex;
@@ -570,26 +666,6 @@ $blue:     var(--info);
 }
 
 // ── Action buttons ────────────────────────────────────────────────────────────
-.btn-start {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  width: 100%;
-  padding: 8px 0;
-  background: $accent;
-  border: none;
-  border-radius: 6px;
-  color: var(--accent-contrast);
-  font-weight: 700;
-  font-size: .875rem;
-  cursor: pointer;
-  transition: background .15s;
-
-  mat-icon { font-size: 16px; width: 16px; height: 16px; }
-  &:hover { background: var(--accent-hover); }
-}
-
 .btn-complete {
   display: flex;
   align-items: center;
