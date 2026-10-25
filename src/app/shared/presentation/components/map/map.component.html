@@ -326,18 +326,230 @@
       <!-- ── HEATMAP VIEW ────────────────────────────────────────── -->
       @if (viewMode() === 'HEATMAP') {
         <div class="floor-plan-wrap">
-          <div class="floor-plan heat-mode">
-            <canvas #heatCanvas class="heat-canvas"></canvas>
 
-            @for (col of zoneLayout(); track col.zone?.zoneId ?? '__unzoned__') {
-              @for (item of col.equipment; track item.eq.uuid) {
-                <div class="machine-pin pin-ghost" [style.top]="item.top" [style.left]="item.left">
-                  <div class="ghost-body"><mat-icon class="ghost-icon">{{ item.icon }}</mat-icon></div>
-                  <span class="usage-chip">{{ (usageByUuid()[item.eq.uuid] ?? 0) }}</span>
-                  <span class="pin-label">{{ item.eq.name }}</span>
+          <!-- Same gym-blueprint shell, heat-blueprint modifier darkens it -->
+          <div class="gym-blueprint heat-blueprint">
+            <div class="scan-line" aria-hidden="true"></div>
+            <div class="blueprint-grid" aria-hidden="true"></div>
+
+            <!-- ════════════════════════════════════════════════════════
+                 HEAT OVERLAY — absolute, full blueprint area.
+                 Each blob is mix-blend-mode:screen → organic fusion.
+                 Positioned via blueprintHeatPos() which maps each
+                 machine to its approximate XY in the blueprint grid.
+                 ════════════════════════════════════════════════════════ -->
+            <div class="heat-overlay-full" aria-hidden="true">
+
+              <!-- ─── Layer 1: Continuous cold base (entire training block) ── -->
+              <!-- Creates the teal-blue "background radiation" like the reference image -->
+              <div class="heat-base-training"></div>
+
+              <!-- ─── Layer 2: Zone-level ambient blobs (avg utilization per zone) ── -->
+              <!-- Large, very blurred blobs that fill each zone with thermal colour -->
+              <div class="heat-zone-ambient zone-ambient-cardio"
+                   [style.background]="zoneAmbient(cardioEquipment)"></div>
+              <div class="heat-zone-ambient zone-ambient-weights"
+                   [style.background]="zoneAmbient(freeWeightsEquipment)"></div>
+              <div class="heat-zone-ambient zone-ambient-upper"
+                   [style.background]="zoneAmbient(upperBodyEquipment)"></div>
+              <div class="heat-zone-ambient zone-ambient-lower"
+                   [style.background]="zoneAmbient(lowerBodyEquipment)"></div>
+
+              <!-- ─── Layer 3: Machine-specific hot spots ────────────────── -->
+              @for (item of cardioEquipment; track item.eq.uuid; let i = $index) {
+                <div class="heat-blob-full"
+                     [style.top]="blueprintHeatPos(i, cardioEquipment.length, 'CARDIO').top"
+                     [style.left]="blueprintHeatPos(i, cardioEquipment.length, 'CARDIO').left"
+                     [style.background]="heatGradient(item.eq.uuid)"
+                     [style.width]="heatRadius(item.eq.uuid)"
+                     [style.height]="heatRadius(item.eq.uuid)">
                 </div>
               }
-            }
+
+              @for (item of freeWeightsEquipment; track item.eq.uuid; let i = $index) {
+                <div class="heat-blob-full"
+                     [style.top]="blueprintHeatPos(i, freeWeightsEquipment.length, 'FREE_WEIGHTS').top"
+                     [style.left]="blueprintHeatPos(i, freeWeightsEquipment.length, 'FREE_WEIGHTS').left"
+                     [style.background]="heatGradient(item.eq.uuid)"
+                     [style.width]="heatRadius(item.eq.uuid)"
+                     [style.height]="heatRadius(item.eq.uuid)">
+                </div>
+              }
+
+              @for (item of upperBodyEquipment; track item.eq.uuid; let i = $index) {
+                <div class="heat-blob-full"
+                     [style.top]="blueprintHeatPos(i, upperBodyEquipment.length, 'UPPER_BODY').top"
+                     [style.left]="blueprintHeatPos(i, upperBodyEquipment.length, 'UPPER_BODY').left"
+                     [style.background]="heatGradient(item.eq.uuid)"
+                     [style.width]="heatRadius(item.eq.uuid)"
+                     [style.height]="heatRadius(item.eq.uuid)">
+                </div>
+              }
+
+              @for (item of lowerBodyEquipment; track item.eq.uuid; let i = $index) {
+                <div class="heat-blob-full"
+                     [style.top]="blueprintHeatPos(i, lowerBodyEquipment.length, 'LOWER_BODY').top"
+                     [style.left]="blueprintHeatPos(i, lowerBodyEquipment.length, 'LOWER_BODY').left"
+                     [style.background]="heatGradient(item.eq.uuid)"
+                     [style.width]="heatRadius(item.eq.uuid)"
+                     [style.height]="heatRadius(item.eq.uuid)">
+                </div>
+              }
+
+            </div><!-- /heat-overlay-full -->
+
+            <!-- ════════════════════════════════════════════════════════
+                 FLOOR STRUCTURE — same as MAP view.
+                 Zones have transparent backgrounds so heat shows through.
+                 Ghost pins and zone labels render above the heat layer.
+                 ════════════════════════════════════════════════════════ -->
+            <div class="floor-outer heat-floor-outer">
+
+              <!-- ══ LEFT — TRAINING STUDIO BLOCK ═══════════════════ -->
+              <div class="training-block">
+
+                <!-- Cardio -->
+                <div class="training-zone zone-cardio heat-zone">
+                  <header class="zone-label-tag">
+                    <span class="zone-accent-dot"></span>
+                    <span class="zone-name-text">Cardio</span>
+                  </header>
+                  <div class="zone-equipment-grid">
+                    @for (item of cardioEquipment; track item.eq.uuid) {
+                      <div class="heat-ghost-pin"
+                           (click)="openEquipmentDetail(item.eq.uuid, $event)">
+                        <div class="ghost-body"
+                             [style.border-color]="heatBorderColor(item.eq.uuid)">
+                          <mat-icon class="ghost-icon">{{ item.icon }}</mat-icon>
+                        </div>
+                        <span class="pin-label heat-pin-label">{{ item.eq.name }}</span>
+                      </div>
+                    }
+                    @if (cardioEquipment.length === 0) {
+                      <div class="zone-empty-hint">
+                        <mat-icon>directions_run</mat-icon>
+                        <mat-icon>directions_bike</mat-icon>
+                      </div>
+                    }
+                  </div>
+                </div>
+
+                <!-- Middle row -->
+                <div class="training-middle-row">
+                  <div class="training-zone zone-free-weights heat-zone">
+                    <header class="zone-label-tag">
+                      <span class="zone-accent-dot"></span>
+                      <span class="zone-name-text">Lifting + Free Weights</span>
+                    </header>
+                    <div class="zone-equipment-grid">
+                      @for (item of freeWeightsEquipment; track item.eq.uuid) {
+                        <div class="heat-ghost-pin"
+                             (click)="openEquipmentDetail(item.eq.uuid, $event)">
+                          <div class="ghost-body"
+                               [style.border-color]="heatBorderColor(item.eq.uuid)">
+                            <mat-icon class="ghost-icon">{{ item.icon }}</mat-icon>
+                          </div>
+                          <span class="pin-label heat-pin-label">{{ item.eq.name }}</span>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                  <div class="studio-open-area heat-zone" aria-hidden="true">
+                    <span class="studio-watermark">Training<br>Studio</span>
+                  </div>
+                </div>
+
+                <!-- Bottom row -->
+                <div class="training-bottom-row">
+                  <div class="training-zone zone-upper-body heat-zone">
+                    <header class="zone-label-tag">
+                      <span class="zone-accent-dot"></span>
+                      <span class="zone-name-text">Training (Upper Body)</span>
+                    </header>
+                    <div class="zone-equipment-grid">
+                      @for (item of upperBodyEquipment; track item.eq.uuid) {
+                        <div class="heat-ghost-pin"
+                             (click)="openEquipmentDetail(item.eq.uuid, $event)">
+                          <div class="ghost-body"
+                               [style.border-color]="heatBorderColor(item.eq.uuid)">
+                            <mat-icon class="ghost-icon">{{ item.icon }}</mat-icon>
+                          </div>
+                          <span class="pin-label heat-pin-label">{{ item.eq.name }}</span>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                  <div class="training-zone zone-lower-body heat-zone">
+                    <header class="zone-label-tag">
+                      <span class="zone-accent-dot"></span>
+                      <span class="zone-name-text">Training (Lower Body)</span>
+                    </header>
+                    <div class="zone-equipment-grid">
+                      @for (item of lowerBodyEquipment; track item.eq.uuid) {
+                        <div class="heat-ghost-pin"
+                             (click)="openEquipmentDetail(item.eq.uuid, $event)">
+                          <div class="ghost-body"
+                               [style.border-color]="heatBorderColor(item.eq.uuid)">
+                            <mat-icon class="ghost-icon">{{ item.icon }}</mat-icon>
+                          </div>
+                          <span class="pin-label heat-pin-label">{{ item.eq.name }}</span>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                </div>
+
+              </div><!-- /training-block -->
+
+              <!-- ══ RIGHT — SUPPORT BLOCK (unchanged from MAP) ═════ -->
+              <div class="support-block">
+                <div class="support-top-row">
+                  <div class="support-room room-office">
+                    <mat-icon class="support-room-icon">desk</mat-icon>
+                    <span class="support-room-label">Office</span>
+                    <div class="office-furniture" aria-hidden="true">
+                      <div class="office-desk-elem"></div>
+                      <div class="office-chair-elem"></div>
+                    </div>
+                  </div>
+                  <div class="support-room room-reception">
+                    <mat-icon class="support-room-icon">badge</mat-icon>
+                    <span class="support-room-label">Reception</span>
+                    <div class="reception-counter" aria-hidden="true">
+                      <div class="counter-desk"></div>
+                      <div class="counter-chairs">
+                        <div class="counter-chair"></div>
+                        <div class="counter-chair"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="support-room room-locker-womens">
+                  <mat-icon class="support-room-icon">wc</mat-icon>
+                  <span class="support-room-label">Locker Room (Womens)</span>
+                  <div class="locker-row" aria-hidden="true">
+                    <div class="locker-unit"></div><div class="locker-unit"></div>
+                    <div class="locker-unit"></div><div class="locker-unit"></div>
+                    <div class="locker-unit"></div>
+                  </div>
+                </div>
+                <div class="support-room room-locker-mens">
+                  <mat-icon class="support-room-icon">wc</mat-icon>
+                  <span class="support-room-label">Locker Room (Mens)</span>
+                  <div class="locker-row" aria-hidden="true">
+                    <div class="locker-unit"></div><div class="locker-unit"></div>
+                    <div class="locker-unit"></div><div class="locker-unit"></div>
+                  </div>
+                </div>
+              </div><!-- /support-block -->
+
+            </div><!-- /floor-outer -->
+          </div><!-- /gym-blueprint -->
+
+          <div class="floor-legend">
+            <div class="legend-item"><span class="ldot ldot-green"></span><span>{{ 'map.legend.available' | translate: { count: availableCount } }}</span></div>
+            <div class="legend-item"><span class="ldot ldot-red"></span><span>{{ 'map.legend.inUse' | translate: { count: inUseCount } }}</span></div>
+            <div class="legend-item"><span class="ldot ldot-yellow"></span><span>{{ 'map.legend.reserved' | translate: { count: reservedCount } }}</span></div>
           </div>
         </div>
       }
