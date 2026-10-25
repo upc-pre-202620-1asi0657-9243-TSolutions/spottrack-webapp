@@ -18,6 +18,7 @@ import { AdminGymStore } from '../../../application/admin-gym.store';
 import { ZoneStore } from '../../../application/zone.store';
 import { ContextMenuDirective } from '../../../../shared/presentation/directives/context-menu.directive';
 import { ContextMenuItem } from '../../../../shared/application/context-menu.service';
+import { PaginatorComponent, paginate } from '../../../../shared/presentation/components/paginator/paginator';
 
 export interface EquipmentRow {
   uuid:                 string;
@@ -48,6 +49,7 @@ export interface EquipmentRow {
     MatProgressSpinnerModule,
     MatChipsModule,
     ContextMenuDirective,
+    PaginatorComponent,
   ],
   templateUrl: './equipment-management.html',
   styleUrl: './equipment-management.scss',
@@ -73,6 +75,13 @@ export class EquipmentManagementComponent {
       const id = this.gymId();
       if (id) this.zoneStore.load(id);
     });
+
+    // A new search or status filter starts on the first page.
+    effect(() => {
+      this.searchQuery();
+      this.selectedStatus();
+      this.page.set(0);
+    }, { allowSignalWrites: true });
   }
 
   searchQuery    = signal('');
@@ -107,6 +116,13 @@ export class EquipmentManagementComponent {
         maintenanceThreshold: e.maintenanceThreshold,
       } as EquipmentRow));
   });
+
+  readonly page     = signal(0);
+  readonly pageSize = signal(10);
+
+  readonly pagedEquipment = computed(() =>
+    paginate(this.filteredEquipment(), this.page(), this.pageSize())
+  );
 
   zoneName(zoneId: string): string {
     if (!this.zoneStore.loaded()) return '…';

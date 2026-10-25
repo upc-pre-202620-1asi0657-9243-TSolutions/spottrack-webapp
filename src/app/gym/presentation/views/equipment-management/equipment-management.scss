@@ -173,6 +173,11 @@ $blue:         var(--info);
   overflow: hidden;
 }
 
+.eq-card__footer {
+  padding: 10px 16px;
+  border-top: 1px solid $border;
+}
+
 .eq-loading {
   display: flex;
   justify-content: center;
