@@ -434,6 +434,23 @@
     "reader": {
       "title": "Selecciona una alerta para leerla",
       "subtitle": "No hay nada seleccionado"
+    },
+    "filters": {
+      "title": "Filtrar por fecha y hora",
+      "date": "Fecha",
+      "hours": "Hora del día",
+      "from": "Desde",
+      "to": "Hasta",
+      "anyHour": "Cualquiera",
+      "preset": {
+        "any": "Cualquier fecha",
+        "today": "Hoy",
+        "week": "Últimos 7 días",
+        "month": "Últimos 30 días",
+        "custom": "Rango personalizado"
+      },
+      "overnight": "Franja nocturna: incluye las horas después del inicio y antes del fin.",
+      "clear": "Quitar filtros de fecha"
     }
   },
   "nav": {

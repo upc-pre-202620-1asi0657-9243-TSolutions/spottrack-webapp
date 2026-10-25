@@ -59,11 +59,95 @@
     <section class="ai-list">
       <div class="ai-list__head">
         <h2>{{ 'alerts.folder.' + folder() | translate }}</h2>
-        <button type="button" class="icon-btn" (click)="sort.set(sort() === 'newest' ? 'oldest' : 'newest')"
-                [title]="'alerts.sort.' + sort() | translate">
-          <mat-icon>{{ sort() === 'newest' ? 'arrow_downward' : 'arrow_upward' }}</mat-icon>
-        </button>
+        <div class="ai-list__tools">
+          <button type="button" class="icon-btn" [class.icon-btn--on]="showFilters() || activeFilterCount()"
+                  (click)="showFilters.set(!showFilters())" [title]="'alerts.filters.title' | translate">
+            <mat-icon>filter_list</mat-icon>
+            @if (activeFilterCount()) { <span class="icon-btn__badge">{{ activeFilterCount() }}</span> }
+          </button>
+          <button type="button" class="icon-btn" (click)="sort.set(sort() === 'newest' ? 'oldest' : 'newest')"
+                  [title]="'alerts.sort.' + sort() | translate">
+            <mat-icon>{{ sort() === 'newest' ? 'arrow_downward' : 'arrow_upward' }}</mat-icon>
+          </button>
+        </div>
       </div>
+
+      @if (showFilters()) {
+        <div class="ai-filters">
+          <div class="ai-filters__group">
+            <span class="ai-filters__label"><mat-icon>event</mat-icon>{{ 'alerts.filters.date' | translate }}</span>
+            <div class="ai-chips">
+              @for (p of datePresets; track p) {
+                <button type="button" class="ai-chip" [class.ai-chip--on]="datePreset() === p" (click)="datePreset.set(p)">
+                  {{ 'alerts.filters.preset.' + p | translate }}
+                </button>
+              }
+            </div>
+            @if (datePreset() === 'custom') {
+              <div class="ai-range">
+                <label>
+                  <span>{{ 'alerts.filters.from' | translate }}</span>
+                  <input type="date" [max]="dateTo() || null" [ngModel]="dateFrom()" (ngModelChange)="dateFrom.set($event)" />
+                </label>
+                <label>
+                  <span>{{ 'alerts.filters.to' | translate }}</span>
+                  <input type="date" [min]="dateFrom() || null" [ngModel]="dateTo()" (ngModelChange)="dateTo.set($event)" />
+                </label>
+              </div>
+            }
+          </div>
+
+          <div class="ai-filters__group">
+            <span class="ai-filters__label"><mat-icon>schedule</mat-icon>{{ 'alerts.filters.hours' | translate }}</span>
+            <div class="ai-range">
+              <label>
+                <span>{{ 'alerts.filters.from' | translate }}</span>
+                <select [ngModel]="hourFrom()" (ngModelChange)="hourFrom.set($event)">
+                  <option [ngValue]="null">{{ 'alerts.filters.anyHour' | translate }}</option>
+                  @for (h of hours; track h) { <option [ngValue]="h">{{ hourLabel(h) }}</option> }
+                </select>
+              </label>
+              <label>
+                <span>{{ 'alerts.filters.to' | translate }}</span>
+                <select [ngModel]="hourTo()" (ngModelChange)="hourTo.set($event)">
+                  <option [ngValue]="null">{{ 'alerts.filters.anyHour' | translate }}</option>
+                  @for (h of hours; track h) { <option [ngValue]="h">{{ hourEndLabel(h) }}</option> }
+                </select>
+              </label>
+            </div>
+            @if (hourFrom() !== null && hourTo() !== null && hourFrom()! > hourTo()!) {
+              <p class="ai-filters__hint">{{ 'alerts.filters.overnight' | translate }}</p>
+            }
+          </div>
+
+          @if (activeFilterCount()) {
+            <button type="button" class="cmd ai-filters__clear" (click)="clearFilters()">
+              <mat-icon>filter_list_off</mat-icon>{{ 'alerts.filters.clear' | translate }}
+            </button>
+          }
+        </div>
+      } @else if (activeFilterCount()) {
+        <div class="ai-active">
+          @if (datePreset() !== 'any') {
+            <span class="ai-active__chip">
+              <mat-icon>event</mat-icon>
+              @if (datePreset() === 'custom') {
+                {{ dateFrom() || '…' }} – {{ dateTo() || '…' }}
+              } @else {
+                {{ 'alerts.filters.preset.' + datePreset() | translate }}
+              }
+              <button type="button" (click)="datePreset.set('any')"><mat-icon>close</mat-icon></button>
+            </span>
+          }
+          @if (hourFrom() !== null || hourTo() !== null) {
+            <span class="ai-active__chip">
+              <mat-icon>schedule</mat-icon>
+              {{ hourLabel(hourFrom() ?? 0) }} – {{ hourEndLabel(hourTo() ?? 23) }}
+              <button type="button" (click)="hourFrom.set(null); hourTo.set(null)"><mat-icon>close</mat-icon></button>
+            </span>
+          }
+        </div>
+      }
 
       <div class="ai-list__scroll" (keydown.arrowdown)="step($event, 1)" (keydown.arrowup)="step($event, -1)">
         @if (!alertsList().length) {
@@ -76,7 +160,7 @@
           <div class="ai-empty">
             <mat-icon>search_off</mat-icon>
             <p class="ai-empty__title">{{ 'alerts.noMatch' | translate }}</p>
-            <button type="button" class="cmd" (click)="folder.set('all'); search.set('')">{{ 'alerts.resetFilters' | translate }}</button>
+            <button type="button" class="cmd" (click)="folder.set('all'); search.set(''); clearFilters()">{{ 'alerts.resetFilters' | translate }}</button>
           </div>
         } @else {
           @for (group of groups(); track group.key) {

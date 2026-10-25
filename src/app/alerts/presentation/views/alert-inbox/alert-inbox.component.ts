@@ -14,6 +14,7 @@ import { AlertReaderComponent } from '../../components/alert-reader/alert-reader
 
 export type AlertFolder = 'all' | 'unread' | AlertTone;
 export type AlertSort = 'newest' | 'oldest';
+export type DatePreset = 'any' | 'today' | 'week' | 'month' | 'custom';
 
 interface AlertGroup {
   key:    'today' | 'yesterday' | 'week' | 'earlier';
@@ -56,6 +57,20 @@ export class AlertInboxComponent {
   readonly collapsed    = signal<Set<string>>(new Set());
   readonly confirmClear = signal(false);
 
+  // ── Date & hour filters ───────────────────────────────────────────────────
+  readonly datePresets: DatePreset[] = ['any', 'today', 'week', 'month', 'custom'];
+  readonly hours = Array.from({ length: 24 }, (_, h) => h);
+  readonly showFilters = signal(false);
+  readonly datePreset  = signal<DatePreset>('any');
+  readonly dateFrom    = signal('');   // yyyy-MM-dd, custom range only
+  readonly dateTo      = signal('');
+  readonly hourFrom    = signal<number | null>(null);
+  readonly hourTo      = signal<number | null>(null);
+
+  readonly activeFilterCount = computed(() =>
+    (this.datePreset() !== 'any' ? 1 : 0) + (this.hourFrom() !== null || this.hourTo() !== null ? 1 : 0)
+  );
+
   readonly isAdmin = computed(() => !this.authStore.isClient());
 
   private get currentRole(): 'admin' | 'client' {
@@ -82,7 +97,8 @@ export class AlertInboxComponent {
     return this.alertsList()
       .filter(a =>
         (f === 'all' || (f === 'unread' ? !a.read : alertTone(a) === f)) &&
-        (!q || `${this.resolveTitle(a)} ${this.resolveDescription(a)}`.toLowerCase().includes(q))
+        (!q || `${this.resolveTitle(a)} ${this.resolveDescription(a)}`.toLowerCase().includes(q)) &&
+        this.matchesDate(a.date) && this.matchesHour(a.date)
       )
       .sort((a, b) => dir * (a.date.getTime() - b.date.getTime()));
   });
@@ -117,6 +133,46 @@ export class AlertInboxComponent {
   }
 
   tone(alert: AppAlert): AlertTone { return alertTone(alert); }
+
+  hourLabel(h: number): string { return `${String(h).padStart(2, '0')}:00`; }
+  hourEndLabel(h: number): string { return `${String(h).padStart(2, '0')}:59`; }
+
+  clearFilters(): void {
+    this.datePreset.set('any');
+    this.dateFrom.set('');
+    this.dateTo.set('');
+    this.hourFrom.set(null);
+    this.hourTo.set(null);
+  }
+
+  private matchesDate(date: Date): boolean {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    const t = date.getTime();
+    switch (this.datePreset()) {
+      case 'today': return t >= start.getTime();
+      case 'week':  return t >= start.getTime() - 6 * DAY_MS;
+      case 'month': return t >= start.getTime() - 29 * DAY_MS;
+      case 'custom': {
+        // Local-day bounds; either end may be left open.
+        const from = this.dateFrom() ? new Date(`${this.dateFrom()}T00:00:00`).getTime() : -Infinity;
+        const to   = this.dateTo()   ? new Date(`${this.dateTo()}T23:59:59.999`).getTime() : Infinity;
+        return t >= from && t <= to;
+      }
+      default: return true;
+    }
+  }
+
+  /** Hour window [from, to] inclusive; from > to means an overnight window such as 22:00–06:00. */
+  private matchesHour(date: Date): boolean {
+    const from = this.hourFrom();
+    const to = this.hourTo();
+    if (from === null && to === null) return true;
+    const h = date.getHours();
+    const lo = from ?? 0;
+    const hi = to ?? 23;
+    return lo <= hi ? h >= lo && h <= hi : h >= lo || h <= hi;
+  }
 
   select(alert: AppAlert): void {
     this.store.markRead(alert.id);

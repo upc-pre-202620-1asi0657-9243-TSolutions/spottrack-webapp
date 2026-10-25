@@ -434,6 +434,23 @@
     "reader": {
       "title": "Select an alert to read it",
       "subtitle": "Nothing is selected"
+    },
+    "filters": {
+      "title": "Filter by date and time",
+      "date": "Date",
+      "hours": "Time of day",
+      "from": "From",
+      "to": "To",
+      "anyHour": "Any",
+      "preset": {
+        "any": "Any time",
+        "today": "Today",
+        "week": "Last 7 days",
+        "month": "Last 30 days",
+        "custom": "Custom range"
+      },
+      "overnight": "Overnight window: includes hours after the start and before the end.",
+      "clear": "Clear date filters"
     }
   },
   "nav": {
