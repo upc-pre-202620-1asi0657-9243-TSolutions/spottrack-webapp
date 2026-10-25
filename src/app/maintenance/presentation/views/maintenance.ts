@@ -132,6 +132,10 @@ export class MaintenanceComponent {
     return this.equipmentStore.equipment().find(e => e.uuid === id)?.name ?? id;
   }
 
+  technicianName(id: string): string {
+    return this.technicianStore.technicians().find(t => t.id === id)?.name ?? id;
+  }
+
   equipmentOf(id: string) {
     return this.equipmentStore.equipment().find(e => e.uuid === id) ?? null;
   }

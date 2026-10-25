@@ -152,7 +152,7 @@
                   <span class="ticket-name">{{ equipmentName(t.equipmentId) }}</span>
                   <p class="ticket-desc">{{ t.description }}</p>
                   @if (t.assignee) {
-                    <p class="ticket-assignee">{{ 'maintenance.assignedTo' | translate }}: {{ t.assignee }}</p>
+                    <p class="ticket-assignee">{{ 'maintenance.assignedTo' | translate }}: {{ technicianName(t.assignee) }}</p>
                   }
                 </div>
                 <span class="status-dot status-dot--amber"></span>
@@ -188,7 +188,7 @@
                   <span class="ticket-name ticket-name--done">{{ equipmentName(t.equipmentId) }}</span>
                   <p class="ticket-desc">{{ t.description }}</p>
                   @if (t.completedBy) {
-                    <p class="ticket-assignee">{{ 'maintenance.completedBy' | translate }}: {{ t.completedBy }}</p>
+                    <p class="ticket-assignee">{{ 'maintenance.completedBy' | translate }}: {{ technicianName(t.completedBy) }}</p>
                   }
                 </div>
                 <mat-icon class="done-check">check_circle</mat-icon>
@@ -242,7 +242,7 @@
                     </span>
                   </td>
                   <td class="ticket-table__muted">{{ 'maintenance.type.' + t.type | translate }}</td>
-                  <td class="ticket-table__muted">{{ t.assignee || '—' }}</td>
+                  <td class="ticket-table__muted">{{ t.assignee ? technicianName(t.assignee) : '—' }}</td>
                   <td class="ticket-table__muted">{{ ticketAge(t) }}</td>
                   <td class="ticket-table__actions">
                     @if (t.status === 'OPEN') {
