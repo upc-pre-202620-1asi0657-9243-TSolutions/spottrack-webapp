@@ -1,12 +1,10 @@
 import { Component, computed, effect, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Equipment, EquipmentStatus } from '../../../domain/model/equipment.entity';
 import { EquipmentStore } from '../../../application/equipment.store';
@@ -17,17 +15,24 @@ import { EquipmentRow } from '../equipment-management/equipment-management';
 
 export const CURRENCIES = ['USD', 'EUR', 'PEN', 'MXN', 'COP', 'GBP', 'BRL'] as const;
 
+export const STATUS_ICONS: Record<EquipmentStatus, string> = {
+  [EquipmentStatus.AVAILABLE]:      'check_circle',
+  [EquipmentStatus.OCCUPIED]:       'person',
+  [EquipmentStatus.ACTIVE]:         'bolt',
+  [EquipmentStatus.MAINTENANCE]:    'build',
+  [EquipmentStatus.OUT_OF_SERVICE]: 'cancel',
+  [EquipmentStatus.DECOMMISSIONED]: 'delete_forever',
+};
+
 @Component({
   selector: 'app-add-equipment-dialog',
   standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    RouterLink,
     TranslateModule,
-    MatFormFieldModule,
-    MatInputModule,
     MatSelectModule,
-    MatButtonModule,
     MatIconModule,
   ],
   templateUrl: './add-equipment-dialog.html',
@@ -42,10 +47,11 @@ export class AddEquipmentDialogComponent {
   readonly branchStore   = inject(BranchStore);
   readonly zoneStore     = inject(ZoneStore);
 
-  readonly equipmentStatuses = Object.values(EquipmentStatus);
+  // Decommissioning has its own action in the equipment table.
+  readonly equipmentStatuses = Object.values(EquipmentStatus).filter(s => s !== EquipmentStatus.DECOMMISSIONED);
   readonly currencies        = CURRENCIES;
 
-  private existing: EquipmentRow | undefined = (history.state as { equipment?: EquipmentRow }).equipment;
+  readonly existing: EquipmentRow | undefined = (history.state as { equipment?: EquipmentRow }).equipment;
   readonly isEditMode = !!this.route.snapshot.paramMap.get('id');
 
   form = this.fb.nonNullable.group({
@@ -59,6 +65,9 @@ export class AddEquipmentDialogComponent {
     maintenanceThreshold: [this.existing?.maintenanceThreshold ?? ''],
   });
 
+  /** Live form values for the preview card. */
+  readonly value = toSignal(this.form.valueChanges, { initialValue: this.form.getRawValue() });
+
   readonly groupedZones = computed(() => {
     const zones    = this.zoneStore.zones();
     const branches = this.branchStore.branches();
@@ -68,6 +77,15 @@ export class AddEquipmentDialogComponent {
         zones: zones.filter(z => z.branchId === branch.branchId),
       }))
       .filter(g => g.zones.length > 0);
+  });
+
+  /** valueChanges omits disabled controls, so edit mode reads the fixed zone from the raw value. */
+  readonly previewZone = computed(() => {
+    const zoneId = this.value().zoneId ?? this.form.getRawValue().zoneId;
+    const zone   = this.zoneStore.zones().find(z => z.zoneId === zoneId);
+    if (!zone) return null;
+    const branch = this.branchStore.branches().find(b => b.branchId === zone.branchId);
+    return branch ? `${zone.zoneName} · ${branch.name}` : zone.zoneName;
   });
 
   constructor() {
@@ -82,8 +100,26 @@ export class AddEquipmentDialogComponent {
     });
   }
 
+  statusIcon(status: EquipmentStatus | string | undefined): string {
+    return STATUS_ICONS[status as EquipmentStatus] ?? 'help';
+  }
+
+  /** Errors show once the user has left the field, not while typing the first character. */
+  showError(control: keyof typeof this.form.controls): boolean {
+    const c = this.form.controls[control];
+    return c.invalid && (c.touched || c.dirty);
+  }
+
+  setStatus(status: EquipmentStatus): void {
+    this.form.controls.status.setValue(status);
+    this.form.controls.status.markAsDirty();
+  }
+
   submit(): void {
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
     const val = this.form.getRawValue();
 
     if (this.isEditMode && this.existing?.uuid) {

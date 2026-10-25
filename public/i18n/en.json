@@ -618,7 +618,7 @@
     "dialog": {
       "addTitle": "Register New Equipment",
       "editTitle": "Update Equipment Status",
-      "subtitle": "Fill in all required fields to register the equipment in the system.",
+      "subtitle": "Add a machine to your gym so members can see, book and track it.",
       "editHint": "In edit mode only the status can be updated.",
       "editMode": "Edit mode",
       "newMode": "New equipment",
@@ -626,8 +626,13 @@
       "deleteMessage": "Are you sure you want to decommission this equipment? This action cannot be undone.",
       "sections": {
         "identification": "Identification",
-        "configuration": "Pricing & Location",
-        "status": "Operational Status"
+        "configuration": "Location & purchase",
+        "status": "Operational Status",
+        "details": "Machine details",
+        "detailsHint": "Registered details can't be changed after creation",
+        "identificationHint": "How the machine appears to staff and members",
+        "configurationHint": "Where it stands and what it cost, used for ROI analytics",
+        "statusHint": "Current state and next preventive maintenance"
       },
       "fields": {
         "name": "Equipment name",
@@ -648,6 +653,26 @@
       "validation": {
         "required": "This field is required",
         "min": "Value must be 0 or greater"
+      },
+      "back": "Back to equipment",
+      "placeholders": {
+        "name": "e.g. Treadmill 03",
+        "brand": "e.g. Life Fitness",
+        "model": "e.g. Integrity SL",
+        "zone": "Select a zone"
+      },
+      "createZones": "Create zones in branch management",
+      "preview": {
+        "title": "Preview",
+        "unnamed": "Unnamed machine",
+        "nextMaintenance": "Next maintenance",
+        "notSet": "Not set"
+      },
+      "tips": {
+        "title": "Good to know",
+        "item1": "Include a number in the name (Treadmill 03) so twins are easy to tell apart.",
+        "item2": "The purchase amount feeds the financial impact and ROI reports.",
+        "item3": "After registering, attach a motion sensor from IoT monitoring to track usage."
       }
     }
   },

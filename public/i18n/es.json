@@ -618,7 +618,7 @@
     "dialog": {
       "addTitle": "Registrar Nuevo Equipo",
       "editTitle": "Actualizar Estado del Equipo",
-      "subtitle": "Completa todos los campos requeridos para registrar el equipo en el sistema.",
+      "subtitle": "Agrega una máquina a tu gimnasio para que los socios puedan verla, reservarla y medir su uso.",
       "editHint": "En modo edición solo se puede actualizar el estado del equipo.",
       "editMode": "Modo edición",
       "newMode": "Nuevo equipo",
@@ -626,8 +626,13 @@
       "deleteMessage": "¿Estás seguro de que deseas dar de baja este equipo? Esta acción no se puede deshacer.",
       "sections": {
         "identification": "Identificación",
-        "configuration": "Precio y Ubicación",
-        "status": "Estado Operacional"
+        "configuration": "Ubicación y compra",
+        "status": "Estado Operacional",
+        "details": "Datos de la máquina",
+        "detailsHint": "Los datos registrados no se pueden cambiar después de crearla",
+        "identificationHint": "Cómo verán la máquina el personal y los socios",
+        "configurationHint": "Dónde está y cuánto costó, usado en la analítica de ROI",
+        "statusHint": "Estado actual y próximo mantenimiento preventivo"
       },
       "fields": {
         "name": "Nombre del equipo",
@@ -648,6 +653,26 @@
       "validation": {
         "required": "Este campo es obligatorio",
         "min": "El valor debe ser 0 o mayor"
+      },
+      "back": "Volver a equipos",
+      "placeholders": {
+        "name": "Ej. Caminadora 03",
+        "brand": "Ej. Life Fitness",
+        "model": "Ej. Integrity SL",
+        "zone": "Selecciona una zona"
+      },
+      "createZones": "Crear zonas en la gestión de sedes",
+      "preview": {
+        "title": "Vista previa",
+        "unnamed": "Máquina sin nombre",
+        "nextMaintenance": "Próximo mantenimiento",
+        "notSet": "Sin definir"
+      },
+      "tips": {
+        "title": "Para tener en cuenta",
+        "item1": "Incluye un número en el nombre (Caminadora 03) para distinguir máquinas iguales.",
+        "item2": "El monto de compra alimenta los reportes de impacto financiero y ROI.",
+        "item3": "Tras registrarla, asígnale un sensor de movimiento desde Monitoreo IoT para medir su uso."
       }
     }
   },
