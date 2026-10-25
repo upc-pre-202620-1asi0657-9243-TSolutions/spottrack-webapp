@@ -837,7 +837,36 @@
       "time": "Scheduled Time",
       "description": "Description",
       "cancel": "Cancel",
-      "submit": "Create Ticket"
+      "submit": "Create Ticket",
+      "back": "Back to maintenance",
+      "subtitle": "Report a machine problem or plan preventive work for the technicians",
+      "equipmentHint": "Pick the machine that needs attention",
+      "searchMachine": "Search by name, brand or model…",
+      "noMachines": "No machines match your search.",
+      "pickMachine": "Select a machine to continue",
+      "change": "Change",
+      "openTickets": "Open tickets",
+      "duplicateWarning": "This machine already has {{count}} open ticket(s). Check the board before filing a duplicate.",
+      "problemTitle": "Problem",
+      "problemHint": "What kind of work it is and how urgent",
+      "typeHint": {
+        "CORRECTIVE": "Something is broken or failing",
+        "PREVENTIVE": "Planned upkeep before it fails"
+      },
+      "descriptionPlaceholder": "e.g. The belt slips under load and makes a squeaking sound above 8 km/h.",
+      "scheduleTitle": "Preferred slot",
+      "scheduleHint": "Optional — checks the slot against peak gym hours",
+      "summary": {
+        "title": "Ticket summary",
+        "none": "Not selected",
+        "when": "Preferred slot"
+      },
+      "next": {
+        "title": "What happens next",
+        "step1": "The ticket lands in the Pending column of the maintenance board.",
+        "step2": "Assign a technician to start it; it moves to In progress.",
+        "step3": "Complete it with notes and the repair cost to close it."
+      }
     },
     "scheduler": {
       "peakWarning": "Peak demand hour",

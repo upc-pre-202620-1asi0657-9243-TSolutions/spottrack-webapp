@@ -1,119 +1,271 @@
-<div class="overlay" (click)="cancel()">
-  <div class="modal" (click)="$event.stopPropagation()">
+<div class="nt-page">
 
-    <!-- Header -->
-    <div class="modal__header">
-      <span class="modal__title">{{ 'maintenance.form.title' | translate }}</span>
-      <button class="modal__close" type="button" (click)="cancel()">
-        <mat-icon>close</mat-icon>
-      </button>
+  <a class="nt-back" routerLink="/maintenance">
+    <mat-icon>arrow_back</mat-icon>
+    {{ 'maintenance.form.back' | translate }}
+  </a>
+
+  <header class="nt-header">
+    <span class="nt-header__icon"><mat-icon>build</mat-icon></span>
+    <div>
+      <h1 class="nt-header__title">{{ 'maintenance.form.title' | translate }}</h1>
+      <p class="nt-header__subtitle">{{ 'maintenance.form.subtitle' | translate }}</p>
     </div>
+  </header>
 
-    <!-- Peak warning -->
-    @if (isPeak()) {
-      <div class="peak-banner">
-        <mat-icon>schedule</mat-icon>
-        <div class="peak-banner__text">
-          <strong>{{ 'maintenance.scheduler.peakWarning' | translate }}</strong>
-          <span>{{ 'maintenance.scheduler.peakWarningMsg' | translate }}</span>
+  <div class="nt-columns">
+
+    <form class="nt-card nt-form" (ngSubmit)="submit()">
+
+      <!-- ── 1. Machine ───────────────────────────────────────────────── -->
+      <section class="nt-section">
+        <div class="nt-section__head">
+          <span class="nt-step" [class.nt-step--done]="selected()">
+            @if (selected()) { <mat-icon>check</mat-icon> } @else { 1 }
+          </span>
+          <div>
+            <h2>{{ 'maintenance.form.equipment' | translate }}</h2>
+            <p>{{ 'maintenance.form.equipmentHint' | translate }}</p>
+          </div>
         </div>
-      </div>
-      <div class="suggestions">
-        <span class="suggestions__label">{{ 'maintenance.scheduler.suggestions' | translate }}</span>
-        <div class="suggestions__chips">
-          @for (t of store.suggestedTimes; track t) {
-            <button class="chip" type="button" (click)="applySuggestion(t)">{{ t }}</button>
+
+        @if (selected(); as m) {
+          <div class="nt-machine nt-tone--{{ m.status.toLowerCase() }}">
+            <div class="nt-machine__head">
+              <span class="nt-machine__icon"><mat-icon>fitness_center</mat-icon></span>
+              <div class="nt-machine__title">
+                <h3>{{ m.name }}</h3>
+                <p>{{ m.brand }} · {{ m.model }}</p>
+              </div>
+              <span class="nt-badge">
+                <mat-icon>{{ statusIcon(m.status) }}</mat-icon>
+                {{ 'equipment.status.' + m.status | translate }}
+              </span>
+              <button type="button" class="btn btn--ghost btn--sm" (click)="clearMachine()">
+                {{ 'maintenance.form.change' | translate }}
+              </button>
+            </div>
+            <dl class="nt-machine__facts">
+              <div>
+                <dt>{{ 'equipment.dialog.fields.zoneId' | translate }}</dt>
+                <dd>{{ selectedZone() ?? '—' }}</dd>
+              </div>
+              <div>
+                <dt>{{ 'equipment.dialog.fields.purchaseAmount' | translate }}</dt>
+                <dd>{{ m.purchaseCurrency }} {{ m.purchaseAmount | number: '1.0-2' }}</dd>
+              </div>
+              <div>
+                <dt>{{ 'equipment.dialog.preview.nextMaintenance' | translate }}</dt>
+                <dd>{{ m.maintenanceThreshold ? (m.maintenanceThreshold | date: 'mediumDate') : ('equipment.dialog.preview.notSet' | translate) }}</dd>
+              </div>
+              <div>
+                <dt>{{ 'maintenance.form.openTickets' | translate }}</dt>
+                <dd>{{ openTickets().length }}</dd>
+              </div>
+              <div class="nt-machine__id">
+                <dt>ID</dt>
+                <dd class="mono">{{ m.uuid }}</dd>
+              </div>
+            </dl>
+          </div>
+
+          @if (openTickets().length > 0) {
+            <div class="nt-notice nt-notice--warning">
+              <mat-icon>info</mat-icon>
+              <span>{{ 'maintenance.form.duplicateWarning' | translate: { count: openTickets().length } }}</span>
+            </div>
           }
+        } @else {
+          <div class="nt-search">
+            <mat-icon>search</mat-icon>
+            <input type="text" name="machineSearch" [placeholder]="'maintenance.form.searchMachine' | translate"
+                   [ngModel]="search()" (ngModelChange)="search.set($event)" />
+          </div>
+
+          @if (visibleMachines().length === 0) {
+            <div class="nt-state">
+              <mat-icon>search_off</mat-icon>
+              <p>{{ 'maintenance.form.noMachines' | translate }}</p>
+            </div>
+          } @else {
+            <ul class="nt-machines">
+              @for (m of visibleMachines(); track m.uuid) {
+                <li>
+                  <button type="button" class="nt-option-row nt-tone--{{ m.status.toLowerCase() }}" (click)="selectMachine(m.uuid)">
+                    <span class="nt-option-row__icon"><mat-icon>fitness_center</mat-icon></span>
+                    <span class="nt-option-row__body">
+                      <span class="nt-option-row__name">{{ m.name }}</span>
+                      <span class="nt-option-row__meta">{{ m.brand }} · {{ m.model }}</span>
+                    </span>
+                    <span class="nt-dot-label">
+                      <i></i>{{ 'equipment.status.' + m.status | translate }}
+                    </span>
+                    <mat-icon class="nt-option-row__chevron">chevron_right</mat-icon>
+                  </button>
+                </li>
+              }
+            </ul>
+          }
+          @if (touched() && !selected()) {
+            <span class="nt-error">{{ 'maintenance.form.pickMachine' | translate }}</span>
+          }
+        }
+      </section>
+
+      <!-- ── 2. Problem ───────────────────────────────────────────────── -->
+      <section class="nt-section">
+        <div class="nt-section__head">
+          <span class="nt-step" [class.nt-step--done]="description().trim()">
+            @if (description().trim()) { <mat-icon>check</mat-icon> } @else { 2 }
+          </span>
+          <div>
+            <h2>{{ 'maintenance.form.problemTitle' | translate }}</h2>
+            <p>{{ 'maintenance.form.problemHint' | translate }}</p>
+          </div>
         </div>
-      </div>
-    }
 
-    <!-- Form -->
-    <form class="modal__form" (ngSubmit)="submit()">
-
-      <!-- Máquina -->
-      <div class="field">
-        <label class="field__label">{{ 'maintenance.form.equipment' | translate }} *</label>
-        <mat-form-field appearance="outline" class="field__mat">
-          <mat-select [(ngModel)]="form.equipmentId" name="eq" required>
-            @for (eq of equipmentStore.equipment(); track eq.uuid) {
-              <mat-option [value]="eq.uuid">{{ eq.name }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-      </div>
-
-      <!-- ID de Máquina (auto-filled) -->
-      <div class="field">
-        <label class="field__label">ID de Máquina *</label>
-        <div class="field__static">{{ selectedEquipmentId || '—' }}</div>
-      </div>
-
-      <!-- Descripción -->
-      <div class="field field--full">
-        <label class="field__label">{{ 'maintenance.form.description' | translate }} *</label>
-        <mat-form-field appearance="outline" class="field__mat">
-          <textarea matInput [(ngModel)]="form.description" name="desc" rows="3" required
-                    [placeholder]="'maintenance.form.description' | translate"></textarea>
-        </mat-form-field>
-      </div>
-
-      <!-- Prioridad -->
-      <div class="field">
-        <label class="field__label">{{ 'maintenance.form.priority' | translate }}</label>
-        <mat-form-field appearance="outline" class="field__mat">
-          <mat-select [(ngModel)]="form.priority" name="pr">
-            @for (p of priorities; track p) {
-              <mat-option [value]="p">{{ 'maintenance.priority.' + p | translate }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-      </div>
-
-      <!-- Tipo -->
-      <div class="field">
-        <label class="field__label">{{ 'maintenance.form.type' | translate }}</label>
-        <mat-form-field appearance="outline" class="field__mat">
-          <mat-select [(ngModel)]="form.type" name="ty">
+        <div class="nt-field">
+          <span class="nt-label">{{ 'maintenance.form.type' | translate }}</span>
+          <div class="nt-types" role="radiogroup">
             @for (t of types; track t) {
-              <mat-option [value]="t">{{ 'maintenance.type.' + t | translate }}</mat-option>
+              <button type="button" role="radio" class="nt-type" [class.nt-type--on]="type() === t"
+                      [attr.aria-checked]="type() === t" (click)="type.set(t)">
+                <mat-icon>{{ typeIcon(t) }}</mat-icon>
+                <span>
+                  <strong>{{ 'maintenance.type.' + t | translate }}</strong>
+                  <small>{{ 'maintenance.form.typeHint.' + t | translate }}</small>
+                </span>
+              </button>
             }
-          </mat-select>
-        </mat-form-field>
-      </div>
+          </div>
+        </div>
 
-      <!-- Fecha y Hora (optional) -->
-      <div class="field">
-        <label class="field__label">{{ 'maintenance.form.date' | translate }}</label>
-        <mat-form-field appearance="outline" class="field__mat">
-          <input matInput type="date" [(ngModel)]="form.date" name="dt" [min]="today">
-        </mat-form-field>
-      </div>
+        <div class="nt-field">
+          <span class="nt-label">{{ 'maintenance.form.priority' | translate }}</span>
+          <div class="nt-priorities" role="radiogroup">
+            @for (p of priorities; track p) {
+              <button type="button" role="radio" class="nt-priority nt-priority--{{ p.toLowerCase() }}"
+                      [class.nt-priority--on]="priority() === p"
+                      [attr.aria-checked]="priority() === p" (click)="priority.set(p)">
+                <mat-icon>{{ priorityIcon(p) }}</mat-icon>
+                {{ 'maintenance.priority.' + p | translate }}
+              </button>
+            }
+          </div>
+        </div>
 
-      <div class="field">
-        <label class="field__label">{{ 'maintenance.form.time' | translate }}</label>
-        <mat-form-field appearance="outline" class="field__mat">
-          <input matInput type="time" [(ngModel)]="form.time" name="tm" (ngModelChange)="onTimeChange()">
-          @if (isPeak()) {
-            <mat-hint class="hint-peak">{{ 'maintenance.scheduler.peakHint' | translate }}</mat-hint>
-          }
-          @if (isOffPeak()) {
-            <mat-hint class="hint-ok">{{ 'maintenance.scheduler.confirmedMsg' | translate }}</mat-hint>
-          }
-        </mat-form-field>
-      </div>
+        <div class="nt-field">
+          <label class="nt-label" for="nt-desc">{{ 'maintenance.form.description' | translate }} <span class="req">*</span></label>
+          <textarea id="nt-desc" class="nt-textarea" name="description" rows="4" [maxlength]="descriptionMax"
+                    [class.nt-input--error]="touched() && !description().trim()"
+                    [ngModel]="description()" (ngModelChange)="description.set($event)"
+                    [placeholder]="'maintenance.form.descriptionPlaceholder' | translate"></textarea>
+          <div class="nt-field__foot">
+            @if (touched() && !description().trim()) {
+              <span class="nt-error">{{ 'equipment.dialog.validation.required' | translate }}</span>
+            }
+            <span class="nt-counter">{{ description().length }} / {{ descriptionMax }}</span>
+          </div>
+        </div>
+      </section>
 
-      <!-- Footer buttons -->
-      <div class="modal__footer">
-        <button type="button" class="btn-cancel" (click)="cancel()">
+      <!-- ── 3. Schedule ──────────────────────────────────────────────── -->
+      <section class="nt-section">
+        <div class="nt-section__head">
+          <span class="nt-step" [class.nt-step--done]="time()">
+            @if (time()) { <mat-icon>check</mat-icon> } @else { 3 }
+          </span>
+          <div>
+            <h2>{{ 'maintenance.form.scheduleTitle' | translate }}</h2>
+            <p>{{ 'maintenance.form.scheduleHint' | translate }}</p>
+          </div>
+        </div>
+
+        <div class="nt-row">
+          <div class="nt-field">
+            <label class="nt-label" for="nt-date">{{ 'maintenance.form.date' | translate }}</label>
+            <input id="nt-date" class="nt-input" type="date" name="date" [min]="today"
+                   [ngModel]="date()" (ngModelChange)="date.set($event)" />
+          </div>
+          <div class="nt-field">
+            <label class="nt-label" for="nt-time">{{ 'maintenance.form.time' | translate }}</label>
+            <input id="nt-time" class="nt-input" type="time" name="time"
+                   [ngModel]="time()" (ngModelChange)="time.set($event)" />
+          </div>
+        </div>
+
+        @if (isPeak()) {
+          <div class="nt-notice nt-notice--danger">
+            <mat-icon>groups</mat-icon>
+            <span>
+              <strong>{{ 'maintenance.scheduler.peakWarning' | translate }}.</strong>
+              {{ 'maintenance.scheduler.peakWarningMsg' | translate }}
+            </span>
+          </div>
+          <div class="nt-suggestions">
+            <span>{{ 'maintenance.scheduler.suggestions' | translate }}</span>
+            @for (t of store.suggestedTimes; track t) {
+              <button class="nt-chip" type="button" (click)="applySuggestion(t)">{{ t }}</button>
+            }
+          </div>
+        } @else if (isOffPeak()) {
+          <div class="nt-notice nt-notice--success">
+            <mat-icon>check_circle</mat-icon>
+            <span>{{ 'maintenance.scheduler.confirmedMsg' | translate }}</span>
+          </div>
+        }
+      </section>
+
+      <div class="nt-form__footer">
+        <button type="button" class="btn btn--secondary" (click)="cancel()">
           {{ 'maintenance.form.cancel' | translate }}
         </button>
-        <button type="submit" class="btn-submit"
-                [disabled]="!form.equipmentId || !form.description || !form.priority || !form.type">
+        <button type="submit" class="btn btn--primary">
+          <mat-icon>add</mat-icon>
           {{ 'maintenance.form.submit' | translate }}
         </button>
       </div>
-
     </form>
+
+    <!-- ── Summary ───────────────────────────────────────────────────────── -->
+    <aside class="nt-side">
+      <section class="nt-card nt-summary">
+        <p class="nt-eyebrow">{{ 'maintenance.form.summary.title' | translate }}</p>
+        <dl>
+          <div>
+            <dt>{{ 'maintenance.form.equipment' | translate }}</dt>
+            <dd [class.nt-muted]="!selected()">{{ selected()?.name ?? ('maintenance.form.summary.none' | translate) }}</dd>
+          </div>
+          <div>
+            <dt>{{ 'maintenance.form.type' | translate }}</dt>
+            <dd><mat-icon>{{ typeIcon(type()) }}</mat-icon>{{ 'maintenance.type.' + type() | translate }}</dd>
+          </div>
+          <div>
+            <dt>{{ 'maintenance.form.priority' | translate }}</dt>
+            <dd>
+              <span class="nt-pill nt-priority--{{ priority().toLowerCase() }}">
+                <mat-icon>{{ priorityIcon(priority()) }}</mat-icon>{{ 'maintenance.priority.' + priority() | translate }}
+              </span>
+            </dd>
+          </div>
+          <div>
+            <dt>{{ 'maintenance.form.summary.when' | translate }}</dt>
+            <dd [class.nt-muted]="!time()">
+              {{ date() | date: 'mediumDate' }}{{ time() ? ' · ' + time() : '' }}
+            </dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="nt-card nt-next">
+        <h2>{{ 'maintenance.form.next.title' | translate }}</h2>
+        <ol>
+          <li><span>1</span>{{ 'maintenance.form.next.step1' | translate }}</li>
+          <li><span>2</span>{{ 'maintenance.form.next.step2' | translate }}</li>
+          <li><span>3</span>{{ 'maintenance.form.next.step3' | translate }}</li>
+        </ol>
+      </section>
+    </aside>
+
   </div>
 </div>

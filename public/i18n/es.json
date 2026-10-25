@@ -837,7 +837,36 @@
       "time": "Hora Programada",
       "description": "Descripción",
       "cancel": "Cancelar",
-      "submit": "Crear Ticket"
+      "submit": "Crear Ticket",
+      "back": "Volver a mantenimiento",
+      "subtitle": "Reporta un problema en una máquina o planifica trabajo preventivo para los técnicos",
+      "equipmentHint": "Elige la máquina que necesita atención",
+      "searchMachine": "Buscar por nombre, marca o modelo…",
+      "noMachines": "Ninguna máquina coincide con tu búsqueda.",
+      "pickMachine": "Selecciona una máquina para continuar",
+      "change": "Cambiar",
+      "openTickets": "Tickets abiertos",
+      "duplicateWarning": "Esta máquina ya tiene {{count}} ticket(s) abierto(s). Revisa el tablero antes de crear un duplicado.",
+      "problemTitle": "Problema",
+      "problemHint": "Qué tipo de trabajo es y qué tan urgente",
+      "typeHint": {
+        "CORRECTIVE": "Algo está roto o fallando",
+        "PREVENTIVE": "Mantenimiento planificado antes de que falle"
+      },
+      "descriptionPlaceholder": "Ej. La banda patina con carga y chirría por encima de 8 km/h.",
+      "scheduleTitle": "Horario preferido",
+      "scheduleHint": "Opcional — compara el horario con las horas punta del gimnasio",
+      "summary": {
+        "title": "Resumen del ticket",
+        "none": "Sin seleccionar",
+        "when": "Horario preferido"
+      },
+      "next": {
+        "title": "Qué sigue",
+        "step1": "El ticket aparece en la columna Pendiente del tablero de mantenimiento.",
+        "step2": "Asigna un técnico para iniciarlo; pasa a En progreso.",
+        "step3": "Complétalo con notas y el costo de la reparación para cerrarlo."
+      }
     },
     "scheduler": {
       "peakWarning": "Hora de alta demanda",
