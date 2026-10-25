@@ -587,7 +587,8 @@
       "save": "Register",
       "updateStatus": "Update Status",
       "cancel": "Cancel",
-      "confirm": "Confirm"
+      "confirm": "Confirm",
+      "saveChanges": "Save changes"
     },
     "table": {
       "id": "ID",
@@ -617,9 +618,9 @@
     },
     "dialog": {
       "addTitle": "Register New Equipment",
-      "editTitle": "Update Equipment Status",
+      "editTitle": "Edit Equipment",
       "subtitle": "Add a machine to your gym so members can see, book and track it.",
-      "editHint": "In edit mode only the status can be updated.",
+      "editHint": "Correct the machine details, its status or the next maintenance date.",
       "editMode": "Edit mode",
       "newMode": "New equipment",
       "deleteTitle": "Decommission Equipment",

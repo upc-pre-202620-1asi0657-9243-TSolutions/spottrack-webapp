@@ -587,7 +587,8 @@
       "save": "Registrar",
       "updateStatus": "Actualizar Estado",
       "cancel": "Cancelar",
-      "confirm": "Confirmar"
+      "confirm": "Confirmar",
+      "saveChanges": "Guardar cambios"
     },
     "table": {
       "id": "ID",
@@ -617,9 +618,9 @@
     },
     "dialog": {
       "addTitle": "Registrar Nuevo Equipo",
-      "editTitle": "Actualizar Estado del Equipo",
+      "editTitle": "Editar Equipo",
       "subtitle": "Agrega una máquina a tu gimnasio para que los socios puedan verla, reservarla y medir su uso.",
-      "editHint": "En modo edición solo se puede actualizar el estado del equipo.",
+      "editHint": "Corrige los datos de la máquina, su estado o la fecha del próximo mantenimiento.",
       "editMode": "Modo edición",
       "newMode": "Nuevo equipo",
       "deleteTitle": "Dar de baja",

@@ -172,7 +172,7 @@ export class EquipmentManagementComponent {
 
   rowMenu(row: EquipmentRow): ContextMenuItem[] {
     return [
-      { label: 'Edit status',   icon: 'edit',         action: () => this.navigateToEdit(row) },
+      { label: 'Edit',          icon: 'edit',         action: () => this.navigateToEdit(row) },
       { label: 'Decommission',  icon: 'delete',       action: () => this.decommissionEquipment(row.uuid) },
       { label: '', icon: '', separator: true, action: () => {} },
       { label: 'New ticket',    icon: 'build',        action: () => this.router.navigate(['/maintenance/new-ticket']) },

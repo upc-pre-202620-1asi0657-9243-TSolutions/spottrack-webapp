@@ -21,107 +21,87 @@
 
     <form class="ae-card ae-form" [formGroup]="form" (ngSubmit)="submit()">
 
-      @if (isEditMode) {
-        <!-- ── Read-only details ──────────────────────────────────────── -->
-        <section class="ae-section">
-          <div class="ae-section__head">
-            <h2>{{ 'equipment.dialog.sections.details' | translate }}</h2>
-            <p>{{ 'equipment.dialog.sections.detailsHint' | translate }}</p>
-          </div>
-          <dl class="ae-facts">
-            <div><dt>{{ 'equipment.dialog.fields.name' | translate }}</dt><dd>{{ existing?.name ?? '—' }}</dd></div>
-            <div><dt>{{ 'equipment.dialog.fields.brand' | translate }}</dt><dd>{{ existing?.brand ?? '—' }}</dd></div>
-            <div><dt>{{ 'equipment.dialog.fields.model' | translate }}</dt><dd>{{ existing?.model ?? '—' }}</dd></div>
-            <div><dt>{{ 'equipment.dialog.fields.zoneId' | translate }}</dt><dd>{{ previewZone() ?? '—' }}</dd></div>
-            <div>
-              <dt>{{ 'equipment.dialog.fields.purchaseAmount' | translate }}</dt>
-              <dd>{{ existing ? existing.purchaseCurrency + ' ' + (existing.purchaseAmount | number: '1.0-2') : '—' }}</dd>
-            </div>
-          </dl>
-        </section>
-      } @else {
-        <!-- ── Identification ─────────────────────────────────────────── -->
-        <section class="ae-section">
-          <div class="ae-section__head">
-            <h2>{{ 'equipment.dialog.sections.identification' | translate }}</h2>
-            <p>{{ 'equipment.dialog.sections.identificationHint' | translate }}</p>
-          </div>
+      <!-- ── Identification ─────────────────────────────────────────── -->
+      <section class="ae-section">
+        <div class="ae-section__head">
+          <h2>{{ 'equipment.dialog.sections.identification' | translate }}</h2>
+          <p>{{ 'equipment.dialog.sections.identificationHint' | translate }}</p>
+        </div>
 
+        <div class="ae-field">
+          <label for="eq-name">{{ 'equipment.dialog.fields.name' | translate }} <span class="req">*</span></label>
+          <input id="eq-name" class="ae-input" formControlName="name"
+                 [class.ae-input--error]="showError('name')"
+                 [placeholder]="'equipment.dialog.placeholders.name' | translate" />
+          @if (showError('name')) { <span class="ae-error">{{ 'equipment.dialog.validation.required' | translate }}</span> }
+        </div>
+
+        <div class="ae-row">
           <div class="ae-field">
-            <label for="eq-name">{{ 'equipment.dialog.fields.name' | translate }} <span class="req">*</span></label>
-            <input id="eq-name" class="ae-input" formControlName="name"
-                   [class.ae-input--error]="showError('name')"
-                   [placeholder]="'equipment.dialog.placeholders.name' | translate" />
-            @if (showError('name')) { <span class="ae-error">{{ 'equipment.dialog.validation.required' | translate }}</span> }
+            <label for="eq-brand">{{ 'equipment.dialog.fields.brand' | translate }} <span class="req">*</span></label>
+            <input id="eq-brand" class="ae-input" formControlName="brand"
+                   [class.ae-input--error]="showError('brand')"
+                   [placeholder]="'equipment.dialog.placeholders.brand' | translate" />
+            @if (showError('brand')) { <span class="ae-error">{{ 'equipment.dialog.validation.required' | translate }}</span> }
           </div>
-
-          <div class="ae-row">
-            <div class="ae-field">
-              <label for="eq-brand">{{ 'equipment.dialog.fields.brand' | translate }} <span class="req">*</span></label>
-              <input id="eq-brand" class="ae-input" formControlName="brand"
-                     [class.ae-input--error]="showError('brand')"
-                     [placeholder]="'equipment.dialog.placeholders.brand' | translate" />
-              @if (showError('brand')) { <span class="ae-error">{{ 'equipment.dialog.validation.required' | translate }}</span> }
-            </div>
-            <div class="ae-field">
-              <label for="eq-model">{{ 'equipment.dialog.fields.model' | translate }} <span class="req">*</span></label>
-              <input id="eq-model" class="ae-input" formControlName="model"
-                     [class.ae-input--error]="showError('model')"
-                     [placeholder]="'equipment.dialog.placeholders.model' | translate" />
-              @if (showError('model')) { <span class="ae-error">{{ 'equipment.dialog.validation.required' | translate }}</span> }
-            </div>
-          </div>
-        </section>
-
-        <!-- ── Location & purchase ────────────────────────────────────── -->
-        <section class="ae-section">
-          <div class="ae-section__head">
-            <h2>{{ 'equipment.dialog.sections.configuration' | translate }}</h2>
-            <p>{{ 'equipment.dialog.sections.configurationHint' | translate }}</p>
-          </div>
-
           <div class="ae-field">
-            <span class="ae-label">{{ 'equipment.dialog.fields.zoneId' | translate }} <span class="req">*</span></span>
-            <div class="ae-select" [class.ae-input--error]="showError('zoneId')">
-              <mat-icon>location_on</mat-icon>
-              <mat-select formControlName="zoneId" class="form-select"
-                          [placeholder]="'equipment.dialog.placeholders.zone' | translate"
-                          panelClass="booking-select-panel" disableRipple>
-                @if (zoneStore.loading()) {
-                  <mat-option disabled>{{ 'equipment.dialog.zonesLoading' | translate }}</mat-option>
-                } @else if (groupedZones().length === 0) {
-                  <mat-option disabled>{{ 'equipment.dialog.noZones' | translate }}</mat-option>
-                } @else {
-                  @for (group of groupedZones(); track group.branch.branchId) {
-                    <mat-optgroup [label]="group.branch.name">
-                      @for (zone of group.zones; track zone.zoneId) {
-                        <mat-option [value]="zone.zoneId">{{ zone.zoneName }}</mat-option>
-                      }
-                    </mat-optgroup>
-                  }
+            <label for="eq-model">{{ 'equipment.dialog.fields.model' | translate }} <span class="req">*</span></label>
+            <input id="eq-model" class="ae-input" formControlName="model"
+                   [class.ae-input--error]="showError('model')"
+                   [placeholder]="'equipment.dialog.placeholders.model' | translate" />
+            @if (showError('model')) { <span class="ae-error">{{ 'equipment.dialog.validation.required' | translate }}</span> }
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Location & purchase ────────────────────────────────────── -->
+      <section class="ae-section">
+        <div class="ae-section__head">
+          <h2>{{ 'equipment.dialog.sections.configuration' | translate }}</h2>
+          <p>{{ 'equipment.dialog.sections.configurationHint' | translate }}</p>
+        </div>
+
+        <div class="ae-field">
+          <span class="ae-label">{{ 'equipment.dialog.fields.zoneId' | translate }} <span class="req">*</span></span>
+          <div class="ae-select" [class.ae-input--error]="showError('zoneId')">
+            <mat-icon>location_on</mat-icon>
+            <mat-select formControlName="zoneId" class="form-select"
+                        [placeholder]="'equipment.dialog.placeholders.zone' | translate"
+                        panelClass="booking-select-panel" disableRipple>
+              @if (zoneStore.loading()) {
+                <mat-option disabled>{{ 'equipment.dialog.zonesLoading' | translate }}</mat-option>
+              } @else if (groupedZones().length === 0) {
+                <mat-option disabled>{{ 'equipment.dialog.noZones' | translate }}</mat-option>
+              } @else {
+                @for (group of groupedZones(); track group.branch.branchId) {
+                  <mat-optgroup [label]="group.branch.name">
+                    @for (zone of group.zones; track zone.zoneId) {
+                      <mat-option [value]="zone.zoneId">{{ zone.zoneName }}</mat-option>
+                    }
+                  </mat-optgroup>
                 }
-              </mat-select>
-            </div>
-            @if (showError('zoneId')) { <span class="ae-error">{{ 'equipment.dialog.validation.required' | translate }}</span> }
-            @if (!zoneStore.loading() && groupedZones().length === 0) {
-              <a class="ae-link" routerLink="/gym/branches">{{ 'equipment.dialog.createZones' | translate }}</a>
-            }
+              }
+            </mat-select>
           </div>
+          @if (showError('zoneId')) { <span class="ae-error">{{ 'equipment.dialog.validation.required' | translate }}</span> }
+          @if (!zoneStore.loading() && groupedZones().length === 0) {
+            <a class="ae-link" routerLink="/gym/branches">{{ 'equipment.dialog.createZones' | translate }}</a>
+          }
+        </div>
 
-          <div class="ae-field">
-            <label for="eq-amount">{{ 'equipment.dialog.fields.purchaseAmount' | translate }} <span class="req">*</span></label>
-            <div class="ae-money" [class.ae-input--error]="showError('purchaseAmount')">
-              <select formControlName="purchaseCurrency" [attr.aria-label]="'equipment.dialog.fields.purchaseCurrency' | translate">
-                @for (c of currencies; track c) {
-                  <option [value]="c">{{ c }}</option>
-                }
-              </select>
-              <input id="eq-amount" type="number" min="0" step="0.01" formControlName="purchaseAmount" placeholder="0.00" />
-            </div>
-            @if (showError('purchaseAmount')) { <span class="ae-error">{{ 'equipment.dialog.validation.min' | translate }}</span> }
+        <div class="ae-field">
+          <label for="eq-amount">{{ 'equipment.dialog.fields.purchaseAmount' | translate }} <span class="req">*</span></label>
+          <div class="ae-money" [class.ae-input--error]="showError('purchaseAmount')">
+            <select formControlName="purchaseCurrency" [attr.aria-label]="'equipment.dialog.fields.purchaseCurrency' | translate">
+              @for (c of currencies; track c) {
+                <option [value]="c">{{ c }}</option>
+              }
+            </select>
+            <input id="eq-amount" type="number" min="0" step="0.01" formControlName="purchaseAmount" placeholder="0.00" />
           </div>
-        </section>
-      }
+          @if (showError('purchaseAmount')) { <span class="ae-error">{{ 'equipment.dialog.validation.min' | translate }}</span> }
+        </div>
+      </section>
 
       <!-- ── Status & maintenance (always editable) ──────────────────── -->
       <section class="ae-section">
@@ -156,8 +136,8 @@
           {{ 'equipment.actions.cancel' | translate }}
         </button>
         <button type="submit" class="btn btn--primary">
-          <mat-icon>{{ isEditMode ? 'sync' : 'add' }}</mat-icon>
-          {{ (isEditMode ? 'equipment.actions.updateStatus' : 'equipment.actions.save') | translate }}
+          <mat-icon>{{ isEditMode ? 'check' : 'add' }}</mat-icon>
+          {{ (isEditMode ? 'equipment.actions.saveChanges' : 'equipment.actions.save') | translate }}
         </button>
       </div>
     </form>
@@ -171,11 +151,11 @@
             <mat-icon>fitness_center</mat-icon>
           </span>
           <div class="ae-preview__title">
-            <h3 [class.ae-placeholder]="!(existing?.name ?? value().name)">
-              {{ (existing?.name ?? value().name) || ('equipment.dialog.preview.unnamed' | translate) }}
+            <h3 [class.ae-placeholder]="!value().name">
+              {{ value().name || ('equipment.dialog.preview.unnamed' | translate) }}
             </h3>
             <p>
-              {{ (existing?.brand ?? value().brand) || '—' }} · {{ (existing?.model ?? value().model) || '—' }}
+              {{ value().brand || '—' }} · {{ value().model || '—' }}
             </p>
           </div>
         </div>
@@ -193,9 +173,9 @@
           <div>
             <dt>{{ 'equipment.dialog.fields.purchaseAmount' | translate }}</dt>
             <dd>
-              @if ((existing?.purchaseAmount ?? value().purchaseAmount) != null) {
-                {{ existing?.purchaseCurrency ?? value().purchaseCurrency }}
-                {{ (existing?.purchaseAmount ?? value().purchaseAmount) | number: '1.0-2' }}
+              @if (value().purchaseAmount != null) {
+                {{ value().purchaseCurrency }}
+                {{ value().purchaseAmount | number: '1.0-2' }}
               } @else { — }
             </dd>
           </div>

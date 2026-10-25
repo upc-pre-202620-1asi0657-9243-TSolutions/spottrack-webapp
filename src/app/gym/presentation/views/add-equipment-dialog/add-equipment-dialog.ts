@@ -51,18 +51,31 @@ export class AddEquipmentDialogComponent {
   readonly equipmentStatuses = Object.values(EquipmentStatus).filter(s => s !== EquipmentStatus.DECOMMISSIONED);
   readonly currencies        = CURRENCIES;
 
-  readonly existing: EquipmentRow | undefined = (history.state as { equipment?: EquipmentRow }).equipment;
-  readonly isEditMode = !!this.route.snapshot.paramMap.get('id');
+  private readonly editId     = this.route.snapshot.paramMap.get('id');
+  private readonly stateRow   = (history.state as { equipment?: EquipmentRow }).equipment;
+  readonly isEditMode = !!this.editId;
+
+  /** Row passed by the table, or — after a reload, when history.state is gone — the machine from the store. */
+  readonly existing = computed<EquipmentRow | undefined>(() => {
+    if (!this.editId) return undefined;
+    if (this.stateRow?.uuid === this.editId) return this.stateRow;
+    const e = this.store.equipment().find(eq => eq.uuid === this.editId);
+    return e && {
+      uuid: e.uuid, zoneId: e.zoneId, name: e.name, brand: e.brand, model: e.model,
+      purchaseAmount: e.purchaseAmount, purchaseCurrency: e.purchaseCurrency,
+      status: e.status, maintenanceThreshold: e.maintenanceThreshold,
+    };
+  });
 
   form = this.fb.nonNullable.group({
-    name:             [{ value: this.existing?.name  ?? '', disabled: this.isEditMode },  Validators.required],
-    brand:            [{ value: this.existing?.brand ?? '', disabled: this.isEditMode },  Validators.required],
-    model:            [{ value: this.existing?.model ?? '', disabled: this.isEditMode },  Validators.required],
-    zoneId:           [{ value: this.existing?.zoneId ?? '', disabled: this.isEditMode }, Validators.required],
-    purchaseAmount:   [{ value: this.existing?.purchaseAmount ?? (null as unknown as number), disabled: this.isEditMode }, [Validators.required, Validators.min(0)]],
-    purchaseCurrency: [{ value: this.existing?.purchaseCurrency ?? 'USD', disabled: this.isEditMode }, Validators.required],
-    status:           [this.existing?.status ?? EquipmentStatus.AVAILABLE, Validators.required],
-    maintenanceThreshold: [this.existing?.maintenanceThreshold ?? ''],
+    name:             ['', Validators.required],
+    brand:            ['', Validators.required],
+    model:            ['', Validators.required],
+    zoneId:           ['', Validators.required],
+    purchaseAmount:   [null as unknown as number, [Validators.required, Validators.min(0)]],
+    purchaseCurrency: ['USD', Validators.required],
+    status:           [EquipmentStatus.AVAILABLE, Validators.required],
+    maintenanceThreshold: [''],
   });
 
   /** Live form values for the preview card. */
@@ -79,9 +92,8 @@ export class AddEquipmentDialogComponent {
       .filter(g => g.zones.length > 0);
   });
 
-  /** valueChanges omits disabled controls, so edit mode reads the fixed zone from the raw value. */
   readonly previewZone = computed(() => {
-    const zoneId = this.value().zoneId ?? this.form.getRawValue().zoneId;
+    const zoneId = this.value().zoneId;
     const zone   = this.zoneStore.zones().find(z => z.zoneId === zoneId);
     if (!zone) return null;
     const branch = this.branchStore.branches().find(b => b.branchId === zone.branchId);
@@ -96,6 +108,18 @@ export class AddEquipmentDialogComponent {
       if (gymId) {
         this.zoneStore.load(gymId);
         this.branchStore.load(gymId);
+      }
+    });
+
+    // Fill the form once the machine is known, without overwriting edits in progress.
+    effect(() => {
+      const row = this.existing();
+      if (row && this.form.pristine) {
+        this.form.reset({
+          name: row.name, brand: row.brand, model: row.model, zoneId: row.zoneId,
+          purchaseAmount: row.purchaseAmount, purchaseCurrency: row.purchaseCurrency,
+          status: row.status, maintenanceThreshold: row.maintenanceThreshold ?? '',
+        });
       }
     });
   }
@@ -122,10 +146,24 @@ export class AddEquipmentDialogComponent {
     }
     const val = this.form.getRawValue();
 
-    if (this.isEditMode && this.existing?.uuid) {
-      this.store.updateEquipmentStatus(this.existing.uuid, val.status);
-      if (val.maintenanceThreshold && val.maintenanceThreshold !== this.existing.maintenanceThreshold) {
-        this.store.defineMaintenanceThreshold(this.existing.uuid, val.maintenanceThreshold);
+    const row = this.existing();
+    if (this.isEditMode && row) {
+      // Each part has its own endpoint; only call the ones whose fields changed.
+      const detailsChanged =
+        val.name.trim() !== row.name || val.brand.trim() !== row.brand || val.model.trim() !== row.model ||
+        val.zoneId !== row.zoneId || Number(val.purchaseAmount) !== row.purchaseAmount ||
+        val.purchaseCurrency !== row.purchaseCurrency;
+      if (detailsChanged) {
+        this.store.updateEquipmentDetails(row.uuid, {
+          name: val.name.trim(), brand: val.brand.trim(), model: val.model.trim(), zoneId: val.zoneId,
+          purchaseAmount: Number(val.purchaseAmount), purchaseCurrency: val.purchaseCurrency,
+        });
+      }
+      if (val.status !== row.status) {
+        this.store.updateEquipmentStatus(row.uuid, val.status);
+      }
+      if (val.maintenanceThreshold && val.maintenanceThreshold !== row.maintenanceThreshold) {
+        this.store.defineMaintenanceThreshold(row.uuid, val.maintenanceThreshold);
       }
     } else {
       const entity = new Equipment({
