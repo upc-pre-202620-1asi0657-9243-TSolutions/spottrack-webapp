@@ -26,6 +26,7 @@ export class MaintenanceStore {
   // Inline edits get their own slots so they never trip the start/complete dialog logic.
   private readonly ticketSavingSignal    = signal(false);
   private readonly ticketSaveErrorSignal = signal<string | null>(null);
+  private readonly ticketMoveErrorSignal = signal<string | null>(null);
 
   readonly tickets       = this.ticketsSignal.asReadonly();
   readonly schedules     = this.schedulesSignal.asReadonly();
@@ -96,6 +97,37 @@ export class MaintenanceStore {
   }
 
   clearTicketSaveError(): void { this.ticketSaveErrorSignal.set(null); }
+
+  readonly ticketMoveError = this.ticketMoveErrorSignal.asReadonly();
+
+  /**
+   * Moves a ticket to another board column. The card jumps right away and
+   * snaps back if the backend refuses (e.g. no technician for In progress).
+   */
+  moveTicket(ticket: MaintenanceTicket, status: TicketStatus): void {
+    if (ticket.status === status) return;
+    this.ticketMoveErrorSignal.set(null);
+    this.replaceTicket(this.withStatus(ticket, status));
+    this.api.modifyTicketStatus(ticket.id, status)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: updated => this.replaceTicket(updated),
+        error: err => {
+          this.replaceTicket(ticket);
+          this.ticketMoveErrorSignal.set(this.formatError(err, 'Failed to move ticket'));
+        },
+      });
+  }
+
+  clearTicketMoveError(): void { this.ticketMoveErrorSignal.set(null); }
+
+  private withStatus(t: MaintenanceTicket, status: TicketStatus): MaintenanceTicket {
+    return new MaintenanceTicket({
+      id: t.id, maintenanceId: t.maintenanceId, equipmentId: t.equipmentId, status,
+      priority: t.priority, type: t.type, createdAt: t.createdAt, description: t.description,
+      assignee: t.assignee, completedBy: t.completedBy,
+    });
+  }
 
   /** Registers a completion log entry (accountability record) before resolving the ticket. */
   completeTicket(ticketId: string, maintenanceId: string, notes: string, cost: number): void {
