@@ -397,7 +397,8 @@
     "group": {
       "today": "Hoy",
       "yesterday": "Ayer",
-      "earlier": "Anteriores"
+      "earlier": "Anteriores",
+      "week": "Esta semana"
     },
     "new": "Nueva desde tu última visita",
     "goToTarget": "Abrir página relacionada",
@@ -414,6 +415,25 @@
       "severity": "Severidad",
       "received": "Recibida",
       "source": "Origen"
+    },
+    "unreadCount": "{{count}} sin leer",
+    "markAllRead": "Marcar todas como leídas",
+    "delete": "Eliminar",
+    "folders": "Carpetas de alertas",
+    "folder": {
+      "all": "Bandeja de entrada",
+      "unread": "No leídas",
+      "critical": "Críticas",
+      "warning": "Advertencias",
+      "info": "Info"
+    },
+    "sort": {
+      "newest": "Más recientes primero",
+      "oldest": "Más antiguas primero"
+    },
+    "reader": {
+      "title": "Selecciona una alerta para leerla",
+      "subtitle": "No hay nada seleccionado"
     }
   },
   "nav": {

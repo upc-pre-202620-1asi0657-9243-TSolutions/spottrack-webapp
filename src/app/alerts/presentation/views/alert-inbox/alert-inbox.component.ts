@@ -1,4 +1,4 @@
-import { Component, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -10,36 +10,51 @@ import { AuthStore } from '../../../../auth/application/auth.store';
 import { ContextMenuDirective } from '../../../../shared/presentation/directives/context-menu.directive';
 import { ContextMenuItem } from '../../../../shared/application/context-menu.service';
 import { AlertTone, alertTone } from '../../alert-tone';
+import { AlertReaderComponent } from '../../components/alert-reader/alert-reader';
 
-export type ToneFilter = 'all' | AlertTone;
+export type AlertFolder = 'all' | 'unread' | AlertTone;
+export type AlertSort = 'newest' | 'oldest';
 
 interface AlertGroup {
-  key:    'today' | 'yesterday' | 'earlier';
+  key:    'today' | 'yesterday' | 'week' | 'earlier';
   alerts: AppAlert[];
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000;
+/** Below this width the reading pane is hidden and alerts open on their own page. */
+const SPLIT_MIN_WIDTH = 900;
 
+/**
+ * Mail-client style inbox: folders on the left, the alert list in the middle
+ * and a reading pane on the right. Opening an alert marks it read.
+ */
 @Component({
   selector: 'app-alert-inbox',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule, TranslateModule, ContextMenuDirective],
+  imports: [CommonModule, FormsModule, MatIconModule, TranslateModule, ContextMenuDirective, AlertReaderComponent],
   templateUrl: './alert-inbox.component.html',
   styleUrl: './alert-inbox.component.scss',
 })
-export class AlertInboxComponent implements OnInit {
+export class AlertInboxComponent {
   private router      = inject(Router);
   private translate   = inject(TranslateService);
   private authStore   = inject(AuthStore);
   readonly store      = inject(AlertsStore);
 
-  readonly filters: ToneFilter[] = ['all', 'critical', 'warning', 'info'];
-  readonly filter = signal<ToneFilter>('all');
-  readonly search = signal('');
-  readonly confirmClear = signal(false);
+  readonly folders: { key: AlertFolder; icon: string }[] = [
+    { key: 'all',      icon: 'inbox' },
+    { key: 'unread',   icon: 'mark_email_unread' },
+    { key: 'critical', icon: 'error' },
+    { key: 'warning',  icon: 'warning' },
+    { key: 'info',     icon: 'info' },
+  ];
 
-  /** Alerts that were unread when the page opened keep a "new" dot for this visit. */
-  readonly newIds = signal<Set<string>>(new Set());
+  readonly folder = signal<AlertFolder>('all');
+  readonly search = signal('');
+  readonly sort   = signal<AlertSort>('newest');
+  readonly selectedId   = signal<string | null>(null);
+  readonly collapsed    = signal<Set<string>>(new Set());
+  readonly confirmClear = signal(false);
 
   readonly isAdmin = computed(() => !this.authStore.isClient());
 
@@ -47,14 +62,13 @@ export class AlertInboxComponent implements OnInit {
     return this.authStore.isClient() ? 'client' : 'admin';
   }
 
-  readonly alertsList = computed(() =>
-    [...this.store.alertsForRole(this.currentRole)].sort((a, b) => b.date.getTime() - a.date.getTime())
-  );
+  readonly alertsList = computed(() => this.store.alertsForRole(this.currentRole));
 
-  readonly counts = computed<Record<ToneFilter, number>>(() => {
+  readonly counts = computed<Record<AlertFolder, number>>(() => {
     const list = this.alertsList();
     return {
       all:      list.length,
+      unread:   list.filter(a => !a.read).length,
       critical: list.filter(a => alertTone(a) === 'critical').length,
       warning:  list.filter(a => alertTone(a) === 'warning').length,
       info:     list.filter(a => alertTone(a) === 'info').length,
@@ -62,49 +76,89 @@ export class AlertInboxComponent implements OnInit {
   });
 
   readonly visibleAlerts = computed(() => {
-    const f = this.filter();
+    const f = this.folder();
     const q = this.search().trim().toLowerCase();
-    return this.alertsList().filter(a =>
-      (f === 'all' || alertTone(a) === f) &&
-      (!q || `${this.resolveTitle(a)} ${this.resolveDescription(a)}`.toLowerCase().includes(q))
-    );
+    const dir = this.sort() === 'newest' ? -1 : 1;
+    return this.alertsList()
+      .filter(a =>
+        (f === 'all' || (f === 'unread' ? !a.read : alertTone(a) === f)) &&
+        (!q || `${this.resolveTitle(a)} ${this.resolveDescription(a)}`.toLowerCase().includes(q))
+      )
+      .sort((a, b) => dir * (a.date.getTime() - b.date.getTime()));
   });
 
   readonly groups = computed<AlertGroup[]>(() => {
-    const startOfToday = new Date();
-    startOfToday.setHours(0, 0, 0, 0);
-    const today = startOfToday.getTime();
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    const today = start.getTime();
     const buckets: AlertGroup[] = [
       { key: 'today', alerts: [] },
       { key: 'yesterday', alerts: [] },
+      { key: 'week', alerts: [] },
       { key: 'earlier', alerts: [] },
     ];
     for (const a of this.visibleAlerts()) {
       const t = a.date.getTime();
-      buckets[t >= today ? 0 : t >= today - DAY_MS ? 1 : 2].alerts.push(a);
+      const i = t >= today ? 0 : t >= today - DAY_MS ? 1 : t >= today - 6 * DAY_MS ? 2 : 3;
+      buckets[i].alerts.push(a);
     }
-    return buckets.filter(b => b.alerts.length);
+    const groups = buckets.filter(b => b.alerts.length);
+    return this.sort() === 'newest' ? groups : groups.reverse();
   });
 
-  ngOnInit(): void {
-    this.newIds.set(new Set(this.alertsList().filter(a => !a.read).map(a => a.id)));
-    this.store.markReadForRole(this.currentRole);
+  readonly selected = computed(() => this.alertsList().find(a => a.id === this.selectedId()) ?? null);
+
+  constructor() {
+    // A deleted or filtered-out alert leaves the reading pane empty.
+    effect(() => {
+      const id = this.selectedId();
+      if (id && !this.alertsList().some(a => a.id === id)) this.selectedId.set(null);
+    }, { allowSignalWrites: true });
   }
 
   tone(alert: AppAlert): AlertTone { return alertTone(alert); }
 
-  openAlert(alert: AppAlert): void {
-    this.router.navigate(['/alerts', alert.id]);
+  select(alert: AppAlert): void {
+    this.store.markRead(alert.id);
+    if (window.innerWidth < SPLIT_MIN_WIDTH) {
+      this.router.navigate(['/alerts', alert.id]);
+      return;
+    }
+    this.selectedId.set(alert.id);
   }
 
-  goToTarget(event: Event, alert: AppAlert): void {
-    event.stopPropagation();
+  /** Arrow keys walk the visible list, like a mail client. */
+  step(event: Event, delta: number): void {
+    event.preventDefault();
+    const list = this.groups().flatMap(g => this.isCollapsed(g.key) ? [] : g.alerts);
+    if (!list.length) return;
+    const i = list.findIndex(a => a.id === this.selectedId());
+    const next = list[Math.min(list.length - 1, Math.max(0, i + delta))] ?? list[0];
+    this.select(next);
+    document.getElementById(`alert-${next.id}`)?.focus();
+  }
+
+  toggleGroup(key: string): void {
+    this.collapsed.update(set => {
+      const next = new Set(set);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
+  }
+
+  isCollapsed(key: string): boolean { return this.collapsed().has(key); }
+
+  markAllRead(): void { this.store.markReadForRole(this.currentRole); }
+
+  deleteAlert(alert: AppAlert): void { this.store.deleteAlert(alert.id); }
+
+  deleteSelected(): void {
+    const a = this.selected();
+    if (a) this.deleteAlert(a);
+  }
+
+  openTarget(alert: AppAlert): void {
     if (alert.targetRoute) this.router.navigate([alert.targetRoute]);
-  }
-
-  deleteAlert(event: Event, id: string): void {
-    event.stopPropagation();
-    this.store.deleteAlert(id);
   }
 
   clearAll(): void {
@@ -120,21 +174,25 @@ export class AlertInboxComponent implements OnInit {
     return alert.descriptionKey ? this.translate.instant(alert.descriptionKey) : (alert.description ?? '');
   }
 
-  alertMenu(alert: AppAlert): ContextMenuItem[] {
-    return [
-      { label: 'View details', icon: 'open_in_new',  action: () => this.openAlert(alert) },
-      { label: 'Delete',       icon: 'delete',        action: () => this.store.deleteAlert(alert.id) },
-    ];
+  /** Time for today, weekday within the week, short date beyond — like a mail list. */
+  listTime(date: Date): string {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    const lang = this.translate.currentLang || this.translate.defaultLang || 'en';
+    if (date.getTime() >= start.getTime()) {
+      return date.toLocaleTimeString(lang, { hour: '2-digit', minute: '2-digit' });
+    }
+    if (date.getTime() >= start.getTime() - 6 * DAY_MS) {
+      return date.toLocaleDateString(lang, { weekday: 'short' }) + ' ' +
+        date.toLocaleTimeString(lang, { hour: '2-digit', minute: '2-digit' });
+    }
+    return date.toLocaleDateString(lang, { day: 'numeric', month: 'short' });
   }
 
-  getRelativeTime(date: Date): string {
-    const diff = Math.floor((Date.now() - date.getTime()) / 1000);
-    if (diff < 60) return this.translate.instant('alerts.time.moment');
-    const m = Math.floor(diff / 60);
-    if (m < 60) return this.translate.instant(m === 1 ? 'alerts.time.minute' : 'alerts.time.minutes', { count: m });
-    const h = Math.floor(m / 60);
-    if (h < 24) return this.translate.instant(h === 1 ? 'alerts.time.hour' : 'alerts.time.hours', { count: h });
-    const d = Math.floor(h / 24);
-    return this.translate.instant(d === 1 ? 'alerts.time.day' : 'alerts.time.days', { count: d });
+  alertMenu(alert: AppAlert): ContextMenuItem[] {
+    return [
+      { label: 'Open',   icon: 'open_in_full', action: () => this.select(alert) },
+      { label: 'Delete', icon: 'delete',       action: () => this.deleteAlert(alert) },
+    ];
   }
 }

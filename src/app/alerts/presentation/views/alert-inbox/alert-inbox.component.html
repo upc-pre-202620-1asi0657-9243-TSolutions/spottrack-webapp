@@ -1,98 +1,131 @@
-<div class="al-page">
+<div class="ai">
 
-  <!-- ── Header ──────────────────────────────────────────────────────────── -->
-  <header class="al-header">
-    <div>
-      <h1 class="al-header__title">{{ 'alerts.title' | translate }}</h1>
-      <p class="al-header__subtitle">{{ (isAdmin() ? 'alerts.subtitleAdmin' : 'alerts.subtitleClient') | translate }}</p>
+  <!-- ── Command bar ─────────────────────────────────────────────────────── -->
+  <header class="ai-bar">
+    <div class="ai-bar__title">
+      <h1>{{ 'alerts.title' | translate }}</h1>
+      @if (counts().unread) {
+        <span class="ai-bar__unread">{{ 'alerts.unreadCount' | translate: { count: counts().unread } }}</span>
+      }
     </div>
-    @if (alertsList().length) {
+
+    <div class="ai-search">
+      <mat-icon>search</mat-icon>
+      <input type="text" [placeholder]="'alerts.search' | translate" [ngModel]="search()" (ngModelChange)="search.set($event)" />
+      @if (search()) {
+        <button type="button" class="icon-btn icon-btn--sm" (click)="search.set('')"><mat-icon>close</mat-icon></button>
+      }
+    </div>
+
+    <div class="ai-bar__actions">
+      <button type="button" class="cmd" [disabled]="!counts().unread" (click)="markAllRead()">
+        <mat-icon>drafts</mat-icon><span>{{ 'alerts.markAllRead' | translate }}</span>
+      </button>
+      <button type="button" class="cmd" [disabled]="!selected()" (click)="deleteSelected()">
+        <mat-icon>delete_outline</mat-icon><span>{{ 'alerts.delete' | translate }}</span>
+      </button>
+      <span class="ai-bar__sep"></span>
       @if (confirmClear()) {
-        <div class="al-confirm">
-          <span>{{ 'alerts.clearConfirm' | translate: { count: alertsList().length } }}</span>
-          <button type="button" class="btn btn--secondary btn--sm" (click)="confirmClear.set(false)">{{ 'alerts.cancel' | translate }}</button>
-          <button type="button" class="btn btn--danger btn--sm" (click)="clearAll()">{{ 'alerts.clearAll' | translate }}</button>
-        </div>
+        <span class="ai-confirm">
+          {{ 'alerts.clearConfirm' | translate: { count: alertsList().length } }}
+          <button type="button" class="cmd" (click)="confirmClear.set(false)">{{ 'alerts.cancel' | translate }}</button>
+          <button type="button" class="cmd cmd--danger" (click)="clearAll()">{{ 'alerts.clearAll' | translate }}</button>
+        </span>
       } @else {
-        <button type="button" class="btn btn--secondary" (click)="confirmClear.set(true)">
-          <mat-icon>clear_all</mat-icon>
-          {{ 'alerts.clearAll' | translate }}
+        <button type="button" class="cmd" [disabled]="!alertsList().length" (click)="confirmClear.set(true)">
+          <mat-icon>clear_all</mat-icon><span>{{ 'alerts.clearAll' | translate }}</span>
         </button>
       }
-    }
+    </div>
   </header>
 
-  <!-- ── Toolbar ─────────────────────────────────────────────────────────── -->
-  @if (alertsList().length) {
-    <div class="al-toolbar">
-      <div class="al-tabs" role="tablist">
-        @for (f of filters; track f) {
-          <button type="button" role="tab" class="al-tab al-tab--{{ f }}" [class.al-tab--on]="filter() === f" (click)="filter.set(f)">
-            @if (f !== 'all') { <i class="al-tab__dot"></i> }
-            {{ 'alerts.filter.' + f | translate }}
-            <span class="al-tab__count">{{ counts()[f] }}</span>
-          </button>
-        }
+  <div class="ai-body">
+
+    <!-- ── Folders ─────────────────────────────────────────────────────── -->
+    <nav class="ai-folders" [attr.aria-label]="'alerts.folders' | translate">
+      <p class="ai-folders__label">{{ (isAdmin() ? 'alerts.subtitleAdmin' : 'alerts.subtitleClient') | translate }}</p>
+      @for (f of folders; track f.key) {
+        <button type="button" class="ai-folder ai-folder--{{ f.key }}" [class.ai-folder--on]="folder() === f.key" (click)="folder.set(f.key)">
+          <mat-icon>{{ f.icon }}</mat-icon>
+          <span class="ai-folder__name">{{ 'alerts.folder.' + f.key | translate }}</span>
+          @if (counts()[f.key]) {
+            <span class="ai-folder__count" [class.ai-folder__count--strong]="f.key === 'unread'">{{ counts()[f.key] }}</span>
+          }
+        </button>
+      }
+    </nav>
+
+    <!-- ── Message list ────────────────────────────────────────────────── -->
+    <section class="ai-list">
+      <div class="ai-list__head">
+        <h2>{{ 'alerts.folder.' + folder() | translate }}</h2>
+        <button type="button" class="icon-btn" (click)="sort.set(sort() === 'newest' ? 'oldest' : 'newest')"
+                [title]="'alerts.sort.' + sort() | translate">
+          <mat-icon>{{ sort() === 'newest' ? 'arrow_downward' : 'arrow_upward' }}</mat-icon>
+        </button>
       </div>
-      <div class="al-search">
-        <mat-icon>search</mat-icon>
-        <input type="text" [placeholder]="'alerts.search' | translate" [ngModel]="search()" (ngModelChange)="search.set($event)" />
-      </div>
-    </div>
-  }
 
-  <!-- ── Inbox ───────────────────────────────────────────────────────────── -->
-  @if (!alertsList().length) {
-    <div class="al-card al-empty">
-      <span class="al-empty__icon"><mat-icon>notifications_none</mat-icon></span>
-      <h3>{{ 'alerts.emptyTitle' | translate }}</h3>
-      <p>{{ 'alerts.emptyState' | translate }}</p>
-    </div>
-  } @else if (!groups().length) {
-    <div class="al-card al-empty">
-      <span class="al-empty__icon"><mat-icon>search_off</mat-icon></span>
-      <h3>{{ 'alerts.noMatch' | translate }}</h3>
-      <button type="button" class="btn btn--secondary btn--sm" (click)="filter.set('all'); search.set('')">{{ 'alerts.resetFilters' | translate }}</button>
-    </div>
-  } @else {
-    @for (group of groups(); track group.key) {
-      <section class="al-group">
-        <h2 class="al-group__title">{{ 'alerts.group.' + group.key | translate }} <span>{{ group.alerts.length }}</span></h2>
-        <ul class="al-card al-list">
-          @for (alert of group.alerts; track alert.id) {
-            <li class="al-row al-row--{{ tone(alert) }}" role="button" tabindex="0"
-                [appContextMenu]="alertMenu(alert)" (click)="openAlert(alert)" (keydown.enter)="openAlert(alert)">
-              <span class="al-row__icon"><mat-icon>{{ alert.icon }}</mat-icon></span>
-
-              <div class="al-row__body">
-                <div class="al-row__title">
-                  @if (newIds().has(alert.id)) { <i class="al-new" [title]="'alerts.new' | translate"></i> }
-                  <h3>{{ resolveTitle(alert) }}</h3>
-                  @if (alert.severity) {
-                    <span class="al-badge al-badge--{{ tone(alert) }}">{{ 'alerts.severity.' + alert.severity | translate }}</span>
-                  }
-                </div>
-                <p class="al-row__desc">{{ resolveDescription(alert) }}</p>
-              </div>
-
-              <div class="al-row__end">
-                <span class="al-row__time" [title]="alert.date | date: 'medium'">{{ getRelativeTime(alert.date) }}</span>
-                <div class="al-row__actions">
-                  @if (alert.targetRoute) {
-                    <button type="button" class="icon-btn" (click)="goToTarget($event, alert)" [title]="'alerts.goToTarget' | translate">
-                      <mat-icon>open_in_new</mat-icon>
-                    </button>
-                  }
-                  <button type="button" class="icon-btn icon-btn--danger" (click)="deleteAlert($event, alert.id)" [title]="'alerts.deleteTitle' | translate">
+      <div class="ai-list__scroll" (keydown.arrowdown)="step($event, 1)" (keydown.arrowup)="step($event, -1)">
+        @if (!alertsList().length) {
+          <div class="ai-empty">
+            <mat-icon>notifications_none</mat-icon>
+            <p class="ai-empty__title">{{ 'alerts.emptyTitle' | translate }}</p>
+            <p>{{ 'alerts.emptyState' | translate }}</p>
+          </div>
+        } @else if (!groups().length) {
+          <div class="ai-empty">
+            <mat-icon>search_off</mat-icon>
+            <p class="ai-empty__title">{{ 'alerts.noMatch' | translate }}</p>
+            <button type="button" class="cmd" (click)="folder.set('all'); search.set('')">{{ 'alerts.resetFilters' | translate }}</button>
+          </div>
+        } @else {
+          @for (group of groups(); track group.key) {
+            <button type="button" class="ai-group" (click)="toggleGroup(group.key)" [attr.aria-expanded]="!isCollapsed(group.key)">
+              <mat-icon>{{ isCollapsed(group.key) ? 'chevron_right' : 'expand_more' }}</mat-icon>
+              {{ 'alerts.group.' + group.key | translate }}
+              <span>{{ group.alerts.length }}</span>
+            </button>
+            @if (!isCollapsed(group.key)) {
+              @for (alert of group.alerts; track alert.id) {
+                <div class="ai-item ai-item--{{ tone(alert) }}" [id]="'alert-' + alert.id" role="button" tabindex="0"
+                     [class.ai-item--unread]="!alert.read" [class.ai-item--on]="selectedId() === alert.id"
+                     [appContextMenu]="alertMenu(alert)" (click)="select(alert)" (keydown.enter)="select(alert)">
+                  <span class="ai-item__avatar"><mat-icon>{{ alert.icon }}</mat-icon></span>
+                  <div class="ai-item__body">
+                    <div class="ai-item__line">
+                      <span class="ai-item__tag">{{ 'alerts.filter.' + tone(alert) | translate }}</span>
+                      <span class="ai-item__source">{{ 'alerts.source.' + alert.type | translate }}</span>
+                      <span class="ai-item__time" [title]="alert.date | date: 'medium'">{{ listTime(alert.date) }}</span>
+                    </div>
+                    <p class="ai-item__title">{{ resolveTitle(alert) }}</p>
+                    <p class="ai-item__desc">{{ resolveDescription(alert) }}</p>
+                  </div>
+                  <button type="button" class="icon-btn icon-btn--sm ai-item__delete" (click)="deleteAlert(alert); $event.stopPropagation()"
+                          [title]="'alerts.deleteTitle' | translate">
                     <mat-icon>delete_outline</mat-icon>
                   </button>
                 </div>
-              </div>
-            </li>
+              }
+            }
           }
-        </ul>
-      </section>
-    }
-  }
+        }
+      </div>
+    </section>
 
+    <!-- ── Reading pane ────────────────────────────────────────────────── -->
+    <section class="ai-reader">
+      @if (selected(); as a) {
+        <div class="ai-reader__scroll">
+          <app-alert-reader [alert]="a" (deleted)="deleteAlert($event)" (opened)="openTarget($event)" />
+        </div>
+      } @else {
+        <div class="ai-reader__empty">
+          <span class="ai-reader__art"><mat-icon>mark_email_read</mat-icon></span>
+          <p class="ai-reader__title">{{ 'alerts.reader.title' | translate }}</p>
+          <p>{{ 'alerts.reader.subtitle' | translate }}</p>
+        </div>
+      }
+    </section>
+
+  </div>
 </div>

@@ -397,7 +397,8 @@
     "group": {
       "today": "Today",
       "yesterday": "Yesterday",
-      "earlier": "Earlier"
+      "earlier": "Earlier",
+      "week": "Earlier this week"
     },
     "new": "New since your last visit",
     "goToTarget": "Open related page",
@@ -414,6 +415,25 @@
       "severity": "Severity",
       "received": "Received",
       "source": "Source"
+    },
+    "unreadCount": "{{count}} unread",
+    "markAllRead": "Mark all as read",
+    "delete": "Delete",
+    "folders": "Alert folders",
+    "folder": {
+      "all": "Inbox",
+      "unread": "Unread",
+      "critical": "Critical",
+      "warning": "Warnings",
+      "info": "Info"
+    },
+    "sort": {
+      "newest": "Newest first",
+      "oldest": "Oldest first"
+    },
+    "reader": {
+      "title": "Select an alert to read it",
+      "subtitle": "Nothing is selected"
     }
   },
   "nav": {
