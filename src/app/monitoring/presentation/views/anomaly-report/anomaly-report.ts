@@ -40,8 +40,12 @@ export class AnomalyReportComponent implements OnInit {
   readonly store           = inject(MonitoringStore);
   readonly equipmentStore  = inject(EquipmentStore);
 
-  readonly loading        = this.store.actionLoading;
-  readonly error          = this.store.actionError;
+  // The store's loading/error slots are shared by every monitoring call (sensor
+  // lists, cameras…); this page only reflects its own submit.
+  private readonly storeLoading = this.store.actionLoading;
+  private readonly storeError   = this.store.actionError;
+  readonly loading = signal(false);
+  readonly error   = signal<string | null>(null);
   readonly anomalyReports = this.store.anomalyReports;
   readonly equipment      = this.equipmentStore.equipment;
 
@@ -67,7 +71,6 @@ export class AnomalyReportComponent implements OnInit {
   readonly description   = signal('');
   readonly submitted     = signal(false);
 
-  private pendingSubmit = false;
 
   readonly sortedReservations = computed(() =>
     [...this.reservations()].sort((a, b) => (b.startedAt ?? '').localeCompare(a.startedAt ?? ''))
@@ -90,9 +93,11 @@ export class AnomalyReportComponent implements OnInit {
   constructor() {
     // The store has no success signal: a submit that settles without an error landed.
     effect(() => {
-      if (this.pendingSubmit && !this.loading()) {
-        this.pendingSubmit = false;
-        if (!this.error()) {
+      if (this.loading() && !this.storeLoading()) {
+        const error = this.storeError();
+        this.loading.set(false);
+        this.error.set(error);
+        if (!error) {
           this.reset();
           this.submitted.set(true);
           setTimeout(() => this.submitted.set(false), 5000);
@@ -129,7 +134,8 @@ export class AnomalyReportComponent implements OnInit {
     // The API takes free text only, so the category travels as a prefix admins can scan for.
     const label  = this.translate.instant(`monitoring.anomalyReport.category.${category}`);
 
-    this.pendingSubmit = true;
+    this.loading.set(true);
+    this.error.set(null);
     this.store.reportAnomaly({
       reservationId: reservation.id,
       equipmentId: reservation.equipmentId,
