@@ -14,6 +14,7 @@ import { BranchStore } from '../../../../gym/application/branch.store';
 import { ZoneStore } from '../../../../gym/application/zone.store';
 import { Zone } from '../../../../gym/domain/model/zone.entity';
 import { ActiveGymStore } from '../../../../auth/application/active-gym.store';
+import { ThemeService } from '../../../application/theme.service';
 
 export type FilterTab = 'ALL' | 'STRENGTH' | 'CARDIO';
 export type ViewMode  = 'MAP' | 'HEATMAP' | 'ALL_BRANCHES';
@@ -54,6 +55,7 @@ export class MapComponent implements OnInit {
   private readonly activeGymStore   = inject(ActiveGymStore);
   private readonly snackBar         = inject(MatSnackBar);
   private readonly translate        = inject(TranslateService);
+  readonly themeService             = inject(ThemeService, { optional: true });
 
   readonly selectedBranchId      = signal<string | null>(null);
   readonly viewMode              = signal<ViewMode>('MAP');

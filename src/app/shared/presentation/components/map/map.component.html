@@ -1,4 +1,4 @@
-<div class="map-root" (click)="closeMachineDetail()">
+<div class="map-root" [attr.data-theme]="themeService?.theme()" (click)="closeMachineDetail()">
 
   <!-- ── HEADER ─────────────────────────────────────────────────── -->
   <header class="map-header">
