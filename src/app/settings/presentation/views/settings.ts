@@ -1,8 +1,7 @@
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
-import { TechnicianStore } from '../../application/technician.store';
 import { NotificationPreferencesStore } from '../../application/notification-preferences.store';
 
 @Component({
@@ -13,11 +12,7 @@ import { NotificationPreferencesStore } from '../../application/notification-pre
   styleUrl: './settings.scss',
 })
 export class SettingsComponent {
-  readonly technicianStore = inject(TechnicianStore);
   readonly notificationPreferencesStore = inject(NotificationPreferencesStore);
-
-  nameInput = '';
-  readonly nameError = signal<string | null>(null);
 
   notifyOnCritical = true;
   notifyOnWarning = true;
@@ -33,23 +28,6 @@ export class SettingsComponent {
         this.notificationEmailInput = prefs.notificationEmail ?? '';
       }
     });
-  }
-
-  addTechnician(): void {
-    const name = this.nameInput.trim();
-    this.nameError.set(null);
-
-    if (!name) {
-      this.nameError.set('settings.technicians.error.nameRequired');
-      return;
-    }
-
-    this.nameInput = '';
-    this.technicianStore.createTechnician(name);
-  }
-
-  onNameInputChange(): void {
-    this.nameError.set(null);
   }
 
   saveNotificationPreferences(): void {

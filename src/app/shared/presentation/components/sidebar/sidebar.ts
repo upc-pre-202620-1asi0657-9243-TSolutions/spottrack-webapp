@@ -35,6 +35,7 @@ const ADMIN_NAV: NavSection[] = [
       { path: '/equipments', icon: 'fitness_center', labelKey: 'nav.equipment' },
       { path: '/iot', icon: 'sensors', labelKey: 'nav.iot', badge: 'iot' },
       { path: '/maintenance', icon: 'build', labelKey: 'nav.maintenance', badge: 'maintenance' },
+      { path: '/technicians', icon: 'engineering', labelKey: 'nav.technicians' },
     ],
   },
   {

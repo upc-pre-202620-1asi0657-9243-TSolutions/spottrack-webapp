@@ -408,7 +408,8 @@
       "whitelist": "Member whitelist",
       "addGym": "Add another gym"
     },
-    "sensorsOnline": "{{online}} of {{total}} sensors online"
+    "sensorsOnline": "{{online}} of {{total}} sensors online",
+    "technicians": "Technicians"
   },
   "monitoring": {
     "sensors": {
@@ -944,7 +945,7 @@
         "hint": "Completion notes appear here when the ticket is completed."
       },
       "assign": "Assign technician",
-      "noTechnicians": "No technicians yet — add them in Settings",
+      "noTechnicians": "No technicians yet — add them in Technicians",
       "needsTechnician": "Assign a technician before moving this ticket to In progress."
     },
     "view": {
@@ -1307,7 +1308,7 @@
   },
   "settings": {
     "title": "Settings",
-    "subtitle": "Manage your maintenance team",
+    "subtitle": "Notification preferences for your account",
     "technicians": {
       "title": "Technicians",
       "subtitle": "Technicians available to assign to maintenance tickets",
@@ -1367,6 +1368,53 @@
       "addFailed": "Could not add DNI. Please try again.",
       "duplicate": "This DNI is already in the whitelist.",
       "invalidFormat": "DNI must be exactly 8 digits."
+    }
+  },
+  "technicians": {
+    "title": "Technicians",
+    "subtitle": "Your maintenance team, their workload and track record",
+    "search": "Search by name or ID…",
+    "copyId": "Copy technician ID",
+    "unassigned": "{{count}} open ticket(s) have no technician yet. Assign them from the maintenance board.",
+    "stats": {
+      "total": "Technicians",
+      "available": "Available",
+      "busy": "Working now",
+      "completed": "Tickets completed"
+    },
+    "filter": {
+      "all": "All",
+      "available": "Available",
+      "assigned": "Assigned",
+      "busy": "Working"
+    },
+    "sort": {
+      "label": "Sort technicians",
+      "name": "Name (A–Z)",
+      "workload": "Most workload",
+      "completed": "Most completed"
+    },
+    "card": {
+      "pending": "Pending",
+      "inProgress": "In progress",
+      "completed": "Completed",
+      "currentWork": "Current work",
+      "free": "No open tickets",
+      "more": "+{{count}} more"
+    },
+    "empty": {
+      "title": "No technicians yet",
+      "desc": "Add the people who repair your machines so tickets can be assigned to them.",
+      "noMatch": "No technicians match these filters",
+      "reset": "Clear filters"
+    },
+    "add": {
+      "button": "Add technician",
+      "title": "Add technician",
+      "subtitle": "They'll be available to assign on maintenance tickets",
+      "name": "Full name",
+      "submit": "Add technician",
+      "duplicate": "A technician with this name already exists"
     }
   },
   "shared": {

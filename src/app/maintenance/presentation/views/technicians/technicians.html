@@ -1,0 +1,199 @@
+<div class="tc-page">
+
+  <!-- ── Header ──────────────────────────────────────────────────────────── -->
+  <header class="tc-header">
+    <div>
+      <h1 class="tc-header__title">{{ 'technicians.title' | translate }}</h1>
+      <p class="tc-header__subtitle">{{ 'technicians.subtitle' | translate }}</p>
+    </div>
+    <button type="button" class="btn btn--primary" (click)="openAdd()">
+      <mat-icon>person_add</mat-icon>
+      {{ 'technicians.add.button' | translate }}
+    </button>
+  </header>
+
+  <!-- ── KPIs ────────────────────────────────────────────────────────────── -->
+  <div class="tc-kpis">
+    <div class="tc-kpi">
+      <span class="tc-kpi__icon tc-kpi__icon--amber"><mat-icon>engineering</mat-icon></span>
+      <div>
+        <p class="tc-kpi__label">{{ 'technicians.stats.total' | translate }}</p>
+        <p class="tc-kpi__value">{{ counts().all }}</p>
+      </div>
+    </div>
+    <div class="tc-kpi">
+      <span class="tc-kpi__icon tc-kpi__icon--green"><mat-icon>check_circle</mat-icon></span>
+      <div>
+        <p class="tc-kpi__label">{{ 'technicians.stats.available' | translate }}</p>
+        <p class="tc-kpi__value">{{ counts().available }}</p>
+      </div>
+    </div>
+    <div class="tc-kpi">
+      <span class="tc-kpi__icon tc-kpi__icon--blue"><mat-icon>build</mat-icon></span>
+      <div>
+        <p class="tc-kpi__label">{{ 'technicians.stats.busy' | translate }}</p>
+        <p class="tc-kpi__value">{{ counts().busy }}</p>
+      </div>
+    </div>
+    <div class="tc-kpi">
+      <span class="tc-kpi__icon tc-kpi__icon--teal"><mat-icon>task_alt</mat-icon></span>
+      <div>
+        <p class="tc-kpi__label">{{ 'technicians.stats.completed' | translate }}</p>
+        <p class="tc-kpi__value">{{ totalCompleted() }}</p>
+      </div>
+    </div>
+  </div>
+
+  @if (unassignedTickets() > 0) {
+    <a class="tc-notice" routerLink="/maintenance">
+      <mat-icon>assignment_late</mat-icon>
+      <span>{{ 'technicians.unassigned' | translate: { count: unassignedTickets() } }}</span>
+      <mat-icon class="tc-notice__arrow">arrow_forward</mat-icon>
+    </a>
+  }
+
+  <!-- ── Toolbar ─────────────────────────────────────────────────────────── -->
+  <div class="tc-toolbar">
+    <div class="tc-search">
+      <mat-icon>search</mat-icon>
+      <input type="text" [placeholder]="'technicians.search' | translate"
+             [ngModel]="search()" (ngModelChange)="search.set($event)" />
+      @if (search()) {
+        <button type="button" class="tc-search__clear" (click)="search.set('')"><mat-icon>close</mat-icon></button>
+      }
+    </div>
+
+    <div class="tc-tabs" role="tablist">
+      @for (f of filters; track f) {
+        <button type="button" role="tab" class="tc-tab" [class.tc-tab--on]="filter() === f" (click)="filter.set(f)">
+          {{ 'technicians.filter.' + f | translate }}
+          <span class="tc-tab__count">{{ counts()[f] }}</span>
+        </button>
+      }
+    </div>
+
+    <label class="tc-sort">
+      <mat-icon>sort</mat-icon>
+      <select [ngModel]="sort()" (ngModelChange)="sort.set($event)" [attr.aria-label]="'technicians.sort.label' | translate">
+        @for (s of sorts; track s) {
+          <option [value]="s">{{ 'technicians.sort.' + s | translate }}</option>
+        }
+      </select>
+    </label>
+  </div>
+
+  @if (technicianStore.error() && !showAdd()) {
+    <div class="tc-error">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ technicianStore.error() }}</span>
+    </div>
+  }
+
+  <!-- ── Technician grid ─────────────────────────────────────────────────── -->
+  @if (technicianStore.loading() && !rows().length) {
+    <div class="tc-state"><mat-icon class="spin">autorenew</mat-icon></div>
+  } @else if (!rows().length) {
+    <div class="tc-card tc-empty">
+      <span class="tc-empty__icon"><mat-icon>engineering</mat-icon></span>
+      <h3>{{ 'technicians.empty.title' | translate }}</h3>
+      <p>{{ 'technicians.empty.desc' | translate }}</p>
+      <button type="button" class="btn btn--primary" (click)="openAdd()">
+        <mat-icon>person_add</mat-icon>
+        {{ 'technicians.add.button' | translate }}
+      </button>
+    </div>
+  } @else if (!visibleRows().length) {
+    <div class="tc-card tc-empty">
+      <span class="tc-empty__icon"><mat-icon>search_off</mat-icon></span>
+      <h3>{{ 'technicians.empty.noMatch' | translate }}</h3>
+      <button type="button" class="btn btn--secondary" (click)="search.set(''); filter.set('all')">
+        {{ 'technicians.empty.reset' | translate }}
+      </button>
+    </div>
+  } @else {
+    <div class="tc-grid">
+      @for (r of pagedRows(); track r.id) {
+        <article class="tc-card tc-tech">
+          <div class="tc-tech__head">
+            <span class="tc-avatar" [style.--hue]="r.hue">{{ r.initials }}</span>
+            <div class="tc-tech__title">
+              <h3>{{ r.name }}</h3>
+              <button type="button" class="tc-id" (click)="copyId(r.id)" [title]="'technicians.copyId' | translate">
+                {{ r.id.slice(0, 8) }} <mat-icon>content_copy</mat-icon>
+              </button>
+            </div>
+            <span class="tc-state-chip tc-state-chip--{{ r.state }}">
+              <i></i>{{ 'technicians.filter.' + r.state | translate }}
+            </span>
+          </div>
+
+          <dl class="tc-tech__stats">
+            <div><dt>{{ 'technicians.card.pending' | translate }}</dt><dd>{{ r.pending.length }}</dd></div>
+            <div><dt>{{ 'technicians.card.inProgress' | translate }}</dt><dd>{{ r.inProgress.length }}</dd></div>
+            <div><dt>{{ 'technicians.card.completed' | translate }}</dt><dd>{{ r.completed }}</dd></div>
+          </dl>
+
+          <div class="tc-tech__work">
+            <p class="tc-tech__label">{{ 'technicians.card.currentWork' | translate }}</p>
+            @for (t of r.inProgress.concat(r.pending).slice(0, 3); track t.id) {
+              <a class="tc-ticket" [routerLink]="['/maintenance']" [queryParams]="{ ticket: t.id }">
+                <i class="tc-ticket__dot tc-ticket__dot--{{ t.status.toLowerCase() }}"></i>
+                <span class="tc-ticket__name">{{ equipmentName(t.equipmentId) }}</span>
+                <span class="tc-ticket__status">{{ 'maintenance.status.' + t.status | translate }}</span>
+              </a>
+            } @empty {
+              <p class="tc-tech__free">{{ 'technicians.card.free' | translate }}</p>
+            }
+            @if (r.inProgress.length + r.pending.length > 3) {
+              <p class="tc-tech__more">{{ 'technicians.card.more' | translate: { count: r.inProgress.length + r.pending.length - 3 } }}</p>
+            }
+          </div>
+        </article>
+      }
+    </div>
+
+    <div class="tc-pager">
+      <app-paginator [total]="visibleRows().length" [pageSizeOptions]="[12, 24, 48]" [(page)]="page" [(pageSize)]="pageSize" />
+    </div>
+  }
+
+</div>
+
+<!-- ── Add technician dialog ─────────────────────────────────────────────── -->
+@if (showAdd()) {
+  <div class="modal-backdrop" (click)="closeAdd()">
+    <div class="modal-card" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <span class="modal-header__icon"><mat-icon>person_add</mat-icon></span>
+        <div class="modal-header__text">
+          <h2>{{ 'technicians.add.title' | translate }}</h2>
+          <p>{{ 'technicians.add.subtitle' | translate }}</p>
+        </div>
+        <button type="button" class="modal-close" (click)="closeAdd()"><mat-icon>close</mat-icon></button>
+      </div>
+
+      <div class="modal-body">
+        <label class="field-label" for="tech-name">{{ 'technicians.add.name' | translate }} <span class="req">*</span></label>
+        <input id="tech-name" class="field-input" type="text" autocomplete="off" autofocus
+               [class.field-input--error]="nameError()"
+               [placeholder]="'settings.technicians.namePlaceholder' | translate"
+               [ngModel]="nameInput()" (ngModelChange)="nameInput.set($event); nameError.set(null)"
+               (keydown.enter)="addTechnician()" />
+        @if (nameError()) {
+          <span class="field-error">{{ nameError()! | translate }}</span>
+        }
+        @if (technicianStore.error()) {
+          <span class="field-error">{{ technicianStore.error() }}</span>
+        }
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn--secondary" (click)="closeAdd()">{{ 'maintenance.form.cancel' | translate }}</button>
+        <button type="button" class="btn btn--primary" [disabled]="technicianStore.creating()" (click)="addTechnician()">
+          <mat-icon [class.spin]="technicianStore.creating()">{{ technicianStore.creating() ? 'autorenew' : 'add' }}</mat-icon>
+          {{ 'technicians.add.submit' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

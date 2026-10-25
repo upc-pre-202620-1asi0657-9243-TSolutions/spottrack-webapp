@@ -106,6 +106,11 @@ export const routes: Routes = [
                 loadComponent: () =>
                   import('./maintenance/presentation/views/new-ticket/new-ticket').then(m => m.NewTicketComponent),
               },
+              {
+                path: 'technicians',
+                loadComponent: () =>
+                  import('./maintenance/presentation/views/technicians/technicians').then(m => m.TechniciansComponent),
+              },
               ...analyticsRoutes,
               ...monitoringRoutes,
               ...membershipRoutes,

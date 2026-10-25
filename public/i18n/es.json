@@ -408,7 +408,8 @@
       "whitelist": "Lista de socios",
       "addGym": "Agregar otro gimnasio"
     },
-    "sensorsOnline": "{{online}} de {{total}} sensores en línea"
+    "sensorsOnline": "{{online}} de {{total}} sensores en línea",
+    "technicians": "Técnicos"
   },
   "monitoring": {
     "sensors": {
@@ -944,7 +945,7 @@
         "hint": "Las notas de cierre aparecen aquí cuando se completa el ticket."
       },
       "assign": "Asignar técnico",
-      "noTechnicians": "Aún no hay técnicos — agrégalos en Configuración",
+      "noTechnicians": "Aún no hay técnicos — agrégalos en Técnicos",
       "needsTechnician": "Asigna un técnico antes de mover este ticket a En progreso."
     },
     "view": {
@@ -1307,7 +1308,7 @@
   },
   "settings": {
     "title": "Configuración",
-    "subtitle": "Gestiona tu equipo de mantenimiento",
+    "subtitle": "Preferencias de notificación de tu cuenta",
     "technicians": {
       "title": "Técnicos",
       "subtitle": "Técnicos disponibles para asignar a tickets de mantenimiento",
@@ -1367,6 +1368,53 @@
       "addFailed": "No se pudo agregar el DNI. Inténtalo de nuevo.",
       "duplicate": "Este DNI ya está en la whitelist.",
       "invalidFormat": "El DNI debe tener exactamente 8 dígitos."
+    }
+  },
+  "technicians": {
+    "title": "Técnicos",
+    "subtitle": "Tu equipo de mantenimiento, su carga de trabajo e historial",
+    "search": "Buscar por nombre o ID…",
+    "copyId": "Copiar ID del técnico",
+    "unassigned": "{{count}} ticket(s) abierto(s) aún no tienen técnico. Asígnalos desde el tablero de mantenimiento.",
+    "stats": {
+      "total": "Técnicos",
+      "available": "Disponibles",
+      "busy": "Trabajando ahora",
+      "completed": "Tickets completados"
+    },
+    "filter": {
+      "all": "Todos",
+      "available": "Disponible",
+      "assigned": "Asignado",
+      "busy": "Trabajando"
+    },
+    "sort": {
+      "label": "Ordenar técnicos",
+      "name": "Nombre (A–Z)",
+      "workload": "Más carga",
+      "completed": "Más completados"
+    },
+    "card": {
+      "pending": "Pendientes",
+      "inProgress": "En progreso",
+      "completed": "Completados",
+      "currentWork": "Trabajo actual",
+      "free": "Sin tickets abiertos",
+      "more": "+{{count}} más"
+    },
+    "empty": {
+      "title": "Aún no hay técnicos",
+      "desc": "Agrega a las personas que reparan tus máquinas para poder asignarles tickets.",
+      "noMatch": "Ningún técnico coincide con estos filtros",
+      "reset": "Limpiar filtros"
+    },
+    "add": {
+      "button": "Agregar técnico",
+      "title": "Agregar técnico",
+      "subtitle": "Estará disponible para asignar en los tickets de mantenimiento",
+      "name": "Nombre completo",
+      "submit": "Agregar técnico",
+      "duplicate": "Ya existe un técnico con este nombre"
     }
   },
   "shared": {
