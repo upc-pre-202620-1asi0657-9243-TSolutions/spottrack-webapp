@@ -919,7 +919,30 @@
       "description": "Descripción",
       "created": "Creado",
       "unassigned": "Sin asignar",
-      "ids": "ID del ticket"
+      "ids": "ID del ticket",
+      "prev": "Ticket anterior",
+      "next": "Ticket siguiente",
+      "saving": "Guardando…",
+      "saved": "Guardado",
+      "createdOn": "Creado {{date}}",
+      "copyId": "Copiar ID del ticket",
+      "kind": "Ticket",
+      "unknownMachine": "Máquina desconocida",
+      "resolvedLocked": "Este ticket está resuelto, así que sus campos están bloqueados.",
+      "assignToStart": "Asignar para iniciar",
+      "edit": "Editar",
+      "save": "Guardar",
+      "saveHint": "Ctrl/⌘ + Enter para guardar",
+      "noDescription": "Sin descripción. Haz clic para agregar una.",
+      "expand": "Ver más",
+      "collapse": "Ver menos",
+      "activity": {
+        "title": "Actividad",
+        "created": "Ticket creado",
+        "assigned": "Asignado a {{name}}",
+        "completed": "Completado con notas",
+        "hint": "Las notas de cierre aparecen aquí cuando se completa el ticket."
+      }
     },
     "view": {
       "label": "Vista de tickets",

@@ -919,7 +919,30 @@
       "description": "Description",
       "created": "Created",
       "unassigned": "Not assigned yet",
-      "ids": "Ticket ID"
+      "ids": "Ticket ID",
+      "prev": "Previous ticket",
+      "next": "Next ticket",
+      "saving": "Saving…",
+      "saved": "Saved",
+      "createdOn": "Created {{date}}",
+      "copyId": "Copy ticket ID",
+      "kind": "Ticket",
+      "unknownMachine": "Unknown machine",
+      "resolvedLocked": "This ticket is resolved, so its fields are locked.",
+      "assignToStart": "Assign to start",
+      "edit": "Edit",
+      "save": "Save",
+      "saveHint": "Ctrl/⌘ + Enter to save",
+      "noDescription": "No description yet. Click to add one.",
+      "expand": "Expand",
+      "collapse": "Collapse",
+      "activity": {
+        "title": "Activity",
+        "created": "Ticket created",
+        "assigned": "Assigned to {{name}}",
+        "completed": "Completed with notes",
+        "hint": "Completion notes appear here when the ticket is completed."
+      }
     },
     "view": {
       "label": "Ticket view",

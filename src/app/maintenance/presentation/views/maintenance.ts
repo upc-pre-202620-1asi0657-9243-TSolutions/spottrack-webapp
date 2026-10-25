@@ -14,6 +14,7 @@ import { MaintenanceLogResource } from '../../infrastructure/maintenance-respons
 import { ContextMenuDirective } from '../../../shared/presentation/directives/context-menu.directive';
 import { ContextMenuItem } from '../../../shared/application/context-menu.service';
 import { PaginatorComponent, paginate } from '../../../shared/presentation/components/paginator/paginator';
+import { TicketDetailComponent } from '../components/ticket-detail/ticket-detail';
 
 type ModalMode = 'detail' | 'start' | 'complete' | 'log' | null;
 export type TicketView = 'board' | 'list';
@@ -23,7 +24,7 @@ const VIEW_STORAGE_KEY = 'spottrack.maintenance.view';
 @Component({
   selector: 'app-maintenance',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, MatIconModule, MatFormFieldModule, MatSelectModule, ContextMenuDirective, PaginatorComponent],
+  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, MatIconModule, MatFormFieldModule, MatSelectModule, ContextMenuDirective, PaginatorComponent, TicketDetailComponent],
   templateUrl: './maintenance.html',
   styleUrl:    './maintenance.scss',
 })
@@ -135,17 +136,24 @@ export class MaintenanceComponent {
     return this.equipmentStore.equipment().find(e => e.uuid === id) ?? null;
   }
 
-  /** Full ticket view; completion notes load alongside so resolved tickets show their history. */
   openDetail(t: MaintenanceTicket): void {
     this.modalTicket.set(t);
     this.store.clearTicketActionError();
     this.modalMode.set('detail');
-    this.logEntries.set([]);
-    this.logLoading.set(true);
-    this.store.getCompletionLogs(t.id).subscribe({
-      next:  logs => { this.logEntries.set(logs); this.logLoading.set(false); },
-      error: () => this.logLoading.set(false),
-    });
+  }
+
+  /** The open ticket as the store has it now, so in-place edits show up immediately. */
+  readonly detailTicket = computed(() => {
+    const id = this.modalTicket()?.id;
+    return this.store.tickets().find(t => t.id === id) ?? this.modalTicket();
+  });
+
+  /** Position in the list order, for the panel's previous / next arrows. */
+  readonly detailIndex = computed(() => this.listTickets().findIndex(t => t.id === this.modalTicket()?.id));
+
+  stepDetail(delta: number): void {
+    const target = this.listTickets()[this.detailIndex() + delta];
+    if (target) this.modalTicket.set(target);
   }
 
   openStartModal(t: MaintenanceTicket): void {

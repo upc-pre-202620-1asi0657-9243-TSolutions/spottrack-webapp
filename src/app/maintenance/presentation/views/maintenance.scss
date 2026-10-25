@@ -658,12 +658,6 @@ $blue:     var(--info);
   position: relative;
 
   &--log { width: 480px; }
-  &--detail {
-    width: 560px;
-    max-height: 88vh;
-    overflow-y: auto;
-    box-sizing: border-box;
-  }
 }
 
 .modal__close {
@@ -752,8 +746,6 @@ $blue:     var(--info);
   transition: background .15s;
 
   &--primary   { background: $accent; color: var(--accent-contrast); }
-  &--success   { background: $green; color: #fff; }
-  &--success:hover:not(:disabled) { opacity: .88; }
   &--secondary { background: $bg-card; color: $text; border: 1px solid $border; }
 
   &--primary:hover:not(:disabled)   { background: var(--accent-hover); }
@@ -789,16 +781,7 @@ $blue:     var(--info);
   font-size: .75rem;
 }
 
-// ── Ticket details ───────────────────────────────────────────────────────────
-.td-head {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-}
-
-.td-id { font-family: var(--font-mono); font-size: .8rem; color: $muted; }
-
+// ── Status pill (list view) ──────────────────────────────────────────────────
 .td-status {
   display: inline-flex;
   align-items: center;
@@ -813,58 +796,4 @@ $blue:     var(--info);
   &--open        { background: var(--danger-soft);  color: $red; }
   &--in_progress { background: var(--warning-soft); color: $amber; }
   &--resolved    { background: var(--success-soft); color: $green; }
-}
-
-.td-machine {
-  margin: 0 0 18px;
-  font-size: .875rem;
-  color: $muted;
-
-  span { color: $text; font-weight: 600; }
-}
-
-.td-block {
-  margin-bottom: 18px;
-
-  h3 {
-    margin: 0 0 8px;
-    font-size: .75rem;
-    font-weight: 600;
-    letter-spacing: .06em;
-    text-transform: uppercase;
-    color: $muted;
-  }
-}
-
-.td-desc {
-  margin: 0;
-  padding: 12px 14px;
-  border-radius: var(--radius);
-  background: $bg-inner;
-  font-size: .9rem;
-  line-height: 1.5;
-  white-space: pre-line;
-  word-break: break-word;
-}
-
-.td-facts {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px 20px;
-  margin: 0 0 18px;
-  padding: 14px 0;
-  border-top: 1px solid $border;
-  border-bottom: 1px solid $border;
-
-  dt { margin: 0 0 4px; font-size: .75rem; color: $muted; }
-  dd { margin: 0; font-size: .875rem; font-weight: 600; small { color: $muted; font-weight: 500; } }
-
-  &__wide { grid-column: 1 / -1; }
-}
-
-.td-mono { font-family: var(--font-mono); font-size: .75rem !important; font-weight: 500 !important; color: var(--text-2); word-break: break-all; }
-
-@media (max-width: 600px) {
-  .modal--detail { padding: 24px 18px; }
-  .td-facts { grid-template-columns: 1fr; }
 }

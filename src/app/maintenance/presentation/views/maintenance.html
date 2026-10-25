@@ -274,91 +274,16 @@
   }
 
   <!-- ── Ticket details ─────────────────────────────────────────────── -->
-  @if (modalMode() === 'detail' && modalTicket(); as t) {
-    <div class="modal-overlay" (click)="closeModal()">
-      <div class="modal modal--detail" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
-        <button class="modal__close" (click)="closeModal()"><mat-icon>close</mat-icon></button>
-
-        <div class="td-head">
-          <span class="td-id">{{ ticketId(t) }}</span>
-          <span class="td-status td-status--{{ t.status.toLowerCase() }}">
-            <i></i>{{ 'maintenance.status.' + t.status | translate }}
-          </span>
-        </div>
-        <h2 class="modal__title">{{ equipmentName(t.equipmentId) }}</h2>
-        @if (equipmentOf(t.equipmentId); as eq) {
-          <p class="td-machine">
-            {{ eq.brand }} · {{ eq.model }} ·
-            <span>{{ 'equipment.status.' + eq.status | translate }}</span>
-          </p>
-        }
-
-        <section class="td-block">
-          <h3>{{ 'maintenance.detail.description' | translate }}</h3>
-          <p class="td-desc">{{ t.description || '—' }}</p>
-        </section>
-
-        <dl class="td-facts">
-          <div>
-            <dt>{{ 'maintenance.form.priority' | translate }}</dt>
-            <dd><span class="priority-badge priority-badge--{{ t.priority.toLowerCase() }}">{{ 'maintenance.priority.' + t.priority | translate }}</span></dd>
-          </div>
-          <div>
-            <dt>{{ 'maintenance.form.type' | translate }}</dt>
-            <dd>{{ 'maintenance.type.' + t.type | translate }}</dd>
-          </div>
-          <div>
-            <dt>{{ 'maintenance.detail.created' | translate }}</dt>
-            <dd>{{ t.createdAt | date: 'medium' }} <small>({{ ticketAge(t) }})</small></dd>
-          </div>
-          <div>
-            <dt>{{ 'maintenance.assignedTo' | translate }}</dt>
-            <dd>{{ t.assignee || ('maintenance.detail.unassigned' | translate) }}</dd>
-          </div>
-          @if (t.completedBy) {
-            <div>
-              <dt>{{ 'maintenance.completedBy' | translate }}</dt>
-              <dd>{{ t.completedBy }}</dd>
-            </div>
-          }
-          <div class="td-facts__wide">
-            <dt>{{ 'maintenance.detail.ids' | translate }}</dt>
-            <dd class="td-mono">{{ t.id }}</dd>
-          </div>
-        </dl>
-
-        <section class="td-block">
-          <h3>{{ 'maintenance.controlPoint.logTitle' | translate }}</h3>
-          @if (logLoading()) {
-            <p class="modal__hint">{{ 'maintenance.controlPoint.logLoading' | translate }}</p>
-          } @else if (logEntries().length === 0) {
-            <p class="modal__hint">{{ 'maintenance.controlPoint.logEmpty' | translate }}</p>
-          } @else {
-            <div class="log-list">
-              @for (entry of logEntries(); track entry.id) {
-                <div class="log-entry">
-                  <p class="log-entry__notes">{{ entry.notes }}</p>
-                  <p class="log-entry__date">{{ entry.completedAt | date:'medium' }}</p>
-                </div>
-              }
-            </div>
-          }
-        </section>
-
-        <div class="modal__actions">
-          <button class="modal__btn modal__btn--secondary" (click)="closeModal()">{{ 'maintenance.controlPoint.close' | translate }}</button>
-          @if (t.status === 'OPEN') {
-            <button class="modal__btn modal__btn--primary" (click)="openStartModal(t)">
-              {{ 'maintenance.action.start' | translate }}
-            </button>
-          } @else if (t.status === 'IN_PROGRESS') {
-            <button class="modal__btn modal__btn--success" (click)="openCompleteModal(t)">
-              {{ 'maintenance.action.complete' | translate }}
-            </button>
-          }
-        </div>
-      </div>
-    </div>
+  @if (modalMode() === 'detail' && detailTicket(); as t) {
+    <app-ticket-detail
+      [ticket]="t"
+      [hasPrev]="detailIndex() > 0"
+      [hasNext]="detailIndex() >= 0 && detailIndex() < listTickets().length - 1"
+      (closed)="closeModal()"
+      (startRequested)="openStartModal($event)"
+      (completeRequested)="openCompleteModal($event)"
+      (prev)="stepDetail(-1)"
+      (next)="stepDetail(1)" />
   }
 
   <!-- ── Control-point modal ────────────────────────────────────────── -->
