@@ -436,19 +436,23 @@
   &__title { font-size: 14px; color: var(--text); }
   &__desc { font-size: 13px; color: var(--text-muted); }
 
-  // Delete appears over the time on hover, like mail quick actions.
-  &__delete {
+  // Quick actions appear on hover, like mail list actions.
+  &__quick {
     position: absolute;
     right: 8px;
     bottom: 8px;
-    opacity: 0;
+    display: flex;
+    gap: 2px;
+    padding: 2px;
+    border-radius: var(--radius-sm);
     background: var(--surface);
     box-shadow: var(--shadow-sm);
+    opacity: 0;
     transition: opacity .12s;
   }
 
-  &:hover &__delete,
-  &:focus-within &__delete { opacity: 1; }
+  &:hover &__quick,
+  &:focus-within &__quick { opacity: 1; }
 
   &--unread {
     &::before {
@@ -501,7 +505,7 @@
   box-shadow: var(--shadow-sm);
   overflow: hidden;
 
-  &__scroll { flex: 1; overflow-y: auto; }
+  &__mail { flex: 1; min-height: 0; }
 
   &__empty {
     flex: 1;
@@ -555,5 +559,5 @@
   .ai-folder { flex-shrink: 0; border: 1px solid var(--border); background: var(--surface); }
   .ai-list__scroll { overflow: visible; }
   .ai-reader { display: none; }
-  .ai-item__delete { opacity: 1; position: static; box-shadow: none; }
+  .ai-item__quick { opacity: 1; position: static; box-shadow: none; align-self: center; }
 }

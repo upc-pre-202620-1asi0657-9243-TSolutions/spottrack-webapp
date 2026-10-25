@@ -7,7 +7,8 @@
 
   @if (alert; as a) {
     <div class="ad-card">
-      <app-alert-reader [alert]="a" (deleted)="dismiss($event)" (opened)="navigateTo($event)" />
+      <app-alert-reader [alert]="a" (deleted)="dismiss($event)" (opened)="navigateTo($event)"
+                        (readToggled)="store.toggleRead($event)" />
     </div>
   } @else {
     <div class="ad-card ad-missing">

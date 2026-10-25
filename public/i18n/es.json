@@ -451,6 +451,18 @@
       },
       "overnight": "Franja nocturna: incluye las horas después del inicio y antes del fin.",
       "clear": "Quitar filtros de fecha"
+    },
+    "markRead": "Marcar como leída",
+    "markUnread": "Marcar como no leída",
+    "mail": {
+      "sender": "Alertas SpotTrack",
+      "to": "Para: ti",
+      "greeting": "Hola,",
+      "reference": "Referencia",
+      "action": "Puedes revisarla desde la página relacionada:",
+      "regards": "Saludos,",
+      "signature": "Monitoreo SpotTrack",
+      "footer": "Este mensaje fue generado automáticamente por SpotTrack. Elimínalo cuando haya sido atendido."
     }
   },
   "nav": {

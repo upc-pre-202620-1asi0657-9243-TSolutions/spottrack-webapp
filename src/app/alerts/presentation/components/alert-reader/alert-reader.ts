@@ -18,8 +18,9 @@ export class AlertReaderComponent {
 
   readonly alert = input.required<AppAlert>();
 
-  readonly deleted = output<AppAlert>();
-  readonly opened  = output<AppAlert>();
+  readonly deleted     = output<AppAlert>();
+  readonly opened      = output<AppAlert>();
+  readonly readToggled = output<AppAlert>();
 
   readonly tone = computed(() => alertTone(this.alert()));
 

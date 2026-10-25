@@ -184,10 +184,16 @@
                     <p class="ai-item__title">{{ resolveTitle(alert) }}</p>
                     <p class="ai-item__desc">{{ resolveDescription(alert) }}</p>
                   </div>
-                  <button type="button" class="icon-btn icon-btn--sm ai-item__delete" (click)="deleteAlert(alert); $event.stopPropagation()"
-                          [title]="'alerts.deleteTitle' | translate">
-                    <mat-icon>delete_outline</mat-icon>
-                  </button>
+                  <span class="ai-item__quick">
+                    <button type="button" class="icon-btn icon-btn--sm" (click)="store.toggleRead(alert); $event.stopPropagation()"
+                            [title]="(alert.read ? 'alerts.markUnread' : 'alerts.markRead') | translate">
+                      <mat-icon>{{ alert.read ? 'mark_email_unread' : 'drafts' }}</mat-icon>
+                    </button>
+                    <button type="button" class="icon-btn icon-btn--sm" (click)="deleteAlert(alert); $event.stopPropagation()"
+                            [title]="'alerts.deleteTitle' | translate">
+                      <mat-icon>delete_outline</mat-icon>
+                    </button>
+                  </span>
                 </div>
               }
             }
@@ -199,9 +205,8 @@
     <!-- ── Reading pane ────────────────────────────────────────────────── -->
     <section class="ai-reader">
       @if (selected(); as a) {
-        <div class="ai-reader__scroll">
-          <app-alert-reader [alert]="a" (deleted)="deleteAlert($event)" (opened)="openTarget($event)" />
-        </div>
+        <app-alert-reader class="ai-reader__mail" [alert]="a" (deleted)="deleteAlert($event)"
+                          (opened)="openTarget($event)" (readToggled)="store.toggleRead($event)" />
       } @else {
         <div class="ai-reader__empty">
           <span class="ai-reader__art"><mat-icon>mark_email_read</mat-icon></span>

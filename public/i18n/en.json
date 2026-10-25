@@ -451,6 +451,18 @@
       },
       "overnight": "Overnight window: includes hours after the start and before the end.",
       "clear": "Clear date filters"
+    },
+    "markRead": "Mark as read",
+    "markUnread": "Mark as unread",
+    "mail": {
+      "sender": "SpotTrack Alerts",
+      "to": "To: you",
+      "greeting": "Hello,",
+      "reference": "Reference",
+      "action": "You can review it from the related page:",
+      "regards": "Regards,",
+      "signature": "SpotTrack monitoring",
+      "footer": "This message was generated automatically by SpotTrack. Delete it once it has been handled."
     }
   },
   "nav": {
