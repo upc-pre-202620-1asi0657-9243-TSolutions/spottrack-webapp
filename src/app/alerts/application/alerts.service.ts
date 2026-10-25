@@ -96,6 +96,11 @@ export class AlertsService {
     this.alerts.update(list => list.map(a => a.id === id && !a.read ? { ...a, read: true } : a));
   }
 
+  /** Flags an alert as unread again, e.g. to come back to it later. */
+  markUnread(id: string): void {
+    this.alerts.update(list => list.map(a => a.id === id && a.read ? { ...a, read: false } : a));
+  }
+
   // Only marks alerts that belong to the given role as read
   markReadForRole(role: 'admin' | 'client'): void {
     this.alerts.update(list =>
