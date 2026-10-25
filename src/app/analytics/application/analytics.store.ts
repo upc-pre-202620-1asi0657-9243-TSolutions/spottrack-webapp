@@ -1,8 +1,12 @@
-import { computed, DestroyRef, inject, Injectable, signal } from '@angular/core';
+import { computed, DestroyRef, effect, inject, Injectable, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AnalyticsApi } from '../infrastructure/analytics-api';
 import { EquipmentResource } from '../infrastructure/analytics-response';
 import { AnalyticsStat } from '../domain/model/analytics-stat.entity';
+import { UsageHeatmapApi } from '../infrastructure/usage-heatmap-api';
+import { UsageHeatmapResource } from '../infrastructure/usage-heatmap-response';
+import { lastDays } from './usage-heatmap.store';
+import { AdminGymStore } from '../../gym/application/admin-gym.store';
 
 // ── Hourly occupancy point ────────────────────────────────────────────────────
 export interface HourlyPoint { hour: string; occupancy: number; }
@@ -47,15 +51,23 @@ function machineCategory(name: string): 'Cardio' | 'Fuerza' | 'Pesas' {
   return 'Fuerza';
 }
 
+function hourLabel(hour: number): string {
+  return `${String(hour).padStart(2, '0')}:00`;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AnalyticsStore {
 
-  private readonly api        = inject(AnalyticsApi);
-  private readonly destroyRef = inject(DestroyRef);
+  private readonly api           = inject(AnalyticsApi);
+  private readonly usageApi      = inject(UsageHeatmapApi);
+  private readonly adminGymStore = inject(AdminGymStore);
+  private readonly destroyRef    = inject(DestroyRef);
 
   // ── Raw signals ───────────────────────────────────────────────────────────
   private readonly _analyticsStats = signal<AnalyticsStat[]>([]);
   private readonly _equipments     = signal<EquipmentResource[]>([]);
+  /** Occupancy built by the backend from real sensor sessions for the selected period. */
+  private readonly _usage          = signal<UsageHeatmapResource | null>(null);
   private readonly _loading        = signal(false);
   private readonly _error          = signal<string | null>(null);
 
@@ -68,6 +80,10 @@ export class AnalyticsStore {
 
   private readonly periodMultiplier = computed(() =>
     ({ month: 1, quarter: 3, year: 12 })[this.selectedPeriod()]
+  );
+
+  private readonly periodDays = computed(() =>
+    ({ month: 30, quarter: 90, year: 365 })[this.selectedPeriod()]
   );
 
   // ── Filtered usage stats (reacts to selectedBranch) ─────────────────────
@@ -91,25 +107,22 @@ export class AnalyticsStore {
 
     const baseHours     = stats.reduce((s, r) => s + r.totalUsageHours, 0);
     const totalHours    = Math.round(baseHours * multiplier);
-    // Downtime cost is a real backend-computed $ figure — used here as a
-    // proxy for "points of occupancy lost", since there's no wear-level
-    // concept on ActivityReport.
-    const avgDowntimeCost = stats.reduce((s, r) => s + r.downtimeCost, 0) / stats.length;
-    const occupancy     = Math.max(0, Math.min(100, Math.round(100 - avgDowntimeCost)));
     const inactiveCount = stats.filter(r => r.downtimeCost >= 30).length;
     const inactive      = Math.round(inactiveCount * 24 * multiplier);
-    const peakStat      = stats.reduce((a, b) =>
-      a.totalUsageHours > b.totalUsageHours ? a : b, stats[0]);
-    const peak = Math.min(100, Math.round((peakStat.totalUsageHours / 10) * 100));
     const hoursChange = Math.round(stats.reduce((s, r) => s + r.percentageComparison, 0) / stats.length);
+
+    // Occupancy and peak are measured from sensor sessions during opening hours.
+    const usage     = this._usage();
+    const occupancy = usage?.occupancyRate ?? 0;
+    const peakHour  = usage?.peakHour ?? null;
 
     return {
       totalHours,
       hoursChange,
       occupancy,
-      occupancyChange:  5,
-      peak,
-      peakTime:        '19:00 - 20:00',
+      occupancyChange:  Math.round((occupancy - (usage?.previousOccupancyRate ?? 0)) * 10) / 10,
+      peak:             usage?.peakOccupancyRate ?? 0,
+      peakTime:         peakHour === null ? '—' : `${hourLabel(peakHour)} - ${hourLabel(peakHour + 1)}`,
       inactive,
       inactiveChange:  -8,
     };
@@ -138,30 +151,10 @@ export class AnalyticsStore {
     return Math.max(...bars.map(b => b.usage), 600);
   });
 
-  // ── Line chart: hourly occupancy from sensor_data / usage_sessions ────────
-  readonly hourlyData = computed<HourlyPoint[]>(() => {
-    const stats = this._filteredStats();
-    if (!stats.length) return [];
-
-    const totalHours = stats.reduce((s, r) => s + r.totalUsageHours, 0);
-    const scale      = Math.min(totalHours / 30, 1);
-
-    const base: HourlyPoint[] = [
-      { hour: '06:00', occupancy: Math.round(30  * scale) },
-      { hour: '07:00', occupancy: Math.round(55  * scale) },
-      { hour: '08:00', occupancy: Math.round(78  * scale) },
-      { hour: '09:00', occupancy: Math.round(88  * scale) },
-      { hour: '10:00', occupancy: Math.round(65  * scale) },
-      { hour: '12:00', occupancy: Math.round(40  * scale) },
-      { hour: '14:00', occupancy: Math.round(50  * scale) },
-      { hour: '16:00', occupancy: Math.round(72  * scale) },
-      { hour: '18:00', occupancy: Math.round(85  * scale) },
-      { hour: '19:00', occupancy: Math.round(95  * scale) },
-      { hour: '20:00', occupancy: Math.round(88  * scale) },
-      { hour: '21:00', occupancy: Math.round(60  * scale) },
-    ];
-    return base;
-  });
+  // ── Line chart: hourly occupancy measured from sensor sessions ────────
+  readonly hourlyData = computed<HourlyPoint[]>(() =>
+    (this._usage()?.hourly ?? []).map(h => ({ hour: hourLabel(h.hour), occupancy: h.occupancyRate }))
+  );
 
   // ── Pie chart: machine types breakdown ────────────────────────────────────
   readonly machineTypes = computed<MachineTypeSegment[]>(() => {
@@ -252,6 +245,22 @@ export class AnalyticsStore {
   // ── Constructor: load data ────────────────────────────────────────────────
   constructor() {
     this.load();
+    // Re-measure occupancy whenever the admin's gym is known or the period changes.
+    effect(() => {
+      const gymId = this.adminGymStore.primaryGym()?.gymId;
+      const days  = this.periodDays();
+      if (gymId) this.loadUsage(gymId, days);
+    });
+  }
+
+  private loadUsage(gymId: string, days: number): void {
+    const { from, to } = lastDays(days);
+    this.usageApi.getGymUsage(gymId, from, to)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next:  usage => this._usage.set(usage),
+        error: () => this._usage.set(null),
+      });
   }
 
   load(): void {
@@ -277,6 +286,7 @@ export class AnalyticsStore {
   reset(): void {
     this._analyticsStats.set([]);
     this._equipments.set([]);
+    this._usage.set(null);
     this._loading.set(false);
     this._error.set(null);
   }

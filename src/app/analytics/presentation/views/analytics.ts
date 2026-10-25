@@ -88,7 +88,7 @@ export class AnalyticsComponent implements OnInit {
       [],
       ['ESTADÍSTICAS GENERALES'],
       ['Horas Totales de Uso', `${s.totalHours}h`, `${s.hoursChange > 0 ? '+' : ''}${s.hoursChange}% vs mes anterior`],
-      ['Tasa de Ocupación',    `${s.occupancy}%`,  `${s.occupancyChange > 0 ? '+' : ''}${s.occupancyChange}% vs mes anterior`],
+      ['Tasa de Ocupación',    `${s.occupancy}%`,  `${s.occupancyChange > 0 ? '+' : ''}${s.occupancyChange} pp vs mes anterior`],
       ['Pico Máximo',          `${s.peak}%`,        s.peakTime],
       ['Tiempo Inactivo',      `${s.inactive}h`,   `${s.inactiveChange}% vs mes anterior`],
       [],
