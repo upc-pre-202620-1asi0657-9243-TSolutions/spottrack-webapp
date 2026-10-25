@@ -6,6 +6,7 @@ import { ProfileApiService } from '../infrastructure/profile-api.service';
 import { ActiveGymStore } from './active-gym.store';
 import { AdminGymStore } from '../../gym/application/admin-gym.store';
 import { AnalyticsStore } from '../../analytics/application/analytics.store';
+import { UsageHeatmapStore } from '../../analytics/application/usage-heatmap.store';
 import { FinancialImpactStore } from '../../analytics/application/financial-impact.store';
 import { AlertsStore } from '../../alerts/application/alerts.store';
 import { User, UserRole } from '../domain/model/user.model';
@@ -51,6 +52,7 @@ export class AuthStore {
   private readonly activeGymStore        = inject(ActiveGymStore);
   private readonly adminGymStore         = inject(AdminGymStore);
   private readonly analyticsStore        = inject(AnalyticsStore);
+  private readonly usageHeatmapStore     = inject(UsageHeatmapStore);
   private readonly financialImpactStore  = inject(FinancialImpactStore);
   // AlertsService's constructor eagerly fires an HTTP call, whose interceptor
   // injects AuthStore — eagerly injecting AlertsStore here (like the stores
@@ -245,6 +247,7 @@ export class AuthStore {
     this.activeGymStore.reset();
     this.adminGymStore.reset();
     this.analyticsStore.reset();
+    this.usageHeatmapStore.reset();
     this.financialImpactStore.reset();
     this.injector.get(AlertsStore).reset();
     this.userSignal.set(null);
