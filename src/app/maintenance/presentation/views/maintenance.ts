@@ -62,15 +62,18 @@ export class MaintenanceComponent {
   readonly actionLoading = this.store.ticketActionLoading;
   readonly actionError   = this.store.ticketActionError;
 
-  private submitting = false;
+  // A signal, not a plain field: the effect must re-run when a submit starts.
+  // With a field, the first run returned before reading any signal, so the
+  // effect tracked nothing and the modal never closed after Start/Complete.
+  private readonly submitting = signal(false);
 
   constructor() {
     effect(() => {
-      if (!this.submitting) return;
+      if (!this.submitting()) return;
       if (this.store.ticketActionLoading()) return;
-      this.submitting = false;
+      this.submitting.set(false);
       if (!this.store.ticketActionError()) this.closeModal();
-    });
+    }, { allowSignalWrites: true });
   }
 
   ticketId(t: MaintenanceTicket): string {
@@ -123,7 +126,7 @@ export class MaintenanceComponent {
     const t = this.modalTicket();
     const technicianId = this.technicianInput().trim();
     if (!t || !technicianId) return;
-    this.submitting = true;
+    this.submitting.set(true);
     this.store.startTicket(t.id, technicianId);
   }
 
@@ -137,7 +140,7 @@ export class MaintenanceComponent {
     const notes = this.notesInput().trim();
     const cost = this.costInput();
     if (!t || !notes || cost === null || cost < 0) return;
-    this.submitting = true;
+    this.submitting.set(true);
     this.store.completeTicket(t.id, t.maintenanceId, notes, cost);
   }
 
