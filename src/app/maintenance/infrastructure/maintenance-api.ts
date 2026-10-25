@@ -11,6 +11,14 @@ import { MaintenanceTicketResource, MaintenanceLogResource } from './maintenance
 import { MaintenanceTicketAssembler } from './maintenance-ticket-assembler';
 import { environment } from '../../../environments/environment';
 
+/** Editable ticket fields; technicianId reassigns an in-progress ticket. */
+export interface TicketChanges {
+  description:   string;
+  priority:      TicketPriority;
+  type:          TicketType;
+  technicianId?: string | null;
+}
+
 @Injectable({ providedIn: 'root' })
 export class MaintenanceApi extends BaseApi {
   private readonly ticketEndpoint: MaintenanceTicketApiEndpoint;
@@ -62,6 +70,11 @@ export class MaintenanceApi extends BaseApi {
     return this.http.patch<MaintenanceTicketResource>(
       `${this.ticketsUrl}/${ticketId}/assign/${technicianId}`, {}
     ).pipe(map(r => this.ticketAssembler.toEntityFromResource(r)));
+  }
+
+  updateTicket(ticketId: string, changes: TicketChanges): Observable<MaintenanceTicket> {
+    return this.http.patch<MaintenanceTicketResource>(`${this.ticketsUrl}/${ticketId}`, changes)
+      .pipe(map(r => this.ticketAssembler.toEntityFromResource(r)));
   }
 
   modifyTicketStatus(ticketId: string, status: string): Observable<any> {

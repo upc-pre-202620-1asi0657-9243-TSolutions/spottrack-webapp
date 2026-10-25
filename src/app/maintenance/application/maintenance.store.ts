@@ -2,7 +2,7 @@ import { computed, DestroyRef, inject, Injectable, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { switchMap } from 'rxjs/operators';
-import { MaintenanceApi } from '../infrastructure/maintenance-api';
+import { MaintenanceApi, TicketChanges } from '../infrastructure/maintenance-api';
 import { MaintenanceTicket, TicketStatus, TicketPriority, TicketType } from '../domain/model/maintenance-ticket.entity';
 import { MaintenanceSchedule, TaskType, ScheduleStatus } from '../domain/model/maintenance-schedule.entity';
 import { MaintenanceLogResource } from '../infrastructure/maintenance-response';
@@ -23,6 +23,9 @@ export class MaintenanceStore {
 
   private readonly ticketActionLoadingSignal = signal(false);
   private readonly ticketActionErrorSignal   = signal<string | null>(null);
+  // Inline edits get their own slots so they never trip the start/complete dialog logic.
+  private readonly ticketSavingSignal    = signal(false);
+  private readonly ticketSaveErrorSignal = signal<string | null>(null);
 
   readonly tickets       = this.ticketsSignal.asReadonly();
   readonly schedules     = this.schedulesSignal.asReadonly();
@@ -71,6 +74,28 @@ export class MaintenanceStore {
         },
       });
   }
+
+  readonly ticketSaving    = this.ticketSavingSignal.asReadonly();
+  readonly ticketSaveError = this.ticketSaveErrorSignal.asReadonly();
+
+  updateTicket(ticketId: string, changes: TicketChanges): void {
+    this.ticketSavingSignal.set(true);
+    this.ticketSaveErrorSignal.set(null);
+    this.api.updateTicket(ticketId, changes)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: updated => {
+          this.replaceTicket(updated);
+          this.ticketSavingSignal.set(false);
+        },
+        error: err => {
+          this.ticketSaveErrorSignal.set(this.formatError(err, 'Failed to update ticket'));
+          this.ticketSavingSignal.set(false);
+        },
+      });
+  }
+
+  clearTicketSaveError(): void { this.ticketSaveErrorSignal.set(null); }
 
   /** Registers a completion log entry (accountability record) before resolving the ticket. */
   completeTicket(ticketId: string, maintenanceId: string, notes: string, cost: number): void {
