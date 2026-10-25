@@ -820,7 +820,20 @@
         "reps": "Repeticiones",
         "setsAbbrev": "series",
         "repsAbbrev": "reps",
-        "submit": "Agregar"
+        "submit": "Agregar",
+        "subtitle": "Será el ejercicio #{{order}} de esta rutina",
+        "namePlaceholder": "Ej. Press de banca",
+        "error": "No se pudo agregar el ejercicio. Inténtalo de nuevo."
+      },
+      "eyebrow": "Rutina",
+      "blocksSubtitle": "Ejercicios en el orden en que los realizas",
+      "breakdownTitle": "Mezcla de ejercicios",
+      "progress": "{{done}} de {{total}} ejercicios hechos",
+      "progressHint": "Marca cada ejercicio al terminarlo y luego completa la sesión.",
+      "exercisesDone": "{{count}} ejercicios hechos",
+      "facts": {
+        "exercises": "Ejercicios",
+        "volume": "Volumen total"
       }
     },
     "modal": {

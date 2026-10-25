@@ -1,124 +1,214 @@
-<div class="detail-page">
+<div class="rd-page">
 
-  <div class="breadcrumb">
-    <a routerLink="/routines" class="back-link">
-      <mat-icon>arrow_back</mat-icon>
-      {{ 'routines.title' | translate }}
-    </a>
-  </div>
+  <a routerLink="/routines" class="rd-back">
+    <mat-icon>arrow_back</mat-icon>
+    {{ 'routines.title' | translate }}
+  </a>
 
-  @if (routine) {
-    <div class="routine-header">
-      <div>
-        <h1 class="routine-name">{{ routine.routineName }}</h1>
-      </div>
-      <div class="blocks-count">
-        <mat-icon>fitness_center</mat-icon>
-        <span>{{ routine.exerciseBlockCount }} {{ 'routines.card.exercises' | translate }}</span>
-      </div>
-    </div>
+  @if (routine; as r) {
 
-    <div class="session-section">
-      @if (activeSession(); as session) {
-        <span class="tag tag--level">{{ 'routines.session.activeLabel' | translate }}</span>
-        <button class="btn-session btn-session--complete" [disabled]="sessionActionLoading()" (click)="completeSession()">
-          @if (sessionActionLoading()) { <mat-icon class="spin">refresh</mat-icon> }
-          {{ 'routines.session.complete' | translate }}
-        </button>
-        <button class="btn-session btn-session--missed" [disabled]="sessionActionLoading()" (click)="markMissed()">
-          @if (sessionActionLoading()) { <mat-icon class="spin">refresh</mat-icon> }
-          {{ 'routines.session.missed' | translate }}
-        </button>
-      } @else {
-        <button class="btn-session btn-session--start" [disabled]="sessionActionLoading()" (click)="startSession()">
-          <mat-icon [class.spin]="sessionActionLoading()">{{ sessionActionLoading() ? 'refresh' : 'play_arrow' }}</mat-icon>
-          {{ 'routines.session.start' | translate }}
-        </button>
-      }
-    </div>
+    <!-- ── Summary ─────────────────────────────────────────────────────── -->
+    <section class="rd-card rd-summary" [class.rd-summary--active]="activeSession()">
+      <div class="rd-summary__main">
+        <div class="rd-summary__title">
+          <span class="rd-summary__icon"><mat-icon>fitness_center</mat-icon></span>
+          <div>
+            <p class="rd-eyebrow">{{ 'routines.detail.eyebrow' | translate }}</p>
+            <div class="rd-summary__name-row">
+              <h1 class="rd-summary__name">{{ r.routineName }}</h1>
+              @if (activeSession()) {
+                <span class="rd-badge rd-badge--active"><i class="rd-pulse"></i>{{ 'routines.session.activeLabel' | translate }}</span>
+              }
+            </div>
+          </div>
+        </div>
 
-    @if (sessionActionError()) {
-      <div class="error-banner">{{ sessionActionError() }}</div>
-    }
-
-    <div class="blocks-section">
-      <div class="section-header">
-        <h2 class="section-title">{{ 'routines.detail.blocksTitle' | translate }}</h2>
-        <button class="btn-add-block" (click)="openAddBlock()">
-          <mat-icon>add</mat-icon>
-          {{ 'routines.detail.addBlock.title' | translate }}
-        </button>
+        <div class="rd-summary__actions">
+          @if (activeSession()) {
+            <button class="btn btn--danger-outline" [disabled]="sessionActionLoading()" (click)="markMissed()">
+              <mat-icon>event_busy</mat-icon>
+              {{ 'routines.session.missed' | translate }}
+            </button>
+            <button class="btn btn--success" [disabled]="sessionActionLoading()" (click)="completeSession()">
+              <mat-icon [class.spin]="sessionActionLoading()">{{ sessionActionLoading() ? 'autorenew' : 'check' }}</mat-icon>
+              {{ 'routines.session.complete' | translate }}
+            </button>
+          } @else {
+            <button class="btn btn--primary" [disabled]="sessionActionLoading()" (click)="startSession()">
+              <mat-icon [class.spin]="sessionActionLoading()">{{ sessionActionLoading() ? 'autorenew' : 'play_arrow' }}</mat-icon>
+              {{ 'routines.session.start' | translate }}
+            </button>
+          }
+        </div>
       </div>
 
-      @if (loading()) {
-        <div class="loading-state">
-          <mat-icon class="spin">refresh</mat-icon>
-          {{ 'routines.loading' | translate }}
+      @if (activeSession()) {
+        <div class="rd-progress">
+          <div class="rd-progress__label">
+            <span>{{ 'routines.detail.progress' | translate: { done: doneCount(), total: blocks().length } }}</span>
+            <strong>{{ progressPct() }}%</strong>
+          </div>
+          <span class="rd-meter"><span class="rd-meter__fill" [style.width.%]="progressPct()"></span></span>
+          <p class="rd-progress__hint">{{ 'routines.detail.progressHint' | translate }}</p>
         </div>
       }
 
-      @if (!loading() && blocks().length === 0) {
-        <p class="empty-msg">{{ 'routines.detail.noBlocks' | translate }}</p>
-      }
+      <dl class="rd-facts">
+        <div class="rd-fact">
+          <dt>{{ 'routines.detail.facts.exercises' | translate }}</dt>
+          <dd>{{ blocks().length }}</dd>
+        </div>
+        <div class="rd-fact">
+          <dt>{{ 'routines.detail.facts.volume' | translate }}</dt>
+          <dd>{{ totalSets() }} {{ 'routines.detail.addBlock.setsAbbrev' | translate }} · {{ totalReps() }} {{ 'routines.detail.addBlock.repsAbbrev' | translate }}</dd>
+        </div>
+        <div class="rd-fact">
+          <dt>{{ 'routines.card.sessions' | translate }}</dt>
+          <dd>{{ completedCount() }}</dd>
+        </div>
+        <div class="rd-fact">
+          <dt>{{ 'routines.card.lastTrained' | translate }}</dt>
+          <dd>{{ lastTrainedAt() ? (lastTrainedAt() | date: 'mediumDate') : ('routines.card.never' | translate) }}</dd>
+        </div>
+      </dl>
+    </section>
 
-      <div class="blocks-list">
-        @for (block of blocks(); track block.id) {
-          <div class="block-card" [class.block-card--completed]="isBlockCompleted(block.id)">
-            <span class="block-order">{{ block.order }}</span>
-            @if (activeSession()) {
-              <input
-                type="checkbox"
-                class="block-checkbox"
-                [checked]="isBlockCompleted(block.id)"
-                (change)="toggleBlockCompletion(block.id)"
-              />
+    @if (sessionActionError()) {
+      <div class="rd-notice rd-notice--danger">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ sessionActionError() }}</span>
+      </div>
+    }
+
+    <div class="rd-columns">
+
+      <!-- ── Exercise blocks ──────────────────────────────────────────── -->
+      <section class="rd-card rd-blocks">
+        <div class="rd-card__head">
+          <div>
+            <h2 class="rd-section-title">{{ 'routines.detail.blocksTitle' | translate }}</h2>
+            <p class="rd-section-subtitle">{{ 'routines.detail.blocksSubtitle' | translate }}</p>
+          </div>
+          <button class="btn btn--secondary btn--sm" (click)="openAddBlock()">
+            <mat-icon>add</mat-icon>
+            {{ 'routines.detail.addBlock.title' | translate }}
+          </button>
+        </div>
+
+        @if (loading()) {
+          <div class="rd-state">
+            <mat-icon class="spin">autorenew</mat-icon>
+            <p>{{ 'routines.loading' | translate }}</p>
+          </div>
+        } @else if (blocks().length === 0) {
+          <div class="rd-state">
+            <span class="rd-state__icon"><mat-icon>playlist_add</mat-icon></span>
+            <p>{{ 'routines.detail.noBlocks' | translate }}</p>
+            <button class="btn btn--primary btn--sm" (click)="openAddBlock()">
+              <mat-icon>add</mat-icon>
+              {{ 'routines.detail.addBlock.title' | translate }}
+            </button>
+          </div>
+        } @else {
+          <ol class="rd-block-list">
+            @for (block of blocks(); track block.id) {
+              <li class="rd-block" [class.rd-block--done]="isBlockCompleted(block.id)">
+                @if (activeSession()) {
+                  <button class="rd-check" [class.rd-check--on]="isBlockCompleted(block.id)"
+                          [attr.aria-pressed]="isBlockCompleted(block.id)"
+                          (click)="toggleBlockCompletion(block.id)">
+                    <mat-icon>check</mat-icon>
+                  </button>
+                } @else {
+                  <span class="rd-block__order">{{ block.order }}</span>
+                }
+                <span class="rd-block__type rd-block__type--{{ block.exerciseType.toLowerCase() }}">
+                  <mat-icon>{{ typeIcon(block.exerciseType) }}</mat-icon>
+                </span>
+                <div class="rd-block__info">
+                  <p class="rd-block__name">{{ block.exerciseName }}</p>
+                  <p class="rd-block__meta">{{ 'routines.exerciseType.' + block.exerciseType | translate }}</p>
+                </div>
+                <span class="rd-block__volume">
+                  <strong>{{ block.sets }}</strong> × <strong>{{ block.reps }}</strong>
+                  <small>{{ 'routines.detail.addBlock.setsAbbrev' | translate }} × {{ 'routines.detail.addBlock.repsAbbrev' | translate }}</small>
+                </span>
+              </li>
             }
-            <div class="block-info">
-              <p class="block-exercise">{{ block.exerciseName }}</p>
-            </div>
-            <div class="block-meta">
-              <span class="meta-badge">{{ 'routines.exerciseType.' + block.exerciseType | translate }}</span>
-              <span class="meta-badge">{{ block.sets }} {{ 'routines.detail.addBlock.setsAbbrev' | translate }} × {{ block.reps }} {{ 'routines.detail.addBlock.repsAbbrev' | translate }}</span>
-            </div>
-          </div>
+          </ol>
         }
-      </div>
+      </section>
+
+      <aside class="rd-side">
+
+        <!-- ── Type breakdown ─────────────────────────────────────────── -->
+        <section class="rd-card rd-breakdown">
+          <h2 class="rd-section-title">{{ 'routines.detail.breakdownTitle' | translate }}</h2>
+          @for (t of typeBreakdown(); track t.type) {
+            <div class="rd-breakdown__row">
+              <div class="rd-breakdown__label">
+                <span><mat-icon class="rd-breakdown__icon rd-block__type--{{ t.type.toLowerCase() }}">{{ typeIcon(t.type) }}</mat-icon>
+                  {{ 'routines.exerciseType.' + t.type | translate }}</span>
+                <span class="rd-breakdown__count">{{ t.count }}</span>
+              </div>
+              <span class="rd-meter"><span class="rd-meter__fill rd-meter__fill--{{ t.type.toLowerCase() }}" [style.width.%]="t.pct"></span></span>
+            </div>
+          }
+        </section>
+
+        <!-- ── Session history ────────────────────────────────────────── -->
+        <section class="rd-card rd-history">
+          <h2 class="rd-section-title">{{ 'routines.session.history.title' | translate }}</h2>
+
+          @if (routineSessions().length === 0) {
+            <p class="rd-history__empty">{{ 'routines.session.history.empty' | translate }}</p>
+          } @else {
+            <ul class="rd-timeline">
+              @for (session of pagedSessions(); track session.id) {
+                <li class="rd-timeline__item rd-timeline__item--{{ session.status.toLowerCase() }}">
+                  <span class="rd-timeline__dot"></span>
+                  <div class="rd-timeline__body">
+                    <span class="rd-timeline__date">{{ session.startedAt | date: 'EEE d MMM, HH:mm' }}</span>
+                    <span class="rd-timeline__meta">
+                      {{ 'routines.detail.exercisesDone' | translate: { count: session.completedExerciseBlockIds.length } }}
+                    </span>
+                  </div>
+                  <span class="rd-status rd-status--{{ session.status.toLowerCase() }}">
+                    {{ 'routines.session.status.' + session.status | translate }}
+                  </span>
+                </li>
+              }
+            </ul>
+            @if (routineSessions().length > 5) {
+              <app-paginator [total]="routineSessions().length" [(page)]="historyPage" [(pageSize)]="historyPageSize" />
+            }
+          }
+        </section>
+
+      </aside>
     </div>
 
-    <div class="history-section">
-      <h2 class="section-title">{{ 'routines.session.history.title' | translate }}</h2>
-
-      @if (routineSessions().length === 0) {
-        <p class="empty-msg">{{ 'routines.session.history.empty' | translate }}</p>
-      }
-
-      <div class="history-list">
-        @for (session of routineSessions(); track session.id) {
-          <div class="history-item">
-            <span class="history-date">{{ session.startedAt | date:'medium' }}</span>
-            <span class="meta-badge" [ngClass]="'meta-badge--' + session.status.toLowerCase()">
-              {{ 'routines.session.status.' + session.status | translate }}
-            </span>
-          </div>
-        }
-      </div>
-    </div>
   } @else {
-    <div class="not-found">
-      <mat-icon>search_off</mat-icon>
+    <div class="rd-card rd-state rd-state--page">
+      <span class="rd-state__icon"><mat-icon>search_off</mat-icon></span>
       <p>{{ 'routines.detail.notFound' | translate }}</p>
+      <a routerLink="/routines" class="btn btn--secondary btn--sm">{{ 'routines.title' | translate }}</a>
     </div>
   }
 
 </div>
 
-<!-- ADD EXERCISE BLOCK MODAL -->
+<!-- ── Add exercise modal ────────────────────────────────────────────────── -->
 @if (showAddBlock()) {
   <div class="modal-backdrop" (click)="closeAddBlock()">
     <div class="modal-card" (click)="$event.stopPropagation()">
 
       <div class="modal-header">
-        <h2 class="modal-title">{{ 'routines.detail.addBlock.title' | translate }}</h2>
+        <span class="modal-header__icon"><mat-icon>add_task</mat-icon></span>
+        <div class="modal-header__text">
+          <h2 class="modal-title">{{ 'routines.detail.addBlock.title' | translate }}</h2>
+          <p class="modal-subtitle">{{ 'routines.detail.addBlock.subtitle' | translate: { order: blocks().length + 1 } }}</p>
+        </div>
         <button class="modal-close-btn" (click)="closeAddBlock()">
           <mat-icon>close</mat-icon>
         </button>
@@ -126,38 +216,45 @@
 
       <div class="modal-body">
         <div class="field-group">
-          <label class="field-label">{{ 'routines.detail.addBlock.name' | translate }}</label>
-          <input type="text" class="field-input" [(ngModel)]="newExerciseName" />
+          <label class="field-label" for="exercise-name">{{ 'routines.detail.addBlock.name' | translate }}</label>
+          <input id="exercise-name" type="text" class="field-input" [(ngModel)]="newExerciseName"
+                 [placeholder]="'routines.detail.addBlock.namePlaceholder' | translate" />
         </div>
 
         <div class="field-group">
-          <label class="field-label">{{ 'routines.detail.addBlock.type' | translate }}</label>
-          <select class="field-select" [(ngModel)]="newExerciseType">
+          <span class="field-label">{{ 'routines.detail.addBlock.type' | translate }}</span>
+          <div class="type-picker">
             @for (t of exerciseTypes; track t) {
-              <option [value]="t">{{ 'routines.exerciseType.' + t | translate }}</option>
+              <button type="button" class="type-option" [class.type-option--on]="newExerciseType === t" (click)="newExerciseType = t">
+                <mat-icon>{{ typeIcon(t) }}</mat-icon>
+                {{ 'routines.exerciseType.' + t | translate }}
+              </button>
             }
-          </select>
+          </div>
         </div>
 
         <div class="field-row">
           <div class="field-group">
-            <label class="field-label">{{ 'routines.detail.addBlock.sets' | translate }}</label>
-            <input type="number" class="field-input" min="1" [(ngModel)]="newSets" />
+            <label class="field-label" for="exercise-sets">{{ 'routines.detail.addBlock.sets' | translate }}</label>
+            <input id="exercise-sets" type="number" class="field-input" min="1" [(ngModel)]="newSets" />
           </div>
           <div class="field-group">
-            <label class="field-label">{{ 'routines.detail.addBlock.reps' | translate }}</label>
-            <input type="number" class="field-input" min="1" [(ngModel)]="newReps" />
+            <label class="field-label" for="exercise-reps">{{ 'routines.detail.addBlock.reps' | translate }}</label>
+            <input id="exercise-reps" type="number" class="field-input" min="1" [(ngModel)]="newReps" />
           </div>
         </div>
 
         @if (blockError()) {
-          <p class="error-banner">{{ blockError() }}</p>
+          <div class="rd-notice rd-notice--danger">
+            <mat-icon>error_outline</mat-icon>
+            <span>{{ blockError()! | translate }}</span>
+          </div>
         }
       </div>
 
       <div class="modal-footer">
-        <button class="btn-cancel" (click)="closeAddBlock()">{{ 'routines.modal.cancel' | translate }}</button>
-        <button class="btn-create" [disabled]="!newExerciseName.trim() || newSets <= 0 || newReps <= 0" (click)="submitAddBlock()">
+        <button class="btn btn--secondary" (click)="closeAddBlock()">{{ 'routines.modal.cancel' | translate }}</button>
+        <button class="btn btn--primary" [disabled]="!newExerciseName.trim() || newSets <= 0 || newReps <= 0" (click)="submitAddBlock()">
           {{ 'routines.detail.addBlock.submit' | translate }}
         </button>
       </div>

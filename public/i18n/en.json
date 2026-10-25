@@ -820,7 +820,20 @@
         "reps": "Reps",
         "setsAbbrev": "sets",
         "repsAbbrev": "reps",
-        "submit": "Add"
+        "submit": "Add",
+        "subtitle": "It will be exercise #{{order}} of this routine",
+        "namePlaceholder": "e.g. Bench Press",
+        "error": "Could not add the exercise. Please try again."
+      },
+      "eyebrow": "Routine",
+      "blocksSubtitle": "Exercises in the order you perform them",
+      "breakdownTitle": "Exercise mix",
+      "progress": "{{done}} of {{total}} exercises done",
+      "progressHint": "Tick each exercise as you finish it, then complete the session.",
+      "exercisesDone": "{{count}} exercises done",
+      "facts": {
+        "exercises": "Exercises",
+        "volume": "Total volume"
       }
     },
     "modal": {
