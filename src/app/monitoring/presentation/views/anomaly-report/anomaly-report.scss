@@ -181,7 +181,8 @@
 // Step 1 — reservation cards
 .ar-reservations {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  // minmax(0, …): long machine names must ellipsize, not widen the column
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
 
@@ -189,6 +190,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  min-width: 0;
   padding: 12px;
   border: 1px solid var(--border-strong);
   border-radius: var(--radius);
@@ -522,7 +524,7 @@
 @media (max-width: 600px) {
   .ar-page { padding: 16px 16px 40px; }
   .ar-step { padding: 18px 16px; }
-  .ar-reservations { grid-template-columns: 1fr; }
+  .ar-reservations { grid-template-columns: minmax(0, 1fr); }
   .ar-categories { grid-template-columns: repeat(2, 1fr); }
   .ar-form__footer { padding: 14px 16px; }
   .ar-form__actions { width: 100%; }
