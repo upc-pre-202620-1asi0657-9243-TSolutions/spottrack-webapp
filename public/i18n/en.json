@@ -942,7 +942,10 @@
         "assigned": "Assigned to {{name}}",
         "completed": "Completed with notes",
         "hint": "Completion notes appear here when the ticket is completed."
-      }
+      },
+      "assign": "Assign technician",
+      "noTechnicians": "No technicians yet — add them in Settings",
+      "needsTechnician": "Assign a technician before moving this ticket to In progress."
     },
     "view": {
       "label": "Ticket view",

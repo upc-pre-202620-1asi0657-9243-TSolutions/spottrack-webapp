@@ -161,6 +161,7 @@
 
   mat-icon { font-size: 18px; width: 18px; height: 18px; flex-shrink: 0; }
   &--danger { margin: 18px 0 0; background: var(--danger-soft); color: var(--danger); }
+  &--warning { background: var(--warning-soft); color: var(--warning); }
 }
 
 // ── Properties ───────────────────────────────────────────────────────────────
@@ -248,6 +249,7 @@
   }
 
   &--empty { color: var(--text-muted); }
+  &--attention { border-color: var(--warning); background: var(--warning-soft); color: var(--warning); }
   &--link { color: var(--text); }
 }
 
@@ -292,9 +294,19 @@
 .status-pill {
   display: inline-flex;
   align-items: center;
+  gap: 2px;
   height: 28px;
-  padding: 0 10px;
+  padding: 0 6px 0 10px;
+  border: none;
   border-radius: var(--radius-sm);
+  font-family: inherit;
+  cursor: pointer;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  &:disabled { cursor: default; padding-right: 10px; }
+  &:hover:not(:disabled) { filter: brightness(.96); }
+  &:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
   font-size: 12px;
   font-weight: 700;
   letter-spacing: .04em;
@@ -303,27 +315,6 @@
   &--open        { background: var(--danger-soft);  color: var(--danger); }
   &--in_progress { background: var(--warning-soft); color: var(--warning); }
   &--resolved    { background: var(--success-soft); color: var(--success); }
-}
-
-.step-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-sm);
-  background: var(--surface);
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: background .15s, color .15s, border-color .15s;
-
-  mat-icon { font-size: 18px; width: 18px; height: 18px; }
-
-  &:hover { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-text); }
-  &--done:hover { border-color: var(--success); background: var(--success-soft); color: var(--success); }
-  &:focus-visible { outline: none; box-shadow: var(--focus-ring); }
 }
 
 // ── Description ──────────────────────────────────────────────────────────────

@@ -45,6 +45,13 @@
         <span class="tdp-kind"><mat-icon>{{ typeIcon(ticket().type) }}</mat-icon>{{ 'maintenance.detail.kind' | translate }}</span>
         <h1 class="tdp-title">{{ code() }}: {{ equipment()?.name ?? ('maintenance.detail.unknownMachine' | translate) }}</h1>
 
+        @if (needsTechnician() && !ticket().assignee) {
+          <div class="tdp-notice tdp-notice--warning">
+            <mat-icon>person_add</mat-icon>
+            <span>{{ 'maintenance.detail.needsTechnician' | translate }}</span>
+          </div>
+        }
+
         @if (isResolved()) {
           <div class="tdp-notice">
             <mat-icon>lock</mat-icon>
@@ -57,20 +64,19 @@
           <div class="tdp-prop">
             <dt><mat-icon>radio_button_checked</mat-icon>{{ 'maintenance.list.status' | translate }}</dt>
             <dd>
-              <span class="status-pill status-pill--{{ ticket().status.toLowerCase() }}">
+              <button type="button" class="status-pill status-pill--{{ ticket().status.toLowerCase() }}"
+                      [disabled]="isResolved()" [matMenuTriggerFor]="statusMenu">
                 {{ 'maintenance.status.' + ticket().status | translate }}
-              </span>
-              @if (ticket().status === 'OPEN') {
-                <button type="button" class="step-btn" (click)="startRequested.emit(ticket())"
-                        [title]="'maintenance.action.start' | translate">
-                  <mat-icon>play_arrow</mat-icon>
-                </button>
-              } @else if (ticket().status === 'IN_PROGRESS') {
-                <button type="button" class="step-btn step-btn--done" (click)="completeRequested.emit(ticket())"
-                        [title]="'maintenance.action.complete' | translate">
-                  <mat-icon>check</mat-icon>
-                </button>
-              }
+                @if (!isResolved()) { <mat-icon>arrow_drop_down</mat-icon> }
+              </button>
+              <mat-menu #statusMenu="matMenu">
+                @for (st of statuses; track st) {
+                  <button mat-menu-item [disabled]="st === ticket().status" (click)="moveTo(st)">
+                    <mat-icon>{{ st === ticket().status ? 'check' : 'arrow_forward' }}</mat-icon>
+                    <span>{{ 'maintenance.status.' + st | translate }}</span>
+                  </button>
+                }
+              </mat-menu>
             </dd>
           </div>
 
@@ -78,30 +84,38 @@
           <div class="tdp-prop">
             <dt><mat-icon>person_outline</mat-icon>{{ 'maintenance.assignedTo' | translate }}</dt>
             <dd>
-              @if (ticket().status === 'IN_PROGRESS') {
-                <button type="button" class="prop-btn" [matMenuTriggerFor]="techMenu">
-                  <span class="avatar">{{ technicianName(technicianId()).charAt(0).toUpperCase() }}</span>
-                  {{ technicianName(technicianId()) }}
+              @if (isResolved()) {
+                @if (technicianId()) {
+                  <span class="prop-static">
+                    <span class="avatar">{{ technicianName(technicianId()).charAt(0).toUpperCase() }}</span>
+                    {{ technicianName(technicianId()) }}
+                  </span>
+                } @else {
+                  <span class="prop-static prop-static--muted">—</span>
+                }
+              } @else {
+                <button type="button" class="prop-btn" [class.prop-btn--empty]="!ticket().assignee"
+                        [class.prop-btn--attention]="needsTechnician() && !ticket().assignee"
+                        [matMenuTriggerFor]="techMenu">
+                  @if (ticket().assignee) {
+                    <span class="avatar">{{ technicianName(ticket().assignee).charAt(0).toUpperCase() }}</span>
+                    <span class="prop-btn__text">{{ technicianName(ticket().assignee) }}</span>
+                  } @else {
+                    <mat-icon>person_add</mat-icon>
+                    {{ 'maintenance.detail.assign' | translate }}
+                  }
                   <mat-icon class="prop-btn__caret">expand_more</mat-icon>
                 </button>
                 <mat-menu #techMenu="matMenu">
                   @for (tech of technicianStore.technicians(); track tech.id) {
-                    <button mat-menu-item (click)="reassign(tech.id)">
+                    <button mat-menu-item (click)="assign(tech.id)">
                       <mat-icon>{{ tech.id === ticket().assignee ? 'check' : 'person' }}</mat-icon>
                       <span>{{ tech.name }}</span>
                     </button>
+                  } @empty {
+                    <button mat-menu-item disabled>{{ 'maintenance.detail.noTechnicians' | translate }}</button>
                   }
                 </mat-menu>
-              } @else if (technicianId()) {
-                <span class="prop-static">
-                  <span class="avatar">{{ technicianName(technicianId()).charAt(0).toUpperCase() }}</span>
-                  {{ technicianName(technicianId()) }}
-                </span>
-              } @else {
-                <button type="button" class="prop-btn prop-btn--empty" (click)="startRequested.emit(ticket())">
-                  <mat-icon>person_add</mat-icon>
-                  {{ 'maintenance.detail.assignToStart' | translate }}
-                </button>
               }
             </dd>
           </div>

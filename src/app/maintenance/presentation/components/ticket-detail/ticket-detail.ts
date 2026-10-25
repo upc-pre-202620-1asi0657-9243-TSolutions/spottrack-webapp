@@ -54,13 +54,16 @@ export class TicketDetailComponent {
   readonly ticket  = input.required<MaintenanceTicket>();
   readonly hasPrev = input(false);
   readonly hasNext = input(false);
+  /** True when a move to In progress was refused because nobody is assigned yet. */
+  readonly needsTechnician = input(false);
 
   readonly closed            = output<void>();
-  readonly startRequested    = output<MaintenanceTicket>();
-  readonly completeRequested = output<MaintenanceTicket>();
+  /** The parent applies the move rules (completion log, technician required). */
+  readonly statusChange      = output<TicketStatus>();
   readonly prev              = output<void>();
   readonly next              = output<void>();
 
+  readonly statuses   = [TicketStatus.OPEN, TicketStatus.IN_PROGRESS, TicketStatus.RESOLVED];
   readonly priorities = Object.values(TicketPriority);
   readonly types      = Object.values(TicketType);
 
@@ -164,8 +167,12 @@ export class TicketDetailComponent {
     if (type !== this.ticket().type) this.save({ type });
   }
 
-  reassign(technicianId: string): void {
+  assign(technicianId: string): void {
     if (technicianId !== this.ticket().assignee) this.save({ technicianId });
+  }
+
+  moveTo(status: TicketStatus): void {
+    if (status !== this.ticket().status) this.statusChange.emit(status);
   }
 
   editDescription(): void {

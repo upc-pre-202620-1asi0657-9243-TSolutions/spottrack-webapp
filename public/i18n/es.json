@@ -942,7 +942,10 @@
         "assigned": "Asignado a {{name}}",
         "completed": "Completado con notas",
         "hint": "Las notas de cierre aparecen aquí cuando se completa el ticket."
-      }
+      },
+      "assign": "Asignar técnico",
+      "noTechnicians": "Aún no hay técnicos — agrégalos en Configuración",
+      "needsTechnician": "Asigna un técnico antes de mover este ticket a En progreso."
     },
     "view": {
       "label": "Vista de tickets",
