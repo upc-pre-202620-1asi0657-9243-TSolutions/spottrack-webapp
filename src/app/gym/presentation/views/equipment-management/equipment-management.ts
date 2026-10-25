@@ -175,7 +175,7 @@ export class EquipmentManagementComponent {
       { label: 'Edit',          icon: 'edit',         action: () => this.navigateToEdit(row) },
       { label: 'Decommission',  icon: 'delete',       action: () => this.decommissionEquipment(row.uuid) },
       { label: '', icon: '', separator: true, action: () => {} },
-      { label: 'New ticket',    icon: 'build',        action: () => this.router.navigate(['/maintenance/new-ticket']) },
+      { label: 'New ticket',    icon: 'build',        action: () => this.router.navigate(['/maintenance/new-ticket'], { queryParams: { equipment: row.uuid } }) },
       { label: 'Copy ID',       icon: 'content_copy', action: () => navigator.clipboard.writeText(row.uuid) },
     ];
   }
