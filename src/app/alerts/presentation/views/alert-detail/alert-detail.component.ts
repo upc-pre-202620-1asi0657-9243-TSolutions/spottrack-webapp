@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AlertsStore } from '../../../application/alerts.store';
 import { AppAlert } from '../../../application/alerts.service';
+import { AlertTone, alertTone } from '../../alert-tone';
 
 @Component({
   selector: 'app-alert-detail',
@@ -23,6 +24,8 @@ export class AlertDetailComponent {
     const id = this.route.snapshot.paramMap.get('id');
     return this.store.alerts().find(a => a.id === id);
   }
+
+  tone(alert: AppAlert): AlertTone { return alertTone(alert); }
 
   resolveTitle(alert: AppAlert): string {
     return alert.titleKey ? this.translate.instant(alert.titleKey) : (alert.title ?? '');
