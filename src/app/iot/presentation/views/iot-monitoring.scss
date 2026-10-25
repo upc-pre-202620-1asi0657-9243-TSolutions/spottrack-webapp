@@ -236,6 +236,13 @@
   position: relative;
 }
 
+.iot-card__footer {
+  padding: 10px 16px;
+  border-top: 1px solid var(--border);
+}
+
+.tracked-pager { margin-top: 12px; }
+
 .iot-card__header {
   padding: 16px 24px;
   border-bottom: 1px solid var(--border);
