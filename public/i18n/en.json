@@ -779,7 +779,14 @@
     "loading": "Loading...",
     "empty": "No routines yet — create your first one.",
     "card": {
-      "exercises": "exercises"
+      "exercises": "exercises",
+      "new": "New",
+      "progress": "Session progress",
+      "sessions": "Sessions completed",
+      "lastTrained": "Last trained",
+      "never": "Never",
+      "open": "View routine",
+      "continue": "Continue session"
     },
     "session": {
       "start": "Start Routine",
@@ -822,7 +829,34 @@
       "name": "Routine Name",
       "namePlaceholder": "e.g. Upper Body Day A",
       "cancel": "Cancel",
-      "create": "Create Routine"
+      "create": "Create Routine",
+      "suggestionsLabel": "Or start from an idea",
+      "suggestion": {
+        "upper": "Upper Body",
+        "lower": "Lower Body",
+        "full": "Full Body",
+        "cardio": "Cardio & Core"
+      }
+    },
+    "stats": {
+      "routines": "Routines",
+      "exercises": "Exercises planned",
+      "completed": "Sessions completed",
+      "rate": "Completion rate"
+    },
+    "week": {
+      "title": "Last 7 days",
+      "summary": "{{sessions}} sessions completed on {{days}} of 7 days"
+    },
+    "filter": {
+      "all": "All",
+      "active": "In progress",
+      "new": "Not started"
+    },
+    "emptyState": {
+      "title": "No routines yet",
+      "filteredTitle": "Nothing matches",
+      "filteredDesc": "Try another search or filter."
     }
   },
   "profile": {

@@ -779,7 +779,14 @@
     "loading": "Cargando...",
     "empty": "Aún no tienes rutinas — crea la primera.",
     "card": {
-      "exercises": "ejercicios"
+      "exercises": "ejercicios",
+      "new": "Nueva",
+      "progress": "Progreso de la sesión",
+      "sessions": "Sesiones completadas",
+      "lastTrained": "Último entreno",
+      "never": "Nunca",
+      "open": "Ver rutina",
+      "continue": "Continuar sesión"
     },
     "session": {
       "start": "Iniciar Rutina",
@@ -822,7 +829,34 @@
       "name": "Nombre de la Rutina",
       "namePlaceholder": "Ej. Día A - Tren Superior",
       "cancel": "Cancelar",
-      "create": "Crear Rutina"
+      "create": "Crear Rutina",
+      "suggestionsLabel": "O empieza con una idea",
+      "suggestion": {
+        "upper": "Tren Superior",
+        "lower": "Tren Inferior",
+        "full": "Cuerpo Completo",
+        "cardio": "Cardio y Core"
+      }
+    },
+    "stats": {
+      "routines": "Rutinas",
+      "exercises": "Ejercicios planificados",
+      "completed": "Sesiones completadas",
+      "rate": "Tasa de cumplimiento"
+    },
+    "week": {
+      "title": "Últimos 7 días",
+      "summary": "{{sessions}} sesiones completadas en {{days}} de 7 días"
+    },
+    "filter": {
+      "all": "Todas",
+      "active": "En progreso",
+      "new": "Sin iniciar"
+    },
+    "emptyState": {
+      "title": "Aún no tienes rutinas",
+      "filteredTitle": "Sin coincidencias",
+      "filteredDesc": "Prueba otra búsqueda o filtro."
     }
   },
   "profile": {
