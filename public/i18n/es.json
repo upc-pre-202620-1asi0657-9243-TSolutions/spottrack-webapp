@@ -1451,6 +1451,29 @@
       "name": "Nombre completo",
       "submit": "Agregar técnico",
       "duplicate": "Ya existe un técnico con este nombre"
+    },
+    "detail": {
+      "urgent": "Urgentes / altos abiertos",
+      "tickets": "Tickets",
+      "search": "Buscar máquina, descripción o ID…",
+      "sort": {
+        "newest": "Más recientes",
+        "oldest": "Más antiguos",
+        "priority": "Mayor prioridad"
+      },
+      "tab": {
+        "active": "Activos",
+        "OPEN": "Pendientes",
+        "IN_PROGRESS": "En progreso",
+        "RESOLVED": "Completados",
+        "all": "Todos"
+      },
+      "noMatch": "Ningún ticket coincide",
+      "noTickets": "Aún no hay tickets",
+      "completion": "Cumplimiento",
+      "resolvedOf": "{{done}} de {{total}} tickets resueltos",
+      "machines": "Máquinas atendidas",
+      "notFound": "Este técnico no existe."
     }
   },
   "shared": {

@@ -1451,6 +1451,29 @@
       "name": "Full name",
       "submit": "Add technician",
       "duplicate": "A technician with this name already exists"
+    },
+    "detail": {
+      "urgent": "Urgent / high open",
+      "tickets": "Tickets",
+      "search": "Search machine, description or ID…",
+      "sort": {
+        "newest": "Newest first",
+        "oldest": "Oldest first",
+        "priority": "Highest priority"
+      },
+      "tab": {
+        "active": "Active",
+        "OPEN": "Pending",
+        "IN_PROGRESS": "In progress",
+        "RESOLVED": "Completed",
+        "all": "All"
+      },
+      "noMatch": "No tickets match",
+      "noTickets": "No tickets yet",
+      "completion": "Completion",
+      "resolvedOf": "{{done}} of {{total}} tickets resolved",
+      "machines": "Machines worked on",
+      "notFound": "This technician doesn't exist."
     }
   },
   "shared": {
