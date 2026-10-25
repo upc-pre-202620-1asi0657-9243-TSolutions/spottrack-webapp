@@ -179,6 +179,8 @@
   align-items: center;
   min-height: 38px;
 
+  &--wide { grid-column: 1 / -1; }
+
   dt {
     display: flex;
     align-items: center;
@@ -220,6 +222,8 @@
 
   mat-icon { font-size: 17px; width: 17px; height: 17px; flex-shrink: 0; }
 
+  overflow: hidden;
+
   &:hover:not(:disabled) { background: var(--surface-hover); border-color: var(--border); }
   &:focus-visible { outline: none; box-shadow: var(--focus-ring); }
   &:disabled { cursor: default; }
@@ -227,7 +231,16 @@
   &__caret { color: var(--text-faint); opacity: 0; transition: opacity .15s; }
   &:hover &__caret { opacity: 1; }
 
+  // Long names (e.g. "Cinta de Correr 02 · Mega Power Miraflores") must clip,
+  // not spill into the neighbouring property.
+  &__text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   &__muted {
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     color: var(--text-muted);

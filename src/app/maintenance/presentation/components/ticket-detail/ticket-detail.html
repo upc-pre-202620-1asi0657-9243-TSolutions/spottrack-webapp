@@ -146,14 +146,19 @@
             </dd>
           </div>
 
-          <!-- Machine -->
+          <!-- Created -->
           <div class="tdp-prop">
+            <dt><mat-icon>event</mat-icon>{{ 'maintenance.detail.created' | translate }}</dt>
+            <dd><span class="prop-static">{{ ticket().createdAt | date: 'medium' }}</span></dd>
+          </div>
+          <!-- Machine -->
+          <div class="tdp-prop tdp-prop--wide">
             <dt><mat-icon>fitness_center</mat-icon>{{ 'maintenance.form.equipment' | translate }}</dt>
             <dd>
               @if (equipment(); as eq) {
-                <a class="prop-btn prop-btn--link" [routerLink]="['/equipments', eq.uuid, 'edit']" (click)="closed.emit()">
+                <a class="prop-btn prop-btn--link" [title]="eq.name" [routerLink]="['/equipments', eq.uuid, 'edit']" (click)="closed.emit()">
                   <i class="dot dot--{{ eq.status.toLowerCase() }}"></i>
-                  {{ eq.name }}
+                  <span class="prop-btn__text">{{ eq.name }}</span>
                   <span class="prop-btn__muted">{{ eq.brand }} · {{ eq.model }}</span>
                 </a>
               } @else {
@@ -162,11 +167,6 @@
             </dd>
           </div>
 
-          <!-- Created -->
-          <div class="tdp-prop">
-            <dt><mat-icon>event</mat-icon>{{ 'maintenance.detail.created' | translate }}</dt>
-            <dd><span class="prop-static">{{ ticket().createdAt | date: 'medium' }}</span></dd>
-          </div>
         </dl>
 
         <!-- Description -->
