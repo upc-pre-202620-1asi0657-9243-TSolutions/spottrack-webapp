@@ -6,55 +6,14 @@
   </a>
 
   @if (alert; as a) {
-    <article class="ad-card ad-card--{{ tone(a) }}">
-      <header class="ad-head">
-        <span class="ad-head__icon"><mat-icon>{{ a.icon }}</mat-icon></span>
-        <div class="ad-head__text">
-          <div class="ad-head__badges">
-            <span class="ad-badge">{{ 'alerts.filter.' + tone(a) | translate }}</span>
-            <span class="ad-badge ad-badge--muted">{{ 'alerts.source.' + a.type | translate }}</span>
-          </div>
-          <h1>{{ resolveTitle(a) }}</h1>
-        </div>
-      </header>
-
-      <section class="ad-body">
-        <p class="ad-desc">{{ resolveDescription(a) || ('alerts.noDescription' | translate) }}</p>
-
-        <dl class="ad-facts">
-          <div>
-            <dt>{{ 'alerts.fields.severity' | translate }}</dt>
-            <dd>{{ a.severity ? ('alerts.severity.' + a.severity | translate) : ('alerts.filter.info' | translate) }}</dd>
-          </div>
-          <div>
-            <dt>{{ 'alerts.fields.received' | translate }}</dt>
-            <dd>{{ a.date | date: 'medium' }}</dd>
-          </div>
-          <div>
-            <dt>{{ 'alerts.fields.source' | translate }}</dt>
-            <dd>{{ 'alerts.source.' + a.type | translate }}</dd>
-          </div>
-        </dl>
-      </section>
-
-      <footer class="ad-actions">
-        <button type="button" class="btn btn--danger-outline" (click)="dismiss(a.id)">
-          <mat-icon>delete_outline</mat-icon>
-          {{ 'alerts.dismiss' | translate }}
-        </button>
-        @if (a.targetRoute) {
-          <button type="button" class="btn btn--primary" (click)="navigateTo(a.targetRoute)">
-            {{ 'alerts.goToTarget' | translate }}
-            <mat-icon>arrow_forward</mat-icon>
-          </button>
-        }
-      </footer>
-    </article>
+    <div class="ad-card">
+      <app-alert-reader [alert]="a" (deleted)="dismiss($event)" (opened)="navigateTo($event)" />
+    </div>
   } @else {
     <div class="ad-card ad-missing">
       <span class="ad-missing__icon"><mat-icon>search_off</mat-icon></span>
       <h3>{{ 'alerts.notFound' | translate }}</h3>
-      <a routerLink="/alerts" class="btn btn--secondary">{{ 'alerts.backToInbox' | translate }}</a>
+      <a routerLink="/alerts" class="ad-btn">{{ 'alerts.backToInbox' | translate }}</a>
     </div>
   }
 

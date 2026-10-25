@@ -1,0 +1,45 @@
+<article class="ar ar--{{ tone() }}">
+  <header class="ar-head">
+    <span class="ar-head__icon"><mat-icon>{{ alert().icon }}</mat-icon></span>
+    <div class="ar-head__text">
+      <div class="ar-head__badges">
+        <span class="ar-badge">{{ 'alerts.filter.' + tone() | translate }}</span>
+        <span class="ar-badge ar-badge--muted">{{ 'alerts.source.' + alert().type | translate }}</span>
+      </div>
+      <h1>{{ title() }}</h1>
+      <p class="ar-head__date">{{ alert().date | date: 'EEEE d MMMM y, HH:mm' }}</p>
+    </div>
+  </header>
+
+  <section class="ar-body">
+    <p class="ar-desc">{{ description() || ('alerts.noDescription' | translate) }}</p>
+
+    <dl class="ar-facts">
+      <div>
+        <dt>{{ 'alerts.fields.severity' | translate }}</dt>
+        <dd>{{ alert().severity ? ('alerts.severity.' + alert().severity | translate) : ('alerts.filter.info' | translate) }}</dd>
+      </div>
+      <div>
+        <dt>{{ 'alerts.fields.received' | translate }}</dt>
+        <dd>{{ alert().date | date: 'medium' }}</dd>
+      </div>
+      <div>
+        <dt>{{ 'alerts.fields.source' | translate }}</dt>
+        <dd>{{ 'alerts.source.' + alert().type | translate }}</dd>
+      </div>
+    </dl>
+  </section>
+
+  <footer class="ar-actions">
+    <button type="button" class="btn btn--danger-outline" (click)="deleted.emit(alert())">
+      <mat-icon>delete_outline</mat-icon>
+      {{ 'alerts.dismiss' | translate }}
+    </button>
+    @if (alert().targetRoute) {
+      <button type="button" class="btn btn--primary" (click)="opened.emit(alert())">
+        {{ 'alerts.goToTarget' | translate }}
+        <mat-icon>arrow_forward</mat-icon>
+      </button>
+    }
+  </footer>
+</article>
