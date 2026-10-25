@@ -1,51 +1,220 @@
-<div class="alerts-container">
-  @if (alertsList.length > 0) {
-    <div class="alerts-toolbar">
-      <button class="clear-all-btn" (click)="clearAll()">
-        <mat-icon>clear_all</mat-icon>
-        {{ 'alerts.clearAll' | translate }}
-      </button>
+<div class="ai">
+
+  <!-- ── Command bar ─────────────────────────────────────────────────────── -->
+  <header class="ai-bar">
+    <div class="ai-bar__title">
+      <h1>{{ 'alerts.title' | translate }}</h1>
+      @if (counts().unread) {
+        <span class="ai-bar__unread">{{ 'alerts.unreadCount' | translate: { count: counts().unread } }}</span>
+      }
     </div>
-  }
-  <div class="alerts-grid">
-    @for (alert of alertsList; track alert.id) {
-      <div class="alert-card" [appContextMenu]="alertMenu(alert)">
 
-        <button class="close-btn" (click)="deleteAlert($event, alert.id)" [title]="'alerts.deleteTitle' | translate">
-          <mat-icon>close</mat-icon>
+    <div class="ai-search">
+      <mat-icon>search</mat-icon>
+      <input type="text" [placeholder]="'alerts.search' | translate" [ngModel]="search()" (ngModelChange)="search.set($event)" />
+      @if (search()) {
+        <button type="button" class="icon-btn icon-btn--sm" (click)="search.set('')"><mat-icon>close</mat-icon></button>
+      }
+    </div>
+
+    <div class="ai-bar__actions">
+      <button type="button" class="cmd" [disabled]="!counts().unread" (click)="markAllRead()">
+        <mat-icon>drafts</mat-icon><span>{{ 'alerts.markAllRead' | translate }}</span>
+      </button>
+      <button type="button" class="cmd" [disabled]="!selected()" (click)="deleteSelected()">
+        <mat-icon>delete_outline</mat-icon><span>{{ 'alerts.delete' | translate }}</span>
+      </button>
+      <span class="ai-bar__sep"></span>
+      @if (confirmClear()) {
+        <span class="ai-confirm">
+          {{ 'alerts.clearConfirm' | translate: { count: alertsList().length } }}
+          <button type="button" class="cmd" (click)="confirmClear.set(false)">{{ 'alerts.cancel' | translate }}</button>
+          <button type="button" class="cmd cmd--danger" (click)="clearAll()">{{ 'alerts.clearAll' | translate }}</button>
+        </span>
+      } @else {
+        <button type="button" class="cmd" [disabled]="!alertsList().length" (click)="confirmClear.set(true)">
+          <mat-icon>clear_all</mat-icon><span>{{ 'alerts.clearAll' | translate }}</span>
         </button>
+      }
+    </div>
+  </header>
 
-        <div class="alert-card-top">
-          <div class="alert-icon-container" [ngClass]="'bg-' + alert.type">
-            <mat-icon>{{ alert.icon }}</mat-icon>
-          </div>
+  <div class="ai-body">
 
-          <div class="alert-content">
-            <div class="alert-title-row">
-              <h3 class="alert-title">{{ resolveTitle(alert) }}</h3>
-              @if (alert.severity) {
-                <span class="severity-badge" [ngClass]="'severity-' + alert.severity.toLowerCase()">
-                  {{ 'alerts.severity.' + alert.severity | translate }}
-                </span>
-              }
-            </div>
-            <p class="alert-description">{{ resolveDescription(alert) }}</p>
-          </div>
-        </div>
+    <!-- ── Folders ─────────────────────────────────────────────────────── -->
+    <nav class="ai-folders" [attr.aria-label]="'alerts.folders' | translate">
+      <p class="ai-folders__label">{{ (isAdmin() ? 'alerts.subtitleAdmin' : 'alerts.subtitleClient') | translate }}</p>
+      @for (f of folders; track f.key) {
+        <button type="button" class="ai-folder ai-folder--{{ f.key }}" [class.ai-folder--on]="folder() === f.key" (click)="folder.set(f.key)">
+          <mat-icon>{{ f.icon }}</mat-icon>
+          <span class="ai-folder__name">{{ 'alerts.folder.' + f.key | translate }}</span>
+          @if (counts()[f.key]) {
+            <span class="ai-folder__count" [class.ai-folder__count--strong]="f.key === 'unread'">{{ counts()[f.key] }}</span>
+          }
+        </button>
+      }
+    </nav>
 
-        <div class="alert-card-bottom">
-          <span class="alert-time">{{ getRelativeTime(alert.date) }}</span>
-          <button class="details-btn" (click)="navigateTo(alert.targetRoute)">
-            {{ 'alerts.detailsBtn' | translate }}
+    <!-- ── Message list ────────────────────────────────────────────────── -->
+    <section class="ai-list">
+      <div class="ai-list__head">
+        <h2>{{ 'alerts.folder.' + folder() | translate }}</h2>
+        <div class="ai-list__tools">
+          <button type="button" class="icon-btn" [class.icon-btn--on]="showFilters() || activeFilterCount()"
+                  (click)="showFilters.set(!showFilters())" [title]="'alerts.filters.title' | translate">
+            <mat-icon>filter_list</mat-icon>
+            @if (activeFilterCount()) { <span class="icon-btn__badge">{{ activeFilterCount() }}</span> }
+          </button>
+          <button type="button" class="icon-btn" (click)="sort.set(sort() === 'newest' ? 'oldest' : 'newest')"
+                  [title]="'alerts.sort.' + sort() | translate">
+            <mat-icon>{{ sort() === 'newest' ? 'arrow_downward' : 'arrow_upward' }}</mat-icon>
           </button>
         </div>
+      </div>
 
+      @if (showFilters()) {
+        <div class="ai-filters">
+          <div class="ai-filters__group">
+            <span class="ai-filters__label"><mat-icon>event</mat-icon>{{ 'alerts.filters.date' | translate }}</span>
+            <div class="ai-chips">
+              @for (p of datePresets; track p) {
+                <button type="button" class="ai-chip" [class.ai-chip--on]="datePreset() === p" (click)="datePreset.set(p)">
+                  {{ 'alerts.filters.preset.' + p | translate }}
+                </button>
+              }
+            </div>
+            @if (datePreset() === 'custom') {
+              <div class="ai-range">
+                <label>
+                  <span>{{ 'alerts.filters.from' | translate }}</span>
+                  <input type="date" [max]="dateTo() || null" [ngModel]="dateFrom()" (ngModelChange)="dateFrom.set($event)" />
+                </label>
+                <label>
+                  <span>{{ 'alerts.filters.to' | translate }}</span>
+                  <input type="date" [min]="dateFrom() || null" [ngModel]="dateTo()" (ngModelChange)="dateTo.set($event)" />
+                </label>
+              </div>
+            }
+          </div>
+
+          <div class="ai-filters__group">
+            <span class="ai-filters__label"><mat-icon>schedule</mat-icon>{{ 'alerts.filters.hours' | translate }}</span>
+            <div class="ai-range">
+              <label>
+                <span>{{ 'alerts.filters.from' | translate }}</span>
+                <select [ngModel]="hourFrom()" (ngModelChange)="hourFrom.set($event)">
+                  <option [ngValue]="null">{{ 'alerts.filters.anyHour' | translate }}</option>
+                  @for (h of hours; track h) { <option [ngValue]="h">{{ hourLabel(h) }}</option> }
+                </select>
+              </label>
+              <label>
+                <span>{{ 'alerts.filters.to' | translate }}</span>
+                <select [ngModel]="hourTo()" (ngModelChange)="hourTo.set($event)">
+                  <option [ngValue]="null">{{ 'alerts.filters.anyHour' | translate }}</option>
+                  @for (h of hours; track h) { <option [ngValue]="h">{{ hourEndLabel(h) }}</option> }
+                </select>
+              </label>
+            </div>
+            @if (hourFrom() !== null && hourTo() !== null && hourFrom()! > hourTo()!) {
+              <p class="ai-filters__hint">{{ 'alerts.filters.overnight' | translate }}</p>
+            }
+          </div>
+
+          @if (activeFilterCount()) {
+            <button type="button" class="cmd ai-filters__clear" (click)="clearFilters()">
+              <mat-icon>filter_list_off</mat-icon>{{ 'alerts.filters.clear' | translate }}
+            </button>
+          }
+        </div>
+      } @else if (activeFilterCount()) {
+        <div class="ai-active">
+          @if (datePreset() !== 'any') {
+            <span class="ai-active__chip">
+              <mat-icon>event</mat-icon>
+              @if (datePreset() === 'custom') {
+                {{ dateFrom() || '…' }} – {{ dateTo() || '…' }}
+              } @else {
+                {{ 'alerts.filters.preset.' + datePreset() | translate }}
+              }
+              <button type="button" (click)="datePreset.set('any')"><mat-icon>close</mat-icon></button>
+            </span>
+          }
+          @if (hourFrom() !== null || hourTo() !== null) {
+            <span class="ai-active__chip">
+              <mat-icon>schedule</mat-icon>
+              {{ hourLabel(hourFrom() ?? 0) }} – {{ hourEndLabel(hourTo() ?? 23) }}
+              <button type="button" (click)="hourFrom.set(null); hourTo.set(null)"><mat-icon>close</mat-icon></button>
+            </span>
+          }
+        </div>
+      }
+
+      <div class="ai-list__scroll" (keydown.arrowdown)="step($event, 1)" (keydown.arrowup)="step($event, -1)">
+        @if (!alertsList().length) {
+          <div class="ai-empty">
+            <mat-icon>notifications_none</mat-icon>
+            <p class="ai-empty__title">{{ 'alerts.emptyTitle' | translate }}</p>
+            <p>{{ 'alerts.emptyState' | translate }}</p>
+          </div>
+        } @else if (!groups().length) {
+          <div class="ai-empty">
+            <mat-icon>search_off</mat-icon>
+            <p class="ai-empty__title">{{ 'alerts.noMatch' | translate }}</p>
+            <button type="button" class="cmd" (click)="folder.set('all'); search.set(''); clearFilters()">{{ 'alerts.resetFilters' | translate }}</button>
+          </div>
+        } @else {
+          @for (group of groups(); track group.key) {
+            <button type="button" class="ai-group" (click)="toggleGroup(group.key)" [attr.aria-expanded]="!isCollapsed(group.key)">
+              <mat-icon>{{ isCollapsed(group.key) ? 'chevron_right' : 'expand_more' }}</mat-icon>
+              {{ 'alerts.group.' + group.key | translate }}
+              <span>{{ group.alerts.length }}</span>
+            </button>
+            @if (!isCollapsed(group.key)) {
+              @for (alert of group.alerts; track alert.id) {
+                <div class="ai-item ai-item--{{ tone(alert) }}" [id]="'alert-' + alert.id" role="button" tabindex="0"
+                     [class.ai-item--unread]="!alert.read" [class.ai-item--on]="selectedId() === alert.id"
+                     [appContextMenu]="alertMenu(alert)" (click)="select(alert)" (keydown.enter)="select(alert)">
+                  <span class="ai-item__avatar"><mat-icon>{{ alert.icon }}</mat-icon></span>
+                  <div class="ai-item__body">
+                    <div class="ai-item__line">
+                      <span class="ai-item__tag">{{ 'alerts.filter.' + tone(alert) | translate }}</span>
+                      <span class="ai-item__source">{{ 'alerts.source.' + alert.type | translate }}</span>
+                      <span class="ai-item__time" [title]="alert.date | date: 'medium'">{{ listTime(alert.date) }}</span>
+                    </div>
+                    <p class="ai-item__title">{{ resolveTitle(alert) }}</p>
+                    <p class="ai-item__desc">{{ resolveDescription(alert) }}</p>
+                  </div>
+                  <span class="ai-item__quick">
+                    <button type="button" class="icon-btn icon-btn--sm" (click)="store.toggleRead(alert); $event.stopPropagation()"
+                            [title]="(alert.read ? 'alerts.markUnread' : 'alerts.markRead') | translate">
+                      <mat-icon>{{ alert.read ? 'mark_email_unread' : 'drafts' }}</mat-icon>
+                    </button>
+                    <button type="button" class="icon-btn icon-btn--sm" (click)="deleteAlert(alert); $event.stopPropagation()"
+                            [title]="'alerts.deleteTitle' | translate">
+                      <mat-icon>delete_outline</mat-icon>
+                    </button>
+                  </span>
+                </div>
+              }
+            }
+          }
+        }
       </div>
-    } @empty {
-      <div class="empty-state">
-        <mat-icon>done_all</mat-icon>
-        <p>{{ 'alerts.emptyState' | translate }}</p>
-      </div>
-    }
+    </section>
+
+    <!-- ── Reading pane ────────────────────────────────────────────────── -->
+    <section class="ai-reader">
+      @if (selected(); as a) {
+        <app-alert-reader class="ai-reader__mail" [alert]="a" (deleted)="deleteAlert($event)"
+                          (opened)="openTarget($event)" (readToggled)="store.toggleRead($event)" />
+      } @else {
+        <div class="ai-reader__empty">
+          <span class="ai-reader__art"><mat-icon>mark_email_read</mat-icon></span>
+          <p class="ai-reader__title">{{ 'alerts.reader.title' | translate }}</p>
+          <p>{{ 'alerts.reader.subtitle' | translate }}</p>
+        </div>
+      }
+    </section>
+
   </div>
 </div>

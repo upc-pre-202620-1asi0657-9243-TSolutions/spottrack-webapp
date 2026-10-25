@@ -1,94 +1,174 @@
-<div class="monitoring-page">
+<div class="sr-page">
 
-  <div class="page-header">
+  <a class="sr-back" routerLink="/iot">
+    <mat-icon>arrow_back</mat-icon>
+    {{ 'monitoring.sensors.back' | translate }}
+  </a>
+
+  <header class="sr-header">
+    <span class="sr-header__icon"><mat-icon>sensors</mat-icon></span>
     <div>
-      <button class="btn-back" type="button" (click)="back()">
-        <mat-icon>arrow_back</mat-icon>
-      </button>
-      <h1 class="page-title">{{ 'monitoring.sensors.title' | translate }}</h1>
-      <p class="page-subtitle">{{ 'monitoring.sensors.subtitle' | translate }}</p>
+      <h1 class="sr-header__title">{{ 'monitoring.sensors.title' | translate }}</h1>
+      <p class="sr-header__subtitle">{{ 'monitoring.sensors.subtitle' | translate }}</p>
     </div>
-  </div>
+  </header>
 
-  @if (error()) {
-    <div class="error-state">
-      <mat-icon>error_outline</mat-icon>
-      <p>{{ error() }}</p>
+  @if (registeredName(); as name) {
+    <div class="sr-notice sr-notice--success">
+      <mat-icon>check_circle</mat-icon>
+      <span>{{ 'monitoring.sensors.success' | translate: { machine: name } }}</span>
     </div>
   }
 
-  <div class="forms-grid">
-
-    <!-- Camera sensor registration -->
-    <div class="section-card">
-      <div class="section-header">
-        <mat-icon>videocam</mat-icon>
-        <h2>{{ 'monitoring.sensors.cameraTitle' | translate }}</h2>
-      </div>
-      <form class="reg-form" (ngSubmit)="submitCamera()">
-        <div class="field">
-          <label class="field__label">{{ 'monitoring.sensors.equipment' | translate }} *</label>
-          <mat-form-field appearance="outline" class="field__mat">
-            <mat-select [(ngModel)]="cameraEquipmentId" name="cameraEquipmentId" required>
-              @for (eq of equipment(); track eq.uuid) {
-                <mat-option [value]="eq.uuid">{{ eq.name }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-        </div>
-        <button type="submit" class="btn-submit" [disabled]="loading() || !cameraEquipmentId">
-          {{ 'monitoring.sensors.registerCamera' | translate }}
-        </button>
-      </form>
-
-      @if (cameraSensors().length > 0) {
-        <div class="registered-list">
-          @for (s of cameraSensors(); track s.cameraSensorId) {
-            <div class="registered-row">
-              <mat-icon>videocam</mat-icon>
-              <span class="mono">{{ s.cameraSensorId }}</span>
-              <span class="tag">{{ s.equipmentName ?? '—' }}</span>
-            </div>
-          }
-        </div>
-      }
+  @if (error()) {
+    <div class="sr-notice sr-notice--danger">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ error() }}</span>
     </div>
+  }
 
-    <!-- Motion sensor registration -->
-    <div class="section-card">
-      <div class="section-header">
-        <mat-icon>sensors</mat-icon>
-        <h2>{{ 'monitoring.sensors.motionTitle' | translate }}</h2>
+  <div class="sr-columns">
+
+    <!-- ── Equipment picker ───────────────────────────────────────────── -->
+    <section class="sr-card sr-picker">
+      <div class="sr-card__head">
+        <h2 class="sr-section-title">{{ 'monitoring.sensors.pickTitle' | translate }}</h2>
+        <p class="sr-section-subtitle">{{ 'monitoring.sensors.pickSubtitle' | translate }}</p>
       </div>
-      <form class="reg-form" (ngSubmit)="submitMotion()">
-        <div class="field">
-          <label class="field__label">{{ 'monitoring.sensors.equipment' | translate }} *</label>
-          <mat-form-field appearance="outline" class="field__mat">
-            <mat-select [(ngModel)]="motionEquipmentId" name="motionEquipmentId" required>
-              @for (eq of equipment(); track eq.uuid) {
-                <mat-option [value]="eq.uuid">{{ eq.name }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
+
+      <div class="sr-toolbar">
+        <div class="sr-search">
+          <mat-icon>search</mat-icon>
+          <input type="text" [placeholder]="'monitoring.sensors.search' | translate"
+                 [ngModel]="search()" (ngModelChange)="search.set($event)" />
         </div>
-        <button type="submit" class="btn-submit" [disabled]="loading() || !motionEquipmentId">
+        <div class="sr-segment" role="tablist">
+          <button type="button" role="tab" [class.sr-segment__on]="coverageFilter() === 'uncovered'"
+                  (click)="coverageFilter.set('uncovered')">
+            {{ 'monitoring.sensors.filter.uncovered' | translate }}
+          </button>
+          <button type="button" role="tab" [class.sr-segment__on]="coverageFilter() === 'all'"
+                  (click)="coverageFilter.set('all')">
+            {{ 'monitoring.sensors.filter.all' | translate }}
+          </button>
+        </div>
+      </div>
+
+      @if (equipmentStore.loading()) {
+        <div class="sr-state">
+          <mat-icon class="spin">autorenew</mat-icon>
+        </div>
+      } @else if (visibleMachines().length === 0) {
+        <div class="sr-state">
+          <mat-icon>{{ coverageFilter() === 'uncovered' && !search() ? 'verified' : 'search_off' }}</mat-icon>
+          <p>{{ (coverageFilter() === 'uncovered' && !search() ? 'monitoring.sensors.allCovered' : 'monitoring.sensors.noMatch') | translate }}</p>
+        </div>
+      } @else {
+        <ul class="sr-machines" role="radiogroup">
+          @for (m of visibleMachines(); track m.uuid) {
+            <li>
+              <button type="button" role="radio" class="sr-machine"
+                      [class.sr-machine--on]="selectedId() === m.uuid"
+                      [attr.aria-checked]="selectedId() === m.uuid"
+                      (click)="select(m.uuid)">
+                <span class="sr-machine__icon"><mat-icon>fitness_center</mat-icon></span>
+                <span class="sr-machine__body">
+                  <span class="sr-machine__name">{{ m.name }}</span>
+                  <span class="sr-machine__meta">{{ m.brand }} · {{ m.model }}</span>
+                </span>
+                @if (sensorCount(m.uuid) > 0) {
+                  <span class="sr-chip sr-chip--covered">
+                    <mat-icon>sensors</mat-icon>
+                    {{ 'monitoring.sensors.hasSensor' | translate: { count: sensorCount(m.uuid) } }}
+                  </span>
+                } @else {
+                  <span class="sr-chip">{{ 'monitoring.sensors.noSensor' | translate }}</span>
+                }
+                <span class="sr-machine__radio"></span>
+              </button>
+            </li>
+          }
+        </ul>
+      }
+
+      <div class="sr-picker__footer">
+        <p class="sr-summary">
+          @if (selectedMachine(); as m) {
+            <mat-icon>sensors</mat-icon>
+            <span>{{ 'monitoring.sensors.summary' | translate: { machine: m.name } }}</span>
+          } @else {
+            <span>{{ 'monitoring.sensors.summaryEmpty' | translate }}</span>
+          }
+        </p>
+        <button type="button" class="btn btn--primary" [disabled]="!selectedMachine() || saving()" (click)="submit()">
+          <mat-icon [class.spin]="saving()">{{ saving() ? 'autorenew' : 'add' }}</mat-icon>
           {{ 'monitoring.sensors.registerMotion' | translate }}
         </button>
-      </form>
+      </div>
+    </section>
 
-      @if (motionSensors().length > 0) {
-        <div class="registered-list">
-          @for (s of motionSensors(); track s.motionSensorId) {
-            <div class="registered-row">
-              <mat-icon>sensors</mat-icon>
-              <span class="mono">{{ s.motionSensorId }}</span>
-              <span class="tag">{{ s.equipmentName ?? '—' }}</span>
-            </div>
-          }
+    <aside class="sr-side">
+
+      <!-- ── Coverage ───────────────────────────────────────────────── -->
+      <section class="sr-card sr-coverage">
+        <p class="sr-eyebrow">{{ 'monitoring.sensors.coverage.title' | translate }}</p>
+        <div class="sr-coverage__value">
+          <strong>{{ coveragePct() }}%</strong>
+          <span>{{ 'monitoring.sensors.coverage.machines' | translate: { covered: coveredCount(), total: machineCount() } }}</span>
         </div>
-      }
-    </div>
+        <span class="sr-meter"><span class="sr-meter__fill" [style.width.%]="coveragePct()"></span></span>
+        <dl class="sr-facts">
+          <div>
+            <dt>{{ 'monitoring.sensors.coverage.sensors' | translate }}</dt>
+            <dd>{{ motionSensors().length }}</dd>
+          </div>
+          <div>
+            <dt>{{ 'monitoring.sensors.coverage.online' | translate }}</dt>
+            <dd><i class="sr-dot" [class.sr-dot--on]="onlineCount() > 0"></i>{{ onlineCount() }}</dd>
+          </div>
+        </dl>
+      </section>
 
+      <!-- ── How it works ───────────────────────────────────────────── -->
+      <section class="sr-card sr-how">
+        <h2 class="sr-section-title">{{ 'monitoring.sensors.how.title' | translate }}</h2>
+        <ol class="sr-steps">
+          <li><span>1</span>{{ 'monitoring.sensors.how.step1' | translate }}</li>
+          <li><span>2</span>{{ 'monitoring.sensors.how.step2' | translate }}</li>
+          <li><span>3</span>{{ 'monitoring.sensors.how.step3' | translate }}</li>
+        </ol>
+      </section>
+
+      <!-- ── Registered sensors ─────────────────────────────────────── -->
+      <section class="sr-card sr-registered">
+        <div class="sr-registered__head">
+          <h2 class="sr-section-title">{{ 'monitoring.sensors.registeredTitle' | translate }}</h2>
+          <span class="sr-count">{{ motionSensors().length }}</span>
+        </div>
+        @if (motionSensors().length === 0) {
+          <p class="sr-empty">{{ 'monitoring.sensors.noneRegistered' | translate }}</p>
+        } @else {
+          <ul class="sr-sensors">
+            @for (s of pagedSensors(); track s.motionSensorId) {
+              <li class="sr-sensor">
+                <i class="sr-dot" [class.sr-dot--on]="s.online"></i>
+                <div class="sr-sensor__body">
+                  <span class="sr-sensor__name">{{ s.equipmentName ?? '—' }}</span>
+                  <span class="sr-sensor__meta mono">{{ s.motionSensorId.slice(0, 8) }}</span>
+                </div>
+                <span class="sr-sensor__seen">
+                  {{ s.online ? ('iot.table.online' | translate) : (s.lastSeenAt ? (s.lastSeenAt | date: 'HH:mm') : ('iot.table.never' | translate)) }}
+                </span>
+              </li>
+            }
+          </ul>
+          @if (motionSensors().length > 5) {
+            <app-paginator [total]="motionSensors().length" [(page)]="sensorPage" [(pageSize)]="sensorPageSize" />
+          }
+        }
+      </section>
+
+    </aside>
   </div>
 
 </div>

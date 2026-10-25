@@ -1,93 +1,73 @@
-<div class="form-page">
+<div class="ae-page">
 
-  <div class="form-page__header">
-    <button mat-icon-button class="back-btn" (click)="cancel()">
-      <mat-icon>arrow_back</mat-icon>
-    </button>
+  <a class="ae-back" routerLink="/equipments">
+    <mat-icon>arrow_back</mat-icon>
+    {{ 'equipment.dialog.back' | translate }}
+  </a>
+
+  <header class="ae-header">
+    <span class="ae-header__icon"><mat-icon>{{ isEditMode ? 'edit' : 'add_box' }}</mat-icon></span>
     <div>
-      <h1 class="form-page__title">
+      <h1 class="ae-header__title">
         {{ (isEditMode ? 'equipment.dialog.editTitle' : 'equipment.dialog.addTitle') | translate }}
       </h1>
-      @if (isEditMode) {
-        <p class="form-page__subtitle">{{ 'equipment.dialog.editHint' | translate }}</p>
-      }
+      <p class="ae-header__subtitle">
+        {{ (isEditMode ? 'equipment.dialog.editHint' : 'equipment.dialog.subtitle') | translate }}
+      </p>
     </div>
-  </div>
+  </header>
 
-  <div class="form-page__card">
+  <div class="ae-columns">
 
-    <div class="form-intro">
-      <div class="form-intro__icon-wrap">
-        <mat-icon class="form-intro__icon">fitness_center</mat-icon>
-      </div>
-      <div class="form-intro__text">
-        <p class="form-intro__label">{{ (isEditMode ? 'equipment.dialog.editTitle' : 'equipment.dialog.addTitle') | translate }}</p>
-        <p class="form-intro__hint">{{ 'equipment.dialog.subtitle' | translate }}</p>
-      </div>
-      <div class="form-intro__badge" [class.form-intro__badge--edit]="isEditMode">
-        <mat-icon>{{ isEditMode ? 'edit' : 'add_circle' }}</mat-icon>
-        <span>{{ isEditMode ? ('equipment.dialog.editMode' | translate) : ('equipment.dialog.newMode' | translate) }}</span>
-      </div>
-    </div>
+    <form class="ae-card ae-form" [formGroup]="form" (ngSubmit)="submit()">
 
-    <form [formGroup]="form" (ngSubmit)="submit()" class="eq-form">
-
-      <!-- Section: Identification (read-only in edit mode) -->
-      <div class="form-section">
-        <div class="form-section__header">
-          <mat-icon>badge</mat-icon>
-          <span>{{ 'equipment.dialog.sections.identification' | translate }}</span>
+      <!-- ── Identification ─────────────────────────────────────────── -->
+      <section class="ae-section">
+        <div class="ae-section__head">
+          <h2>{{ 'equipment.dialog.sections.identification' | translate }}</h2>
+          <p>{{ 'equipment.dialog.sections.identificationHint' | translate }}</p>
         </div>
 
-        <mat-form-field appearance="outline" class="form-field form-field--full">
-          <mat-label>{{ 'equipment.dialog.fields.name' | translate }}</mat-label>
-          <mat-icon matPrefix>label</mat-icon>
-          <input matInput formControlName="name" />
-          @if (form.controls.name.hasError('required')) {
-            <mat-error>{{ 'equipment.dialog.validation.required' | translate }}</mat-error>
-          }
-        </mat-form-field>
-
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="form-field">
-            <mat-label>{{ 'equipment.dialog.fields.brand' | translate }}</mat-label>
-            <mat-icon matPrefix>business</mat-icon>
-            <input matInput formControlName="brand" />
-            @if (form.controls.brand.hasError('required')) {
-              <mat-error>{{ 'equipment.dialog.validation.required' | translate }}</mat-error>
-            }
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="form-field">
-            <mat-label>{{ 'equipment.dialog.fields.model' | translate }}</mat-label>
-            <mat-icon matPrefix>category</mat-icon>
-            <input matInput formControlName="model" />
-            @if (form.controls.model.hasError('required')) {
-              <mat-error>{{ 'equipment.dialog.validation.required' | translate }}</mat-error>
-            }
-          </mat-form-field>
-        </div>
-      </div>
-
-      <!-- Section: Pricing & Location (read-only in edit mode) -->
-      <div class="form-section">
-        <div class="form-section__header">
-          <mat-icon>tune</mat-icon>
-          <span>{{ 'equipment.dialog.sections.configuration' | translate }}</span>
+        <div class="ae-field">
+          <label for="eq-name">{{ 'equipment.dialog.fields.name' | translate }} <span class="req">*</span></label>
+          <input id="eq-name" class="ae-input" formControlName="name"
+                 [class.ae-input--error]="showError('name')"
+                 [placeholder]="'equipment.dialog.placeholders.name' | translate" />
+          @if (showError('name')) { <span class="ae-error">{{ 'equipment.dialog.validation.required' | translate }}</span> }
         </div>
 
-        <!-- Zone: select in create mode, disabled text in edit mode -->
-        @if (isEditMode) {
-          <mat-form-field appearance="outline" class="form-field form-field--full">
-            <mat-label>{{ 'equipment.dialog.fields.zoneId' | translate }}</mat-label>
-            <mat-icon matPrefix>location_on</mat-icon>
-            <input matInput formControlName="zoneId" />
-          </mat-form-field>
-        } @else {
-          <mat-form-field appearance="outline" class="form-field form-field--full">
-            <mat-label>{{ 'equipment.dialog.fields.zoneId' | translate }}</mat-label>
-            <mat-icon matPrefix>location_on</mat-icon>
-            <mat-select formControlName="zoneId">
+        <div class="ae-row">
+          <div class="ae-field">
+            <label for="eq-brand">{{ 'equipment.dialog.fields.brand' | translate }} <span class="req">*</span></label>
+            <input id="eq-brand" class="ae-input" formControlName="brand"
+                   [class.ae-input--error]="showError('brand')"
+                   [placeholder]="'equipment.dialog.placeholders.brand' | translate" />
+            @if (showError('brand')) { <span class="ae-error">{{ 'equipment.dialog.validation.required' | translate }}</span> }
+          </div>
+          <div class="ae-field">
+            <label for="eq-model">{{ 'equipment.dialog.fields.model' | translate }} <span class="req">*</span></label>
+            <input id="eq-model" class="ae-input" formControlName="model"
+                   [class.ae-input--error]="showError('model')"
+                   [placeholder]="'equipment.dialog.placeholders.model' | translate" />
+            @if (showError('model')) { <span class="ae-error">{{ 'equipment.dialog.validation.required' | translate }}</span> }
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Location & purchase ────────────────────────────────────── -->
+      <section class="ae-section">
+        <div class="ae-section__head">
+          <h2>{{ 'equipment.dialog.sections.configuration' | translate }}</h2>
+          <p>{{ 'equipment.dialog.sections.configurationHint' | translate }}</p>
+        </div>
+
+        <div class="ae-field">
+          <span class="ae-label">{{ 'equipment.dialog.fields.zoneId' | translate }} <span class="req">*</span></span>
+          <div class="ae-select" [class.ae-input--error]="showError('zoneId')">
+            <mat-icon>location_on</mat-icon>
+            <mat-select formControlName="zoneId" class="form-select"
+                        [placeholder]="'equipment.dialog.placeholders.zone' | translate"
+                        panelClass="booking-select-panel" disableRipple>
               @if (zoneStore.loading()) {
                 <mat-option disabled>{{ 'equipment.dialog.zonesLoading' | translate }}</mat-option>
               } @else if (groupedZones().length === 0) {
@@ -102,81 +82,122 @@
                 }
               }
             </mat-select>
-            @if (form.controls.zoneId.hasError('required')) {
-              <mat-error>{{ 'equipment.dialog.validation.required' | translate }}</mat-error>
-            }
-          </mat-form-field>
-        }
-
-        <div class="form-row">
-          <mat-form-field appearance="outline" class="form-field form-field--currency">
-            <mat-label>{{ 'equipment.dialog.fields.purchaseCurrency' | translate }}</mat-label>
-            <mat-icon matPrefix>language</mat-icon>
-            <mat-select formControlName="purchaseCurrency">
-              @for (c of currencies; track c) {
-                <mat-option [value]="c">{{ c }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="form-field">
-            <mat-label>{{ 'equipment.dialog.fields.purchaseAmount' | translate }}</mat-label>
-            <mat-icon matPrefix>attach_money</mat-icon>
-            <input matInput type="number" formControlName="purchaseAmount" min="0" />
-            @if (form.controls.purchaseAmount.hasError('required') || form.controls.purchaseAmount.hasError('min')) {
-              <mat-error>{{ 'equipment.dialog.validation.min' | translate }}</mat-error>
-            }
-          </mat-form-field>
-        </div>
-      </div>
-
-      <!-- Section: Status (always editable) -->
-      <div class="form-section">
-        <div class="form-section__header">
-          <mat-icon>toggle_on</mat-icon>
-          <span>{{ 'equipment.dialog.sections.status' | translate }}</span>
-        </div>
-
-        @if (isEditMode) {
-          <div class="edit-hint">
-            <mat-icon>info</mat-icon>
-            <span>{{ 'equipment.dialog.editHint' | translate }}</span>
           </div>
-        }
-
-        <mat-form-field appearance="outline" class="form-field form-field--full">
-          <mat-label>{{ 'equipment.dialog.fields.status' | translate }}</mat-label>
-          <mat-icon matPrefix>circle</mat-icon>
-          <mat-select formControlName="status">
-            @for (s of equipmentStatuses; track s) {
-              <mat-option [value]="s">{{ 'equipment.status.' + s | translate }}</mat-option>
-            }
-          </mat-select>
-          @if (form.controls.status.hasError('required')) {
-            <mat-error>{{ 'equipment.dialog.validation.required' | translate }}</mat-error>
+          @if (showError('zoneId')) { <span class="ae-error">{{ 'equipment.dialog.validation.required' | translate }}</span> }
+          @if (!zoneStore.loading() && groupedZones().length === 0) {
+            <a class="ae-link" routerLink="/gym/branches">{{ 'equipment.dialog.createZones' | translate }}</a>
           }
-        </mat-form-field>
+        </div>
 
-        <mat-form-field appearance="outline" class="form-field form-field--full">
-          <mat-label>{{ 'equipment.dialog.fields.maintenanceThreshold' | translate }}</mat-label>
-          <mat-icon matPrefix>event</mat-icon>
-          <input matInput type="date" formControlName="maintenanceThreshold" />
-          <mat-hint>{{ (isEditMode ? 'equipment.dialog.hints.maintenanceThresholdEdit' : 'equipment.dialog.hints.maintenanceThresholdNew') | translate }}</mat-hint>
-        </mat-form-field>
-      </div>
+        <div class="ae-field">
+          <label for="eq-amount">{{ 'equipment.dialog.fields.purchaseAmount' | translate }} <span class="req">*</span></label>
+          <div class="ae-money" [class.ae-input--error]="showError('purchaseAmount')">
+            <select formControlName="purchaseCurrency" [attr.aria-label]="'equipment.dialog.fields.purchaseCurrency' | translate">
+              @for (c of currencies; track c) {
+                <option [value]="c">{{ c }}</option>
+              }
+            </select>
+            <input id="eq-amount" type="number" min="0" step="0.01" formControlName="purchaseAmount" placeholder="0.00" />
+          </div>
+          @if (showError('purchaseAmount')) { <span class="ae-error">{{ 'equipment.dialog.validation.min' | translate }}</span> }
+        </div>
+      </section>
 
-      <div class="form-actions">
-        <button mat-stroked-button type="button" class="btn-cancel" (click)="cancel()">
-          <mat-icon>close</mat-icon>
+      <!-- ── Status & maintenance (always editable) ──────────────────── -->
+      <section class="ae-section">
+        <div class="ae-section__head">
+          <h2>{{ 'equipment.dialog.sections.status' | translate }}</h2>
+          <p>{{ 'equipment.dialog.sections.statusHint' | translate }}</p>
+        </div>
+
+        <div class="ae-statuses" role="radiogroup">
+          @for (s of equipmentStatuses; track s) {
+            <button type="button" role="radio" class="ae-status ae-status--{{ s.toLowerCase() }}"
+                    [class.ae-status--on]="value().status === s"
+                    [attr.aria-checked]="value().status === s"
+                    (click)="setStatus(s)">
+              <mat-icon>{{ statusIcon(s) }}</mat-icon>
+              {{ 'equipment.status.' + s | translate }}
+            </button>
+          }
+        </div>
+
+        <div class="ae-field">
+          <label for="eq-threshold">{{ 'equipment.dialog.fields.maintenanceThreshold' | translate }}</label>
+          <input id="eq-threshold" class="ae-input ae-input--date" type="date" formControlName="maintenanceThreshold" />
+          <span class="ae-hint">
+            {{ (isEditMode ? 'equipment.dialog.hints.maintenanceThresholdEdit' : 'equipment.dialog.hints.maintenanceThresholdNew') | translate }}
+          </span>
+        </div>
+      </section>
+
+      <div class="ae-form__footer">
+        <button type="button" class="btn btn--secondary" (click)="cancel()">
           {{ 'equipment.actions.cancel' | translate }}
         </button>
-        <button mat-flat-button type="submit" class="btn-save" [disabled]="form.invalid">
-          <mat-icon>{{ isEditMode ? 'sync' : 'add' }}</mat-icon>
-          {{ isEditMode ? ('equipment.actions.updateStatus' | translate) : ('equipment.actions.save' | translate) }}
+        <button type="submit" class="btn btn--primary">
+          <mat-icon>{{ isEditMode ? 'check' : 'add' }}</mat-icon>
+          {{ (isEditMode ? 'equipment.actions.saveChanges' : 'equipment.actions.save') | translate }}
         </button>
       </div>
-
     </form>
-  </div>
 
+    <!-- ── Live preview ──────────────────────────────────────────────── -->
+    <aside class="ae-side">
+      <section class="ae-card ae-preview">
+        <p class="ae-eyebrow">{{ 'equipment.dialog.preview.title' | translate }}</p>
+        <div class="ae-preview__head">
+          <span class="ae-preview__icon ae-status--{{ (value().status ?? '').toLowerCase() }}">
+            <mat-icon>fitness_center</mat-icon>
+          </span>
+          <div class="ae-preview__title">
+            <h3 [class.ae-placeholder]="!value().name">
+              {{ value().name || ('equipment.dialog.preview.unnamed' | translate) }}
+            </h3>
+            <p>
+              {{ value().brand || '—' }} · {{ value().model || '—' }}
+            </p>
+          </div>
+        </div>
+
+        <span class="ae-badge ae-status--{{ (value().status ?? '').toLowerCase() }}">
+          <mat-icon>{{ statusIcon(value().status) }}</mat-icon>
+          {{ 'equipment.status.' + value().status | translate }}
+        </span>
+
+        <dl class="ae-preview__facts">
+          <div>
+            <dt>{{ 'equipment.dialog.fields.zoneId' | translate }}</dt>
+            <dd>{{ previewZone() ?? '—' }}</dd>
+          </div>
+          <div>
+            <dt>{{ 'equipment.dialog.fields.purchaseAmount' | translate }}</dt>
+            <dd>
+              @if (value().purchaseAmount != null) {
+                {{ value().purchaseCurrency }}
+                {{ value().purchaseAmount | number: '1.0-2' }}
+              } @else { — }
+            </dd>
+          </div>
+          <div>
+            <dt>{{ 'equipment.dialog.preview.nextMaintenance' | translate }}</dt>
+            <dd>{{ value().maintenanceThreshold ? (value().maintenanceThreshold | date: 'mediumDate') : ('equipment.dialog.preview.notSet' | translate) }}</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="ae-card ae-tips">
+        <h2>
+          <mat-icon>tips_and_updates</mat-icon>
+          {{ 'equipment.dialog.tips.title' | translate }}
+        </h2>
+        <ul>
+          <li>{{ 'equipment.dialog.tips.item1' | translate }}</li>
+          <li>{{ 'equipment.dialog.tips.item2' | translate }}</li>
+          <li>{{ 'equipment.dialog.tips.item3' | translate }}</li>
+        </ul>
+      </section>
+    </aside>
+
+  </div>
 </div>

@@ -354,7 +354,7 @@
     }
   },
   "alerts": {
-    "emptyState": "No tienes alertas pendientes",
+    "emptyState": "Las nuevas alertas aparecerán aquí.",
     "detailsBtn": "Ver detalles →",
     "deleteTitle": "Eliminar alerta",
     "clearAll": "Limpiar todo",
@@ -363,13 +363,13 @@
       "CRITICAL": "Crítico"
     },
     "time": {
-      "moment":  "Hace un momento",
-      "minute":  "Hace {{count}} minuto",
+      "moment": "Hace un momento",
+      "minute": "Hace {{count}} minuto",
       "minutes": "Hace {{count}} minutos",
-      "hour":    "Hace {{count}} hora",
-      "hours":   "Hace {{count}} horas",
-      "day":     "Hace {{count}} día",
-      "days":    "Hace {{count}} días"
+      "hour": "Hace {{count}} hora",
+      "hours": "Hace {{count}} horas",
+      "day": "Hace {{count}} día",
+      "days": "Hace {{count}} días"
     },
     "backend": {
       "maintenanceThreshold": {
@@ -378,6 +378,91 @@
       "anomalyReported": {
         "title": "Anomalía reportada"
       }
+    },
+    "title": "Alertas",
+    "subtitleAdmin": "Eventos de mantenimiento, sensores y equipos de tu gimnasio",
+    "subtitleClient": "Novedades sobre tus reservas",
+    "clearConfirm": "¿Eliminar las {{count}} alertas?",
+    "cancel": "Cancelar",
+    "filter": {
+      "all": "Todas",
+      "critical": "Críticas",
+      "warning": "Advertencias",
+      "info": "Info"
+    },
+    "search": "Buscar alertas…",
+    "emptyTitle": "Estás al día",
+    "noMatch": "Ninguna alerta coincide con estos filtros",
+    "resetFilters": "Limpiar filtros",
+    "group": {
+      "today": "Hoy",
+      "yesterday": "Ayer",
+      "earlier": "Anteriores",
+      "week": "Esta semana"
+    },
+    "new": "Nueva desde tu última visita",
+    "goToTarget": "Abrir página relacionada",
+    "backToInbox": "Volver a alertas",
+    "dismiss": "Eliminar alerta",
+    "noDescription": "Sin más detalles.",
+    "notFound": "Esta alerta ya no existe.",
+    "source": {
+      "admin": "Gimnasio",
+      "client": "Reserva",
+      "system": "Sistema"
+    },
+    "fields": {
+      "severity": "Severidad",
+      "received": "Recibida",
+      "source": "Origen"
+    },
+    "unreadCount": "{{count}} sin leer",
+    "markAllRead": "Marcar todas como leídas",
+    "delete": "Eliminar",
+    "folders": "Carpetas de alertas",
+    "folder": {
+      "all": "Bandeja de entrada",
+      "unread": "No leídas",
+      "critical": "Críticas",
+      "warning": "Advertencias",
+      "info": "Info"
+    },
+    "sort": {
+      "newest": "Más recientes primero",
+      "oldest": "Más antiguas primero"
+    },
+    "reader": {
+      "title": "Selecciona una alerta para leerla",
+      "subtitle": "No hay nada seleccionado"
+    },
+    "filters": {
+      "title": "Filtrar por fecha y hora",
+      "date": "Fecha",
+      "hours": "Hora del día",
+      "from": "Desde",
+      "to": "Hasta",
+      "anyHour": "Cualquiera",
+      "preset": {
+        "any": "Cualquier fecha",
+        "today": "Hoy",
+        "week": "Últimos 7 días",
+        "month": "Últimos 30 días",
+        "custom": "Rango personalizado"
+      },
+      "overnight": "Franja nocturna: incluye las horas después del inicio y antes del fin.",
+      "clear": "Quitar filtros de fecha"
+    },
+    "markRead": "Marcar como leída",
+    "markUnread": "Marcar como no leída",
+    "mail": {
+      "sender": "Alertas SpotTrack",
+      "to": "Para: ti",
+      "greeting": "Hola,",
+      "reference": "Referencia",
+      "action": "Puedes revisarla desde la página relacionada:",
+      "regards": "Saludos,",
+      "signature": "Monitoreo SpotTrack",
+      "footer": "Este mensaje fue generado automáticamente por SpotTrack. Elimínalo cuando haya sido atendido."
     }
   },
   "nav": {
@@ -408,17 +493,47 @@
       "whitelist": "Lista de socios",
       "addGym": "Agregar otro gimnasio"
     },
-    "sensorsOnline": "{{online}} de {{total}} sensores en línea"
+    "sensorsOnline": "{{online}} de {{total}} sensores en línea",
+    "technicians": "Técnicos"
   },
   "monitoring": {
     "sensors": {
-      "title": "Registro de Sensores",
-      "subtitle": "Registra cámaras y sensores de movimiento para el monitoreo IoT",
+      "title": "Registrar Sensor de Movimiento",
+      "subtitle": "Asigna un sensor de movimiento a una máquina para registrar su uso automáticamente",
       "cameraTitle": "Sensor de Cámara",
       "motionTitle": "Sensor de Movimiento",
       "equipment": "Equipo",
       "registerCamera": "Registrar Cámara",
-      "registerMotion": "Registrar Sensor de Movimiento"
+      "registerMotion": "Registrar sensor",
+      "back": "Volver a monitoreo IoT",
+      "success": "Sensor de movimiento registrado para {{machine}}.",
+      "pickTitle": "Elige una máquina",
+      "pickSubtitle": "Cada sensor vigila un solo equipo",
+      "search": "Buscar por nombre, marca o modelo…",
+      "filter": {
+        "uncovered": "Sin sensor",
+        "all": "Todas las máquinas"
+      },
+      "hasSensor": "{{count}} sensor",
+      "noSensor": "Sin sensor",
+      "allCovered": "Todas las máquinas ya tienen un sensor de movimiento.",
+      "noMatch": "Ninguna máquina coincide con tu búsqueda.",
+      "summary": "Un nuevo sensor vigilará {{machine}}",
+      "summaryEmpty": "Selecciona una máquina para continuar",
+      "coverage": {
+        "title": "Cobertura de sensores",
+        "machines": "{{covered}} de {{total}} máquinas",
+        "sensors": "Sensores de movimiento",
+        "online": "En línea ahora"
+      },
+      "how": {
+        "title": "Cómo funciona",
+        "step1": "Elige la máquina donde está montado el sensor.",
+        "step2": "Se crea un ID de sensor; el dispositivo reporta movimiento con él.",
+        "step3": "Cuando llegan sus latidos aparece En línea y se registran las sesiones de uso."
+      },
+      "registeredTitle": "Sensores registrados",
+      "noneRegistered": "Aún no hay sensores de movimiento registrados."
     },
     "sessionTracking": {
       "title": "Rastreo de Sesiones",
@@ -558,7 +673,8 @@
       "save": "Registrar",
       "updateStatus": "Actualizar Estado",
       "cancel": "Cancelar",
-      "confirm": "Confirmar"
+      "confirm": "Confirmar",
+      "saveChanges": "Guardar cambios"
     },
     "table": {
       "id": "ID",
@@ -588,17 +704,22 @@
     },
     "dialog": {
       "addTitle": "Registrar Nuevo Equipo",
-      "editTitle": "Actualizar Estado del Equipo",
-      "subtitle": "Completa todos los campos requeridos para registrar el equipo en el sistema.",
-      "editHint": "En modo edición solo se puede actualizar el estado del equipo.",
+      "editTitle": "Editar Equipo",
+      "subtitle": "Agrega una máquina a tu gimnasio para que los socios puedan verla, reservarla y medir su uso.",
+      "editHint": "Corrige los datos de la máquina, su estado o la fecha del próximo mantenimiento.",
       "editMode": "Modo edición",
       "newMode": "Nuevo equipo",
       "deleteTitle": "Dar de baja",
       "deleteMessage": "¿Estás seguro de que deseas dar de baja este equipo? Esta acción no se puede deshacer.",
       "sections": {
         "identification": "Identificación",
-        "configuration": "Precio y Ubicación",
-        "status": "Estado Operacional"
+        "configuration": "Ubicación y compra",
+        "status": "Estado Operacional",
+        "details": "Datos de la máquina",
+        "detailsHint": "Los datos registrados no se pueden cambiar después de crearla",
+        "identificationHint": "Cómo verán la máquina el personal y los socios",
+        "configurationHint": "Dónde está y cuánto costó, usado en la analítica de ROI",
+        "statusHint": "Estado actual y próximo mantenimiento preventivo"
       },
       "fields": {
         "name": "Nombre del equipo",
@@ -619,6 +740,26 @@
       "validation": {
         "required": "Este campo es obligatorio",
         "min": "El valor debe ser 0 o mayor"
+      },
+      "back": "Volver a equipos",
+      "placeholders": {
+        "name": "Ej. Caminadora 03",
+        "brand": "Ej. Life Fitness",
+        "model": "Ej. Integrity SL",
+        "zone": "Selecciona una zona"
+      },
+      "createZones": "Crear zonas en la gestión de sedes",
+      "preview": {
+        "title": "Vista previa",
+        "unnamed": "Máquina sin nombre",
+        "nextMaintenance": "Próximo mantenimiento",
+        "notSet": "Sin definir"
+      },
+      "tips": {
+        "title": "Para tener en cuenta",
+        "item1": "Incluye un número en el nombre (Caminadora 03) para distinguir máquinas iguales.",
+        "item2": "El monto de compra alimenta los reportes de impacto financiero y ROI.",
+        "item3": "Tras registrarla, asígnale un sensor de movimiento desde Monitoreo IoT para medir su uso."
       }
     }
   },
@@ -782,7 +923,36 @@
       "time": "Hora Programada",
       "description": "Descripción",
       "cancel": "Cancelar",
-      "submit": "Crear Ticket"
+      "submit": "Crear Ticket",
+      "back": "Volver a mantenimiento",
+      "subtitle": "Reporta un problema en una máquina o planifica trabajo preventivo para los técnicos",
+      "equipmentHint": "Elige la máquina que necesita atención",
+      "searchMachine": "Buscar por nombre, marca o modelo…",
+      "noMachines": "Ninguna máquina coincide con tu búsqueda.",
+      "pickMachine": "Selecciona una máquina para continuar",
+      "change": "Cambiar máquina",
+      "openTickets": "Tickets abiertos",
+      "duplicateWarning": "Esta máquina ya tiene {{count}} ticket(s) abierto(s). Revisa el tablero antes de crear un duplicado.",
+      "problemTitle": "Problema",
+      "problemHint": "Qué tipo de trabajo es y qué tan urgente",
+      "typeHint": {
+        "CORRECTIVE": "Algo está roto o fallando",
+        "PREVENTIVE": "Mantenimiento planificado antes de que falle"
+      },
+      "descriptionPlaceholder": "Ej. La banda patina con carga y chirría por encima de 8 km/h.",
+      "scheduleTitle": "Horario preferido",
+      "scheduleHint": "Opcional — compara el horario con las horas punta del gimnasio",
+      "summary": {
+        "title": "Resumen del ticket",
+        "none": "Sin seleccionar",
+        "when": "Horario preferido"
+      },
+      "next": {
+        "title": "Qué sigue",
+        "step1": "El ticket aparece en la columna Pendiente del tablero de mantenimiento.",
+        "step2": "Asigna un técnico para iniciarlo; pasa a En progreso.",
+        "step3": "Complétalo con notas y el costo de la reparación para cerrarlo."
+      }
     },
     "scheduler": {
       "peakWarning": "Hora de alta demanda",
@@ -830,6 +1000,51 @@
       "logTitle": "Registro de finalización",
       "logLoading": "Cargando registro...",
       "logEmpty": "Aún no hay registros de finalización."
+    },
+    "detail": {
+      "description": "Descripción",
+      "created": "Creado",
+      "unassigned": "Sin asignar",
+      "ids": "ID del ticket",
+      "prev": "Ticket anterior",
+      "next": "Ticket siguiente",
+      "saving": "Guardando…",
+      "saved": "Guardado",
+      "createdOn": "Creado {{date}}",
+      "copyId": "Copiar ID del ticket",
+      "kind": "Ticket",
+      "unknownMachine": "Máquina desconocida",
+      "resolvedLocked": "Este ticket está resuelto, así que sus campos están bloqueados.",
+      "assignToStart": "Asignar para iniciar",
+      "edit": "Editar",
+      "save": "Guardar",
+      "saveHint": "Ctrl/⌘ + Enter para guardar",
+      "noDescription": "Sin descripción. Haz clic para agregar una.",
+      "expand": "Ver más",
+      "collapse": "Ver menos",
+      "activity": {
+        "title": "Actividad",
+        "created": "Ticket creado",
+        "assigned": "Asignado a {{name}}",
+        "completed": "Completado con notas",
+        "hint": "Las notas de cierre aparecen aquí cuando se completa el ticket."
+      },
+      "assign": "Asignar técnico",
+      "noTechnicians": "Aún no hay técnicos — agrégalos en Técnicos",
+      "needsTechnician": "Asigna un técnico antes de mover este ticket a En progreso."
+    },
+    "view": {
+      "label": "Vista de tickets",
+      "board": "Tablero",
+      "list": "Lista"
+    },
+    "list": {
+      "ticket": "Ticket",
+      "status": "Estado",
+      "age": "Antigüedad"
+    },
+    "board": {
+      "dragHint": "Arrastra un ticket a otra columna para cambiar su estado."
     }
   },
   "routines": {
@@ -1178,7 +1393,7 @@
   },
   "settings": {
     "title": "Configuración",
-    "subtitle": "Gestiona tu equipo de mantenimiento",
+    "subtitle": "Preferencias de notificación de tu cuenta",
     "technicians": {
       "title": "Técnicos",
       "subtitle": "Técnicos disponibles para asignar a tickets de mantenimiento",
@@ -1238,6 +1453,86 @@
       "addFailed": "No se pudo agregar el DNI. Inténtalo de nuevo.",
       "duplicate": "Este DNI ya está en la whitelist.",
       "invalidFormat": "El DNI debe tener exactamente 8 dígitos."
+    }
+  },
+  "technicians": {
+    "title": "Técnicos",
+    "subtitle": "Tu equipo de mantenimiento, su carga de trabajo e historial",
+    "search": "Buscar por nombre o ID…",
+    "copyId": "Copiar ID del técnico",
+    "unassigned": "{{count}} ticket(s) abierto(s) aún no tienen técnico. Asígnalos desde el tablero de mantenimiento.",
+    "stats": {
+      "total": "Técnicos",
+      "available": "Disponibles",
+      "busy": "Trabajando ahora",
+      "completed": "Tickets completados"
+    },
+    "filter": {
+      "all": "Todos",
+      "available": "Disponible",
+      "assigned": "Asignado",
+      "busy": "Trabajando"
+    },
+    "sort": {
+      "label": "Ordenar técnicos",
+      "name": "Nombre (A–Z)",
+      "workload": "Más carga",
+      "completed": "Más completados"
+    },
+    "card": {
+      "pending": "Pendientes",
+      "inProgress": "En progreso",
+      "completed": "Completados",
+      "currentWork": "Trabajo actual",
+      "free": "Sin tickets abiertos",
+      "more": "+{{count}} más",
+      "viewAll": "Ver todos los tickets"
+    },
+    "empty": {
+      "title": "Aún no hay técnicos",
+      "desc": "Agrega a las personas que reparan tus máquinas para poder asignarles tickets.",
+      "noMatch": "Ningún técnico coincide con estos filtros",
+      "reset": "Limpiar filtros"
+    },
+    "add": {
+      "button": "Agregar técnico",
+      "title": "Agregar técnico",
+      "subtitle": "Estará disponible para asignar en los tickets de mantenimiento",
+      "name": "Nombre completo",
+      "submit": "Agregar técnico",
+      "duplicate": "Ya existe un técnico con este nombre"
+    },
+    "detail": {
+      "urgent": "Urgentes / altos abiertos",
+      "tickets": "Tickets",
+      "search": "Buscar máquina, descripción o ID…",
+      "sort": {
+        "newest": "Más recientes",
+        "oldest": "Más antiguos",
+        "priority": "Mayor prioridad"
+      },
+      "tab": {
+        "active": "Activos",
+        "OPEN": "Pendientes",
+        "IN_PROGRESS": "En progreso",
+        "RESOLVED": "Completados",
+        "all": "Todos"
+      },
+      "noMatch": "Ningún ticket coincide",
+      "noTickets": "Aún no hay tickets",
+      "completion": "Cumplimiento",
+      "resolvedOf": "{{done}} de {{total}} tickets resueltos",
+      "machines": "Máquinas atendidas",
+      "notFound": "Este técnico no existe."
+    },
+    "view": {
+      "label": "Vista de técnicos",
+      "grid": "Tarjetas",
+      "list": "Lista"
+    },
+    "list": {
+      "technician": "Técnico",
+      "state": "Estado"
     }
   },
   "shared": {

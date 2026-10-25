@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import { Component, computed, DestroyRef, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
@@ -10,6 +10,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
 import { MonitoringStore } from '../../../monitoring/application/monitoring.store';
 import { SessionTrackerResource } from '../../../monitoring/infrastructure/monitoring-response';
+import { PaginatorComponent, paginate } from '../../../shared/presentation/components/paginator/paginator';
 
 type SensorType = 'camera' | 'motion';
 
@@ -37,6 +38,7 @@ interface SensorRow {
     MatProgressSpinnerModule,
     MatFormFieldModule,
     MatSelectModule,
+    PaginatorComponent,
   ],
   templateUrl: './iot-monitoring.html',
   styleUrl: './iot-monitoring.scss',
@@ -54,6 +56,13 @@ export class IotMonitoringComponent {
       this.sessionStore.loadNetworkHealth();
     }, IotMonitoringComponent.AUTO_REFRESH_MS);
     inject(DestroyRef).onDestroy(() => clearInterval(timer));
+
+    // A new search or type filter starts on the first page.
+    effect(() => {
+      this.searchQuery();
+      this.typeFilter();
+      this.sensorPage.set(0);
+    }, { allowSignalWrites: true });
   }
 
   readonly displayedColumns = ['sensorId', 'type', 'equipment', 'status', 'connectivity', 'registeredAt', 'actions'];
@@ -120,6 +129,13 @@ export class IotMonitoringComponent {
     });
   });
 
+  readonly sensorPage     = signal(0);
+  readonly sensorPageSize = signal(10);
+
+  readonly pagedSensors = computed(() =>
+    paginate(this.filteredSensors(), this.sensorPage(), this.sensorPageSize())
+  );
+
   onSearchChange(v: string): void { this.searchQuery.set(v); }
   onTypeFilterChange(v: string): void { this.typeFilter.set(v as SensorType | ''); }
 
@@ -153,6 +169,13 @@ export class IotMonitoringComponent {
   readonly sessionError = this.sessionStore.actionError;
   readonly trackedSessions = this.sessionStore.trackedSessions;
   readonly lastCalculatedTime = this.sessionStore.lastCalculatedTime;
+
+  readonly sessionPage     = signal(0);
+  readonly sessionPageSize = signal(5);
+
+  readonly pagedSessions = computed(() =>
+    paginate(this.trackedSessions(), this.sessionPage(), this.sessionPageSize())
+  );
 
   readonly selectedSessionId = signal<string | null>(null);
   readonly selectedSession = computed<SessionTrackerResource | undefined>(() =>

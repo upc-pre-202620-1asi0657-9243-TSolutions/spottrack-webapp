@@ -9,6 +9,16 @@ import { EquipmentAssembler } from './equipment-assembler';
 import { EquipmentResource } from './equipment-response';
 import { environment } from '../../../environments/environment';
 
+/** Descriptive data an admin can correct after registration. */
+export interface EquipmentDetails {
+  name:             string;
+  brand:            string;
+  model:            string;
+  zoneId:           string;
+  purchaseAmount:   number;
+  purchaseCurrency: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class EquipmentApi extends BaseApi {
   private readonly endpoint:  EquipmentApiEndpoint;
@@ -30,6 +40,23 @@ export class EquipmentApi extends BaseApi {
     ).pipe(
       map(r => this.assembler.toEntityFromResource(r)),
       catchError(() => throwError(() => new Error('Failed to update equipment status')))
+    );
+  }
+
+  updateEquipmentDetails(uuid: string, details: EquipmentDetails): Observable<Equipment> {
+    return this.http.patch<EquipmentResource>(
+      `${environment.apiBase}/equipments/${uuid}/details`,
+      {
+        equipmentName:    details.name,
+        model:            details.model,
+        manufacturerId:   details.brand,
+        zoneId:           details.zoneId,
+        purchaseCurrency: details.purchaseCurrency,
+        purchaseAmount:   details.purchaseAmount,
+      }
+    ).pipe(
+      map(r => this.assembler.toEntityFromResource(r)),
+      catchError(() => throwError(() => new Error('Failed to update equipment details')))
     );
   }
 

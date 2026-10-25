@@ -280,6 +280,217 @@ $blue:     var(--info);
   }
 }
 
+// ── Drag and drop ────────────────────────────────────────────────────────────
+.board-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: -8px 0 -6px;
+  font-size: .75rem;
+  color: $muted;
+
+  mat-icon { font-size: 16px; width: 16px; height: 16px; }
+}
+
+.move-error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  background: var(--danger-soft);
+  color: $red;
+  font-size: .8125rem;
+
+  span { flex: 1; }
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+  button {
+    display: flex;
+    padding: 2px;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+  }
+}
+
+.ticket-list {
+  min-height: 80px;
+  transition: background .15s;
+
+  // Columns light up while a card is being dragged over the board.
+  &.cdk-drop-list-receiving { background: var(--accent-soft); }
+  &.cdk-drop-list-dragging  { background: var(--surface-hover); }
+}
+
+.ticket-card.cdk-drag {
+  cursor: grab;
+  &.cdk-drag-disabled { cursor: pointer; }
+}
+
+.ticket-card.cdk-drag-preview {
+  box-sizing: border-box;
+  border-color: var(--accent);
+  box-shadow: var(--shadow-lg);
+  transform: rotate(1.5deg);
+  cursor: grabbing;
+}
+
+.ticket-placeholder {
+  min-height: 72px;
+  border: 2px dashed var(--accent);
+  border-radius: 12px;
+  background: var(--accent-soft);
+}
+
+.cdk-drag-animating { transition: transform .2s cubic-bezier(0, 0, .2, 1); }
+
+.ticket-person {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  margin: 0 8px 0 auto;
+  overflow: hidden;
+  font-size: .75rem;
+  color: var(--text-2);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  &--empty { color: $faint; font-style: italic; }
+}
+
+.ticket-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: $accent;
+  color: var(--accent-contrast);
+  font-size: .625rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+// ── Board / list toggle ──────────────────────────────────────────────────────
+.view-toggle {
+  display: inline-flex;
+  flex-shrink: 0;
+  padding: 3px;
+  background: var(--surface-3);
+  border-radius: var(--radius);
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 12px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: $muted;
+    font: inherit;
+    font-size: .8125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+
+    mat-icon { font-size: 18px; width: 18px; height: 18px; }
+    &:hover { color: $text; }
+    &:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+  }
+
+  .view-toggle__on {
+    background: $bg-card;
+    color: $text;
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+// ── List view ────────────────────────────────────────────────────────────────
+.ticket-table-card {
+  background: $bg-card;
+  border: 1px solid $border;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+
+  &__footer { padding: 10px 16px; border-top: 1px solid $border; }
+}
+
+.ticket-table-wrap { overflow-x: auto; }
+
+.ticket-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .8125rem;
+
+  th {
+    padding: 10px 16px;
+    background: $bg-inner;
+    border-bottom: 1px solid $border;
+    color: $muted;
+    font-size: .75rem;
+    font-weight: 600;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 12px 16px;
+    border-bottom: 1px solid $border;
+    vertical-align: middle;
+  }
+
+  tbody tr {
+    cursor: pointer;
+    transition: background .15s;
+
+    &:hover { background: var(--surface-hover); }
+    &:focus-visible { outline: none; box-shadow: inset var(--focus-ring); }
+    &:last-child td { border-bottom: none; }
+  }
+
+  &__id { font-family: var(--font-mono); font-size: .75rem; color: $muted; white-space: nowrap; }
+
+  &__machine { display: block; font-weight: 600; color: $heading; white-space: nowrap; }
+
+  &__desc {
+    display: block;
+    max-width: 320px;
+    margin-top: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: $muted;
+    font-size: .75rem;
+  }
+
+  &__muted { color: $muted; white-space: nowrap; }
+  &__actions { width: 1%; text-align: right; white-space: nowrap; }
+
+  .td-status, .priority-badge { white-space: nowrap; }
+}
+
+.row-btn {
+  height: 28px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 6px;
+  font: inherit;
+  font-size: .75rem;
+  font-weight: 700;
+  cursor: pointer;
+
+  &--start    { background: $accent; color: var(--accent-contrast); &:hover { background: var(--accent-hover); } }
+  &--complete { background: $green;  color: #fff; &:hover { opacity: .88; } }
+}
+
 // ── Kanban board ──────────────────────────────────────────────────────────────
 .kanban {
   display: grid;
@@ -354,6 +565,14 @@ $blue:     var(--info);
 
   &--completed {
     opacity: .75;
+  }
+
+  &--clickable {
+    cursor: pointer;
+    transition: border-color .15s, box-shadow .15s;
+
+    &:hover { border-color: var(--border-strong); box-shadow: var(--shadow-md); }
+    &:focus-visible { outline: none; box-shadow: var(--focus-ring); }
   }
 }
 
@@ -447,26 +666,6 @@ $blue:     var(--info);
 }
 
 // ── Action buttons ────────────────────────────────────────────────────────────
-.btn-start {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  width: 100%;
-  padding: 8px 0;
-  background: $accent;
-  border: none;
-  border-radius: 6px;
-  color: var(--accent-contrast);
-  font-weight: 700;
-  font-size: .875rem;
-  cursor: pointer;
-  transition: background .15s;
-
-  mat-icon { font-size: 16px; width: 16px; height: 16px; }
-  &:hover { background: var(--accent-hover); }
-}
-
 .btn-complete {
   display: flex;
   align-items: center;
@@ -498,6 +697,8 @@ $blue:     var(--info);
   .maint-stats   { grid-template-columns: repeat(2, 1fr); }
   .filters-bar   { flex-direction: column; align-items: stretch; }
   .filter-field  { width: 100%; }
+  .view-toggle   { align-self: stretch; }
+  .view-toggle button { flex: 1; justify-content: center; }
   .form-grid     { grid-template-columns: 1fr; }
 }
 
@@ -654,4 +855,21 @@ $blue:     var(--info);
   margin: 0;
   color: $muted;
   font-size: .75rem;
+}
+
+// ── Status pill (list view) ──────────────────────────────────────────────────
+.td-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: .75rem;
+  font-weight: 600;
+
+  i { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+  &--open        { background: var(--danger-soft);  color: $red; }
+  &--in_progress { background: var(--warning-soft); color: $amber; }
+  &--resolved    { background: var(--success-soft); color: $green; }
 }

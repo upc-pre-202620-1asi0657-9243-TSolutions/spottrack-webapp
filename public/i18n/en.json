@@ -354,7 +354,7 @@
     }
   },
   "alerts": {
-    "emptyState": "No pending alerts",
+    "emptyState": "New alerts will show up here.",
     "detailsBtn": "View details →",
     "deleteTitle": "Delete alert",
     "clearAll": "Clear all",
@@ -363,13 +363,13 @@
       "CRITICAL": "Critical"
     },
     "time": {
-      "moment":  "Just now",
-      "minute":  "{{count}} minute ago",
+      "moment": "Just now",
+      "minute": "{{count}} minute ago",
       "minutes": "{{count}} minutes ago",
-      "hour":    "{{count}} hour ago",
-      "hours":   "{{count}} hours ago",
-      "day":     "{{count}} day ago",
-      "days":    "{{count}} days ago"
+      "hour": "{{count}} hour ago",
+      "hours": "{{count}} hours ago",
+      "day": "{{count}} day ago",
+      "days": "{{count}} days ago"
     },
     "backend": {
       "maintenanceThreshold": {
@@ -378,6 +378,91 @@
       "anomalyReported": {
         "title": "Anomaly Reported"
       }
+    },
+    "title": "Alerts",
+    "subtitleAdmin": "Maintenance, sensor and equipment events across your gym",
+    "subtitleClient": "Updates about your reservations",
+    "clearConfirm": "Delete all {{count}} alerts?",
+    "cancel": "Cancel",
+    "filter": {
+      "all": "All",
+      "critical": "Critical",
+      "warning": "Warning",
+      "info": "Info"
+    },
+    "search": "Search alerts…",
+    "emptyTitle": "You're all caught up",
+    "noMatch": "No alerts match these filters",
+    "resetFilters": "Clear filters",
+    "group": {
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "earlier": "Earlier",
+      "week": "Earlier this week"
+    },
+    "new": "New since your last visit",
+    "goToTarget": "Open related page",
+    "backToInbox": "Back to alerts",
+    "dismiss": "Delete alert",
+    "noDescription": "No further details.",
+    "notFound": "This alert no longer exists.",
+    "source": {
+      "admin": "Gym",
+      "client": "Reservation",
+      "system": "System"
+    },
+    "fields": {
+      "severity": "Severity",
+      "received": "Received",
+      "source": "Source"
+    },
+    "unreadCount": "{{count}} unread",
+    "markAllRead": "Mark all as read",
+    "delete": "Delete",
+    "folders": "Alert folders",
+    "folder": {
+      "all": "Inbox",
+      "unread": "Unread",
+      "critical": "Critical",
+      "warning": "Warnings",
+      "info": "Info"
+    },
+    "sort": {
+      "newest": "Newest first",
+      "oldest": "Oldest first"
+    },
+    "reader": {
+      "title": "Select an alert to read it",
+      "subtitle": "Nothing is selected"
+    },
+    "filters": {
+      "title": "Filter by date and time",
+      "date": "Date",
+      "hours": "Time of day",
+      "from": "From",
+      "to": "To",
+      "anyHour": "Any",
+      "preset": {
+        "any": "Any time",
+        "today": "Today",
+        "week": "Last 7 days",
+        "month": "Last 30 days",
+        "custom": "Custom range"
+      },
+      "overnight": "Overnight window: includes hours after the start and before the end.",
+      "clear": "Clear date filters"
+    },
+    "markRead": "Mark as read",
+    "markUnread": "Mark as unread",
+    "mail": {
+      "sender": "SpotTrack Alerts",
+      "to": "To: you",
+      "greeting": "Hello,",
+      "reference": "Reference",
+      "action": "You can review it from the related page:",
+      "regards": "Regards,",
+      "signature": "SpotTrack monitoring",
+      "footer": "This message was generated automatically by SpotTrack. Delete it once it has been handled."
     }
   },
   "nav": {
@@ -408,17 +493,47 @@
       "whitelist": "Member whitelist",
       "addGym": "Add another gym"
     },
-    "sensorsOnline": "{{online}} of {{total}} sensors online"
+    "sensorsOnline": "{{online}} of {{total}} sensors online",
+    "technicians": "Technicians"
   },
   "monitoring": {
     "sensors": {
-      "title": "Sensor Registration",
-      "subtitle": "Register cameras and motion sensors for IoT monitoring",
+      "title": "Register Motion Sensor",
+      "subtitle": "Attach a motion sensor to a machine so its usage is tracked automatically",
       "cameraTitle": "Camera Sensor",
       "motionTitle": "Motion Sensor",
       "equipment": "Equipment",
       "registerCamera": "Register Camera",
-      "registerMotion": "Register Motion Sensor"
+      "registerMotion": "Register sensor",
+      "back": "Back to IoT monitoring",
+      "success": "Motion sensor registered for {{machine}}.",
+      "pickTitle": "Choose a machine",
+      "pickSubtitle": "Each sensor watches one piece of equipment",
+      "search": "Search by name, brand or model…",
+      "filter": {
+        "uncovered": "Without sensor",
+        "all": "All machines"
+      },
+      "hasSensor": "{{count}} sensor",
+      "noSensor": "No sensor",
+      "allCovered": "Every machine already has a motion sensor.",
+      "noMatch": "No machines match your search.",
+      "summary": "A new sensor will watch {{machine}}",
+      "summaryEmpty": "Select a machine to continue",
+      "coverage": {
+        "title": "Sensor coverage",
+        "machines": "{{covered}} of {{total}} machines",
+        "sensors": "Motion sensors",
+        "online": "Online now"
+      },
+      "how": {
+        "title": "How it works",
+        "step1": "Pick the machine the sensor is mounted on.",
+        "step2": "A sensor ID is created; the device reports motion with it.",
+        "step3": "Once heartbeats arrive it shows Online and usage sessions are tracked."
+      },
+      "registeredTitle": "Registered sensors",
+      "noneRegistered": "No motion sensors registered yet."
     },
     "sessionTracking": {
       "title": "Session Tracking",
@@ -558,7 +673,8 @@
       "save": "Register",
       "updateStatus": "Update Status",
       "cancel": "Cancel",
-      "confirm": "Confirm"
+      "confirm": "Confirm",
+      "saveChanges": "Save changes"
     },
     "table": {
       "id": "ID",
@@ -588,17 +704,22 @@
     },
     "dialog": {
       "addTitle": "Register New Equipment",
-      "editTitle": "Update Equipment Status",
-      "subtitle": "Fill in all required fields to register the equipment in the system.",
-      "editHint": "In edit mode only the status can be updated.",
+      "editTitle": "Edit Equipment",
+      "subtitle": "Add a machine to your gym so members can see, book and track it.",
+      "editHint": "Correct the machine details, its status or the next maintenance date.",
       "editMode": "Edit mode",
       "newMode": "New equipment",
       "deleteTitle": "Decommission Equipment",
       "deleteMessage": "Are you sure you want to decommission this equipment? This action cannot be undone.",
       "sections": {
         "identification": "Identification",
-        "configuration": "Pricing & Location",
-        "status": "Operational Status"
+        "configuration": "Location & purchase",
+        "status": "Operational Status",
+        "details": "Machine details",
+        "detailsHint": "Registered details can't be changed after creation",
+        "identificationHint": "How the machine appears to staff and members",
+        "configurationHint": "Where it stands and what it cost, used for ROI analytics",
+        "statusHint": "Current state and next preventive maintenance"
       },
       "fields": {
         "name": "Equipment name",
@@ -619,6 +740,26 @@
       "validation": {
         "required": "This field is required",
         "min": "Value must be 0 or greater"
+      },
+      "back": "Back to equipment",
+      "placeholders": {
+        "name": "e.g. Treadmill 03",
+        "brand": "e.g. Life Fitness",
+        "model": "e.g. Integrity SL",
+        "zone": "Select a zone"
+      },
+      "createZones": "Create zones in branch management",
+      "preview": {
+        "title": "Preview",
+        "unnamed": "Unnamed machine",
+        "nextMaintenance": "Next maintenance",
+        "notSet": "Not set"
+      },
+      "tips": {
+        "title": "Good to know",
+        "item1": "Include a number in the name (Treadmill 03) so twins are easy to tell apart.",
+        "item2": "The purchase amount feeds the financial impact and ROI reports.",
+        "item3": "After registering, attach a motion sensor from IoT monitoring to track usage."
       }
     }
   },
@@ -782,7 +923,36 @@
       "time": "Scheduled Time",
       "description": "Description",
       "cancel": "Cancel",
-      "submit": "Create Ticket"
+      "submit": "Create Ticket",
+      "back": "Back to maintenance",
+      "subtitle": "Report a machine problem or plan preventive work for the technicians",
+      "equipmentHint": "Pick the machine that needs attention",
+      "searchMachine": "Search by name, brand or model…",
+      "noMachines": "No machines match your search.",
+      "pickMachine": "Select a machine to continue",
+      "change": "Change machine",
+      "openTickets": "Open tickets",
+      "duplicateWarning": "This machine already has {{count}} open ticket(s). Check the board before filing a duplicate.",
+      "problemTitle": "Problem",
+      "problemHint": "What kind of work it is and how urgent",
+      "typeHint": {
+        "CORRECTIVE": "Something is broken or failing",
+        "PREVENTIVE": "Planned upkeep before it fails"
+      },
+      "descriptionPlaceholder": "e.g. The belt slips under load and makes a squeaking sound above 8 km/h.",
+      "scheduleTitle": "Preferred slot",
+      "scheduleHint": "Optional — checks the slot against peak gym hours",
+      "summary": {
+        "title": "Ticket summary",
+        "none": "Not selected",
+        "when": "Preferred slot"
+      },
+      "next": {
+        "title": "What happens next",
+        "step1": "The ticket lands in the Pending column of the maintenance board.",
+        "step2": "Assign a technician to start it; it moves to In progress.",
+        "step3": "Complete it with notes and the repair cost to close it."
+      }
     },
     "scheduler": {
       "peakWarning": "Peak demand hour",
@@ -830,6 +1000,51 @@
       "logTitle": "Completion log",
       "logLoading": "Loading log...",
       "logEmpty": "No completion log entries yet."
+    },
+    "detail": {
+      "description": "Description",
+      "created": "Created",
+      "unassigned": "Not assigned yet",
+      "ids": "Ticket ID",
+      "prev": "Previous ticket",
+      "next": "Next ticket",
+      "saving": "Saving…",
+      "saved": "Saved",
+      "createdOn": "Created {{date}}",
+      "copyId": "Copy ticket ID",
+      "kind": "Ticket",
+      "unknownMachine": "Unknown machine",
+      "resolvedLocked": "This ticket is resolved, so its fields are locked.",
+      "assignToStart": "Assign to start",
+      "edit": "Edit",
+      "save": "Save",
+      "saveHint": "Ctrl/⌘ + Enter to save",
+      "noDescription": "No description yet. Click to add one.",
+      "expand": "Expand",
+      "collapse": "Collapse",
+      "activity": {
+        "title": "Activity",
+        "created": "Ticket created",
+        "assigned": "Assigned to {{name}}",
+        "completed": "Completed with notes",
+        "hint": "Completion notes appear here when the ticket is completed."
+      },
+      "assign": "Assign technician",
+      "noTechnicians": "No technicians yet — add them in Technicians",
+      "needsTechnician": "Assign a technician before moving this ticket to In progress."
+    },
+    "view": {
+      "label": "Ticket view",
+      "board": "Board",
+      "list": "List"
+    },
+    "list": {
+      "ticket": "Ticket",
+      "status": "Status",
+      "age": "Age"
+    },
+    "board": {
+      "dragHint": "Drag a ticket to another column to change its status."
     }
   },
   "routines": {
@@ -1178,7 +1393,7 @@
   },
   "settings": {
     "title": "Settings",
-    "subtitle": "Manage your maintenance team",
+    "subtitle": "Notification preferences for your account",
     "technicians": {
       "title": "Technicians",
       "subtitle": "Technicians available to assign to maintenance tickets",
@@ -1238,6 +1453,86 @@
       "addFailed": "Could not add DNI. Please try again.",
       "duplicate": "This DNI is already in the whitelist.",
       "invalidFormat": "DNI must be exactly 8 digits."
+    }
+  },
+  "technicians": {
+    "title": "Technicians",
+    "subtitle": "Your maintenance team, their workload and track record",
+    "search": "Search by name or ID…",
+    "copyId": "Copy technician ID",
+    "unassigned": "{{count}} open ticket(s) have no technician yet. Assign them from the maintenance board.",
+    "stats": {
+      "total": "Technicians",
+      "available": "Available",
+      "busy": "Working now",
+      "completed": "Tickets completed"
+    },
+    "filter": {
+      "all": "All",
+      "available": "Available",
+      "assigned": "Assigned",
+      "busy": "Working"
+    },
+    "sort": {
+      "label": "Sort technicians",
+      "name": "Name (A–Z)",
+      "workload": "Most workload",
+      "completed": "Most completed"
+    },
+    "card": {
+      "pending": "Pending",
+      "inProgress": "In progress",
+      "completed": "Completed",
+      "currentWork": "Current work",
+      "free": "No open tickets",
+      "more": "+{{count}} more",
+      "viewAll": "View all tickets"
+    },
+    "empty": {
+      "title": "No technicians yet",
+      "desc": "Add the people who repair your machines so tickets can be assigned to them.",
+      "noMatch": "No technicians match these filters",
+      "reset": "Clear filters"
+    },
+    "add": {
+      "button": "Add technician",
+      "title": "Add technician",
+      "subtitle": "They'll be available to assign on maintenance tickets",
+      "name": "Full name",
+      "submit": "Add technician",
+      "duplicate": "A technician with this name already exists"
+    },
+    "detail": {
+      "urgent": "Urgent / high open",
+      "tickets": "Tickets",
+      "search": "Search machine, description or ID…",
+      "sort": {
+        "newest": "Newest first",
+        "oldest": "Oldest first",
+        "priority": "Highest priority"
+      },
+      "tab": {
+        "active": "Active",
+        "OPEN": "Pending",
+        "IN_PROGRESS": "In progress",
+        "RESOLVED": "Completed",
+        "all": "All"
+      },
+      "noMatch": "No tickets match",
+      "noTickets": "No tickets yet",
+      "completion": "Completion",
+      "resolvedOf": "{{done}} of {{total}} tickets resolved",
+      "machines": "Machines worked on",
+      "notFound": "This technician doesn't exist."
+    },
+    "view": {
+      "label": "Technician view",
+      "grid": "Cards",
+      "list": "List"
+    },
+    "list": {
+      "technician": "Technician",
+      "state": "State"
     }
   },
   "shared": {

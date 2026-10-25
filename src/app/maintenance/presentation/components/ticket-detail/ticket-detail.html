@@ -1,0 +1,253 @@
+<div class="tdp-overlay" (click)="closed.emit()">
+  <div class="tdp" role="dialog" aria-modal="true" [attr.aria-label]="code()" (click)="$event.stopPropagation()">
+
+    <!-- ── Top bar ────────────────────────────────────────────────────── -->
+    <header class="tdp-bar">
+      <div class="tdp-bar__nav">
+        <button type="button" class="icon-btn" [disabled]="!hasPrev()" (click)="prev.emit()"
+                [title]="'maintenance.detail.prev' | translate">
+          <mat-icon>keyboard_arrow_up</mat-icon>
+        </button>
+        <button type="button" class="icon-btn" [disabled]="!hasNext()" (click)="next.emit()"
+                [title]="'maintenance.detail.next' | translate">
+          <mat-icon>keyboard_arrow_down</mat-icon>
+        </button>
+      </div>
+
+      <nav class="tdp-crumbs">
+        <span class="tdp-crumbs__root"><mat-icon>build</mat-icon>{{ 'maintenance.title' | translate }}</span>
+        <mat-icon class="tdp-crumbs__sep">chevron_right</mat-icon>
+        <span class="tdp-crumbs__item">{{ equipment()?.name ?? '—' }}</span>
+        <mat-icon class="tdp-crumbs__sep">chevron_right</mat-icon>
+        <span class="tdp-crumbs__code">{{ code() }}</span>
+      </nav>
+
+      <div class="tdp-bar__end">
+        @if (saving()) {
+          <span class="tdp-save"><mat-icon class="spin">autorenew</mat-icon>{{ 'maintenance.detail.saving' | translate }}</span>
+        } @else if (justSaved()) {
+          <span class="tdp-save tdp-save--ok"><mat-icon>check</mat-icon>{{ 'maintenance.detail.saved' | translate }}</span>
+        }
+        <span class="tdp-created">{{ 'maintenance.detail.createdOn' | translate: { date: (ticket().createdAt | date: 'MMM d') } }}</span>
+        <button type="button" class="icon-btn" (click)="copyId()" [title]="'maintenance.detail.copyId' | translate">
+          <mat-icon>link</mat-icon>
+        </button>
+        <button type="button" class="icon-btn" (click)="closed.emit()" [title]="'maintenance.controlPoint.close' | translate">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </header>
+
+    <div class="tdp-body">
+
+      <!-- ── Main ─────────────────────────────────────────────────────── -->
+      <main class="tdp-main">
+        <span class="tdp-kind"><mat-icon>{{ typeIcon(ticket().type) }}</mat-icon>{{ 'maintenance.detail.kind' | translate }}</span>
+        <h1 class="tdp-title">{{ code() }}: {{ equipment()?.name ?? ('maintenance.detail.unknownMachine' | translate) }}</h1>
+
+        @if (needsTechnician() && !ticket().assignee) {
+          <div class="tdp-notice tdp-notice--warning">
+            <mat-icon>person_add</mat-icon>
+            <span>{{ 'maintenance.detail.needsTechnician' | translate }}</span>
+          </div>
+        }
+
+        @if (isResolved()) {
+          <div class="tdp-notice">
+            <mat-icon>lock</mat-icon>
+            <span>{{ 'maintenance.detail.resolvedLocked' | translate }}</span>
+          </div>
+        }
+
+        <dl class="tdp-props">
+          <!-- Status -->
+          <div class="tdp-prop">
+            <dt><mat-icon>radio_button_checked</mat-icon>{{ 'maintenance.list.status' | translate }}</dt>
+            <dd>
+              <button type="button" class="status-pill status-pill--{{ ticket().status.toLowerCase() }}"
+                      [disabled]="isResolved()" [matMenuTriggerFor]="statusMenu">
+                {{ 'maintenance.status.' + ticket().status | translate }}
+                @if (!isResolved()) { <mat-icon>arrow_drop_down</mat-icon> }
+              </button>
+              <mat-menu #statusMenu="matMenu">
+                @for (st of statuses; track st) {
+                  <button mat-menu-item [disabled]="st === ticket().status" (click)="moveTo(st)">
+                    <mat-icon>{{ st === ticket().status ? 'check' : 'arrow_forward' }}</mat-icon>
+                    <span>{{ 'maintenance.status.' + st | translate }}</span>
+                  </button>
+                }
+              </mat-menu>
+            </dd>
+          </div>
+
+          <!-- Assignee -->
+          <div class="tdp-prop">
+            <dt><mat-icon>person_outline</mat-icon>{{ 'maintenance.assignedTo' | translate }}</dt>
+            <dd>
+              @if (isResolved()) {
+                @if (technicianId()) {
+                  <span class="prop-static">
+                    <span class="avatar">{{ technicianName(technicianId()).charAt(0).toUpperCase() }}</span>
+                    {{ technicianName(technicianId()) }}
+                  </span>
+                } @else {
+                  <span class="prop-static prop-static--muted">—</span>
+                }
+              } @else {
+                <button type="button" class="prop-btn" [class.prop-btn--empty]="!ticket().assignee"
+                        [class.prop-btn--attention]="needsTechnician() && !ticket().assignee"
+                        [matMenuTriggerFor]="techMenu">
+                  @if (ticket().assignee) {
+                    <span class="avatar">{{ technicianName(ticket().assignee).charAt(0).toUpperCase() }}</span>
+                    <span class="prop-btn__text">{{ technicianName(ticket().assignee) }}</span>
+                  } @else {
+                    <mat-icon>person_add</mat-icon>
+                    {{ 'maintenance.detail.assign' | translate }}
+                  }
+                  <mat-icon class="prop-btn__caret">expand_more</mat-icon>
+                </button>
+                <mat-menu #techMenu="matMenu">
+                  @for (tech of technicianStore.technicians(); track tech.id) {
+                    <button mat-menu-item (click)="assign(tech.id)">
+                      <mat-icon>{{ tech.id === ticket().assignee ? 'check' : 'person' }}</mat-icon>
+                      <span>{{ tech.name }}</span>
+                    </button>
+                  } @empty {
+                    <button mat-menu-item disabled>{{ 'maintenance.detail.noTechnicians' | translate }}</button>
+                  }
+                </mat-menu>
+              }
+            </dd>
+          </div>
+
+          <!-- Priority -->
+          <div class="tdp-prop">
+            <dt><mat-icon>flag</mat-icon>{{ 'maintenance.form.priority' | translate }}</dt>
+            <dd>
+              <button type="button" class="prop-btn" [disabled]="isResolved()" [matMenuTriggerFor]="priorityMenu">
+                <mat-icon [style.color]="priorityColor(ticket().priority)">{{ priorityIcon(ticket().priority) }}</mat-icon>
+                {{ 'maintenance.priority.' + ticket().priority | translate }}
+                @if (!isResolved()) { <mat-icon class="prop-btn__caret">expand_more</mat-icon> }
+              </button>
+              <mat-menu #priorityMenu="matMenu">
+                @for (p of priorities; track p) {
+                  <button mat-menu-item (click)="setPriority(p)">
+                    <mat-icon [style.color]="priorityColor(p)">{{ priorityIcon(p) }}</mat-icon>
+                    <span>{{ 'maintenance.priority.' + p | translate }}</span>
+                  </button>
+                }
+              </mat-menu>
+            </dd>
+          </div>
+
+          <!-- Type -->
+          <div class="tdp-prop">
+            <dt><mat-icon>category</mat-icon>{{ 'maintenance.form.type' | translate }}</dt>
+            <dd>
+              <button type="button" class="prop-btn" [disabled]="isResolved()" [matMenuTriggerFor]="typeMenu">
+                <mat-icon>{{ typeIcon(ticket().type) }}</mat-icon>
+                {{ 'maintenance.type.' + ticket().type | translate }}
+                @if (!isResolved()) { <mat-icon class="prop-btn__caret">expand_more</mat-icon> }
+              </button>
+              <mat-menu #typeMenu="matMenu">
+                @for (t of types; track t) {
+                  <button mat-menu-item (click)="setType(t)">
+                    <mat-icon>{{ typeIcon(t) }}</mat-icon>
+                    <span>{{ 'maintenance.type.' + t | translate }}</span>
+                  </button>
+                }
+              </mat-menu>
+            </dd>
+          </div>
+
+          <!-- Created -->
+          <div class="tdp-prop">
+            <dt><mat-icon>event</mat-icon>{{ 'maintenance.detail.created' | translate }}</dt>
+            <dd><span class="prop-static">{{ ticket().createdAt | date: 'medium' }}</span></dd>
+          </div>
+          <!-- Machine -->
+          <div class="tdp-prop tdp-prop--wide">
+            <dt><mat-icon>fitness_center</mat-icon>{{ 'maintenance.form.equipment' | translate }}</dt>
+            <dd>
+              @if (equipment(); as eq) {
+                <a class="prop-btn prop-btn--link" [title]="eq.name" [routerLink]="['/equipments', eq.uuid, 'edit']" (click)="closed.emit()">
+                  <i class="dot dot--{{ eq.status.toLowerCase() }}"></i>
+                  <span class="prop-btn__text">{{ eq.name }}</span>
+                  <span class="prop-btn__muted">{{ eq.brand }} · {{ eq.model }}</span>
+                </a>
+              } @else {
+                <span class="prop-static prop-static--muted">{{ ticket().equipmentId }}</span>
+              }
+            </dd>
+          </div>
+
+        </dl>
+
+        <!-- Description -->
+        <section class="tdp-desc">
+          <div class="tdp-desc__head">
+            <h2><mat-icon>notes</mat-icon>{{ 'maintenance.detail.description' | translate }}</h2>
+            @if (!isResolved() && !editingDescription()) {
+              <button type="button" class="ghost-btn" (click)="editDescription()">
+                <mat-icon>edit</mat-icon>{{ 'maintenance.detail.edit' | translate }}
+              </button>
+            }
+          </div>
+
+          @if (editingDescription()) {
+            <textarea class="tdp-desc__input" rows="6" maxlength="500" autofocus
+                      [ngModel]="descriptionDraft()" (ngModelChange)="descriptionDraft.set($event)"
+                      (keydown.meta.enter)="saveDescription()" (keydown.control.enter)="saveDescription()"></textarea>
+            <div class="tdp-desc__actions">
+              <span class="tdp-desc__hint">{{ 'maintenance.detail.saveHint' | translate }}</span>
+              <button type="button" class="btn btn--secondary" (click)="cancelDescription()">{{ 'maintenance.form.cancel' | translate }}</button>
+              <button type="button" class="btn btn--primary" [disabled]="!descriptionDraft().trim()" (click)="saveDescription()">
+                {{ 'maintenance.detail.save' | translate }}
+              </button>
+            </div>
+          } @else {
+            <div class="tdp-desc__body" [class.tdp-desc__body--clamped]="longDescription() && !descriptionOpen()"
+                 [class.tdp-desc__body--editable]="!isResolved()" (click)="editDescription()">
+              {{ ticket().description || ('maintenance.detail.noDescription' | translate) }}
+            </div>
+            @if (longDescription()) {
+              <button type="button" class="expand-btn" (click)="descriptionOpen.set(!descriptionOpen())">
+                <mat-icon>{{ descriptionOpen() ? 'expand_less' : 'expand_more' }}</mat-icon>
+                {{ (descriptionOpen() ? 'maintenance.detail.collapse' : 'maintenance.detail.expand') | translate }}
+              </button>
+            }
+          }
+        </section>
+
+        @if (saveError()) {
+          <div class="tdp-notice tdp-notice--danger">
+            <mat-icon>error_outline</mat-icon>
+            <span>{{ saveError() }}</span>
+          </div>
+        }
+      </main>
+
+      <!-- ── Activity ─────────────────────────────────────────────────── -->
+      <aside class="tdp-activity">
+        <h2 class="tdp-activity__title">{{ 'maintenance.detail.activity.title' | translate }}</h2>
+        @if (logsLoading()) {
+          <p class="tdp-activity__hint"><mat-icon class="spin">autorenew</mat-icon></p>
+        }
+        <ol class="timeline">
+          @for (item of activity(); track $index) {
+            <li class="timeline__item timeline__item--{{ item.tone }}">
+              <span class="timeline__dot"><mat-icon>{{ item.icon }}</mat-icon></span>
+              <div class="timeline__body">
+                <p class="timeline__text">{{ item.key | translate: item.params }}</p>
+                @if (item.note) { <p class="timeline__note">{{ item.note }}</p> }
+                @if (item.at) { <span class="timeline__at">{{ item.at | date: 'MMM d, HH:mm' }}</span> }
+              </div>
+            </li>
+          }
+        </ol>
+        <p class="tdp-activity__hint">{{ 'maintenance.detail.activity.hint' | translate }}</p>
+      </aside>
+
+    </div>
+  </div>
+</div>

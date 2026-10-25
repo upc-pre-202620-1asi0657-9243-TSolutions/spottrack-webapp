@@ -1,73 +1,129 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, effect } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
 import { MaintenanceStore } from '../../../application/maintenance.store';
 import { EquipmentStore } from '../../../../gym/application/equipment.store';
+import { AdminGymStore } from '../../../../gym/application/admin-gym.store';
+import { ZoneStore } from '../../../../gym/application/zone.store';
+import { EquipmentStatus } from '../../../../gym/domain/model/equipment.entity';
 import { AuthStore } from '../../../../auth/application/auth.store';
-import { TicketPriority, TicketType } from '../../../domain/model/maintenance-ticket.entity';
+import { TicketPriority, TicketStatus, TicketType } from '../../../domain/model/maintenance-ticket.entity';
 
-interface NewTicketForm {
-  equipmentId:     string | null;
-  description:     string;
-  priority:        TicketPriority | '';
-  type:            TicketType | '';
-  date:            string;
-  time:            string;
-}
+export const DESCRIPTION_MAX = 500;
+
+const STATUS_ICONS: Record<EquipmentStatus, string> = {
+  [EquipmentStatus.AVAILABLE]:      'check_circle',
+  [EquipmentStatus.OCCUPIED]:       'person',
+  [EquipmentStatus.ACTIVE]:         'bolt',
+  [EquipmentStatus.MAINTENANCE]:    'build',
+  [EquipmentStatus.OUT_OF_SERVICE]: 'cancel',
+  [EquipmentStatus.DECOMMISSIONED]: 'delete_forever',
+};
+
+const TYPE_ICONS: Record<TicketType, string> = {
+  [TicketType.CORRECTIVE]: 'build',
+  [TicketType.PREVENTIVE]: 'event_repeat',
+};
+
+const PRIORITY_ICONS: Record<TicketPriority, string> = {
+  [TicketPriority.LOW]:    'south',
+  [TicketPriority.MEDIUM]: 'drag_handle',
+  [TicketPriority.HIGH]:   'north',
+  [TicketPriority.URGENT]: 'priority_high',
+};
 
 @Component({
   selector: 'app-new-ticket',
   standalone: true,
-  imports: [FormsModule, TranslateModule, MatIconModule, MatFormFieldModule, MatInputModule, MatSelectModule],
+  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, MatIconModule],
   templateUrl: './new-ticket.html',
   styleUrl:    './new-ticket.scss',
 })
 export class NewTicketComponent {
   private readonly router     = inject(Router);
+  private readonly route      = inject(ActivatedRoute);
   private readonly authStore  = inject(AuthStore);
+  private readonly adminGymStore = inject(AdminGymStore);
+  readonly zoneStore      = inject(ZoneStore);
   readonly store          = inject(MaintenanceStore);
   readonly equipmentStore = inject(EquipmentStore);
 
   readonly priorities = Object.values(TicketPriority);
   readonly types      = Object.values(TicketType);
   readonly today      = new Date().toISOString().split('T')[0];
+  readonly descriptionMax = DESCRIPTION_MAX;
 
-  selectedTime = signal('');
-  readonly isPeak    = computed(() => this.store.isPeakHour(this.selectedTime()));
-  readonly isOffPeak = computed(() => !!this.selectedTime() && !this.isPeak());
+  // ── Form state ────────────────────────────────────────────────────────────
+  readonly equipmentId = signal<string | null>(this.route.snapshot.queryParamMap.get('equipment'));
+  readonly type        = signal<TicketType>(TicketType.CORRECTIVE);
+  readonly priority    = signal<TicketPriority>(TicketPriority.MEDIUM);
+  readonly description = signal('');
+  readonly date        = signal(this.today);
+  readonly time        = signal('');
+  readonly touched     = signal(false);
 
-  form: NewTicketForm = {
-    equipmentId: null,
-    description: '',
-    priority:    TicketPriority.MEDIUM,
-    type:        TicketType.CORRECTIVE,
-    date:        this.today,
-    time:        '',
-  };
+  readonly search = signal('');
 
-  get selectedEquipmentId(): string {
-    return this.form.equipmentId ?? '';
+  readonly isPeak    = computed(() => this.store.isPeakHour(this.time()));
+  readonly isOffPeak = computed(() => !!this.time() && !this.isPeak());
+
+  /** Decommissioned machines are retired, so they can't get new tickets. */
+  readonly machines = computed(() =>
+    this.equipmentStore.equipment().filter(e => e.status !== EquipmentStatus.DECOMMISSIONED)
+  );
+
+  readonly visibleMachines = computed(() => {
+    const q = this.search().trim().toLowerCase();
+    return this.machines().filter(m => !q || `${m.name} ${m.brand} ${m.model}`.toLowerCase().includes(q));
+  });
+
+  readonly selected = computed(() => this.machines().find(m => m.uuid === this.equipmentId()) ?? null);
+
+  readonly selectedZone = computed(() => {
+    const id = this.selected()?.zoneId;
+    return id ? this.zoneStore.zones().find(z => z.zoneId === id)?.zoneName ?? null : null;
+  });
+
+  /** Tickets still open or in progress on the selected machine, so admins don't file duplicates. */
+  readonly openTickets = computed(() => {
+    const id = this.equipmentId();
+    return id
+      ? this.store.tickets().filter(t => t.equipmentId === id && t.status !== TicketStatus.RESOLVED)
+      : [];
+  });
+
+  readonly isValid = computed(() => !!this.selected() && this.description().trim().length > 0);
+
+  constructor() {
+    this.adminGymStore.load();
+    effect(() => {
+      const gymId = this.adminGymStore.primaryGym()?.gymId;
+      if (gymId) this.zoneStore.load(gymId);
+    });
   }
 
-  onTimeChange(): void { this.selectedTime.set(this.form.time); }
+  typeIcon(t: TicketType): string         { return TYPE_ICONS[t] ?? 'build'; }
+  priorityIcon(p: TicketPriority): string { return PRIORITY_ICONS[p] ?? 'drag_handle'; }
+  statusIcon(s: EquipmentStatus): string  { return STATUS_ICONS[s] ?? 'help'; }
 
-  applySuggestion(t: string): void { this.form.time = t; this.selectedTime.set(t); }
+  selectMachine(uuid: string): void {
+    this.equipmentId.set(uuid);
+    this.search.set('');
+  }
+
+  clearMachine(): void { this.equipmentId.set(null); }
+
+  applySuggestion(t: string): void { this.time.set(t); }
 
   submit(): void {
-    if (!this.form.equipmentId || !this.form.description || !this.form.priority || !this.form.type) return;
+    this.touched.set(true);
+    const machine = this.selected();
+    if (!this.isValid() || !machine) return;
     const requestedBy = this.authStore.currentUser()?.email ?? '';
-    this.store.createTicket(
-      this.form.equipmentId,
-      requestedBy,
-      this.form.description,
-      this.form.priority as TicketPriority,
-      this.form.type     as TicketType,
-    );
+    this.store.createTicket(machine.uuid, requestedBy, this.description().trim(), this.priority(), this.type());
     this.router.navigate(['/maintenance']);
   }
 

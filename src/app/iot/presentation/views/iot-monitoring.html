@@ -99,7 +99,7 @@
       </div>
     }
 
-    <table mat-table [dataSource]="filteredSensors()" class="iot-table">
+    <table mat-table [dataSource]="pagedSensors()" class="iot-table">
 
       <ng-container matColumnDef="sensorId">
         <th mat-header-cell *matHeaderCellDef>{{ 'iot.table.id' | translate }}</th>
@@ -172,6 +172,16 @@
       </tr>
 
     </table>
+
+    @if (filteredSensors().length > 0) {
+      <div class="iot-card__footer">
+        <app-paginator
+          [total]="filteredSensors().length"
+          [pageSizeOptions]="[10, 20, 50]"
+          [(page)]="sensorPage"
+          [(pageSize)]="sensorPageSize" />
+      </div>
+    }
   </div>
 
   <!-- Session monitoring: usage detection, inactivity, session time calculation -->
@@ -200,7 +210,7 @@
         <p class="empty-msg">{{ 'monitoring.sessionTracking.noneTracked' | translate }}</p>
       } @else {
         <div class="tracked-list">
-          @for (s of trackedSessions(); track s.sessionTrackerId) {
+          @for (s of pagedSessions(); track s.sessionTrackerId) {
             <button type="button" class="tracked-row"
                     [class.tracked-row--selected]="s.sessionTrackerId === selectedSessionId()"
                     (click)="selectSession(s.sessionTrackerId)">
@@ -224,6 +234,14 @@
             </button>
           }
         </div>
+        @if (trackedSessions().length > 5) {
+          <div class="tracked-pager">
+            <app-paginator
+              [total]="trackedSessions().length"
+              [(page)]="sessionPage"
+              [(pageSize)]="sessionPageSize" />
+          </div>
+        }
       }
     </div>
 

@@ -1,0 +1,71 @@
+<article class="mail mail--{{ tone() }}">
+
+  <!-- Action toolbar, like a mail client's reading pane -->
+  <div class="mail-toolbar">
+    <button type="button" class="tb-btn" (click)="readToggled.emit(alert())">
+      <mat-icon>{{ alert().read ? 'mark_email_unread' : 'drafts' }}</mat-icon>
+      <span>{{ (alert().read ? 'alerts.markUnread' : 'alerts.markRead') | translate }}</span>
+    </button>
+    <button type="button" class="tb-btn tb-btn--danger" (click)="deleted.emit(alert())">
+      <mat-icon>delete_outline</mat-icon>
+      <span>{{ 'alerts.delete' | translate }}</span>
+    </button>
+    @if (alert().targetRoute) {
+      <span class="tb-sep"></span>
+      <button type="button" class="tb-btn" (click)="opened.emit(alert())">
+        <mat-icon>open_in_new</mat-icon>
+        <span>{{ 'alerts.goToTarget' | translate }}</span>
+      </button>
+    }
+  </div>
+
+  <div class="mail-scroll">
+    <!-- Subject -->
+    <div class="mail-subject">
+      <h1>{{ title() }}</h1>
+      <span class="mail-tag">{{ 'alerts.filter.' + tone() | translate }}</span>
+    </div>
+
+    <!-- Sender -->
+    <div class="mail-from">
+      <span class="mail-from__avatar"><mat-icon>{{ alert().icon }}</mat-icon></span>
+      <div class="mail-from__who">
+        <p class="mail-from__name">
+          {{ 'alerts.mail.sender' | translate }}
+          <span>&lt;{{ 'alerts.source.' + alert().type | translate }}&gt;</span>
+        </p>
+        <p class="mail-from__to">{{ 'alerts.mail.to' | translate }}</p>
+      </div>
+      <time class="mail-from__date" [title]="alert().date | date: 'full'">{{ alert().date | date: 'EEE d/MM/y HH:mm' }}</time>
+    </div>
+
+    <!-- Body -->
+    <div class="mail-body">
+      <p>{{ 'alerts.mail.greeting' | translate }}</p>
+      <p class="mail-body__message">{{ description() || ('alerts.noDescription' | translate) }}</p>
+
+      <table class="mail-details">
+        <tr><th>{{ 'alerts.fields.severity' | translate }}</th>
+            <td><span class="mail-dot"></span>{{ alert().severity ? ('alerts.severity.' + alert().severity | translate) : ('alerts.filter.info' | translate) }}</td></tr>
+        <tr><th>{{ 'alerts.fields.received' | translate }}</th><td>{{ alert().date | date: 'medium' }}</td></tr>
+        <tr><th>{{ 'alerts.fields.source' | translate }}</th><td>{{ 'alerts.source.' + alert().type | translate }}</td></tr>
+        <tr><th>{{ 'alerts.mail.reference' | translate }}</th><td class="mono">{{ alert().id }}</td></tr>
+      </table>
+
+      @if (alert().targetRoute) {
+        <p>{{ 'alerts.mail.action' | translate }}</p>
+        <button type="button" class="mail-cta" (click)="opened.emit(alert())">
+          {{ 'alerts.goToTarget' | translate }}
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      }
+
+      <p class="mail-sign">
+        {{ 'alerts.mail.regards' | translate }}<br>
+        <strong>{{ 'alerts.mail.signature' | translate }}</strong>
+      </p>
+    </div>
+
+    <p class="mail-footer">{{ 'alerts.mail.footer' | translate }}</p>
+  </div>
+</article>

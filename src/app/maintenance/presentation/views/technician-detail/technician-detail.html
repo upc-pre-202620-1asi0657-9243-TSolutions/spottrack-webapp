@@ -1,0 +1,138 @@
+<div class="td-page">
+
+  <a class="td-back" routerLink="/technicians">
+    <mat-icon>arrow_back</mat-icon>
+    {{ 'technicians.title' | translate }}
+  </a>
+
+  @if (technician(); as tech) {
+
+    <!-- ── Profile ─────────────────────────────────────────────────────── -->
+    <section class="td-card td-profile">
+      <div class="td-profile__main">
+        <span class="td-avatar" [style.--hue]="hue()">{{ initials() }}</span>
+        <div class="td-profile__text">
+          <div class="td-profile__name-row">
+            <h1>{{ tech.name }}</h1>
+            <span class="td-state td-state--{{ state() }}"><i></i>{{ 'technicians.filter.' + state() | translate }}</span>
+          </div>
+          <button type="button" class="td-id" (click)="copyId()" [title]="'technicians.copyId' | translate">
+            {{ tech.id }} <mat-icon>content_copy</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <dl class="td-facts">
+        <div><dt>{{ 'technicians.card.pending' | translate }}</dt><dd>{{ counts().OPEN }}</dd></div>
+        <div><dt>{{ 'technicians.card.inProgress' | translate }}</dt><dd>{{ counts().IN_PROGRESS }}</dd></div>
+        <div><dt>{{ 'technicians.card.completed' | translate }}</dt><dd>{{ counts().RESOLVED }}</dd></div>
+        <div>
+          <dt>{{ 'technicians.detail.urgent' | translate }}</dt>
+          <dd [class.td-facts__alert]="urgentOpen() > 0">{{ urgentOpen() }}</dd>
+        </div>
+      </dl>
+    </section>
+
+    <div class="td-columns">
+
+      <!-- ── Tickets ──────────────────────────────────────────────────── -->
+      <section class="td-card td-tickets">
+        <div class="td-tickets__head">
+          <h2>{{ 'technicians.detail.tickets' | translate }}</h2>
+          <div class="td-tickets__tools">
+            <div class="td-search">
+              <mat-icon>search</mat-icon>
+              <input type="text" [placeholder]="'technicians.detail.search' | translate"
+                     [ngModel]="search()" (ngModelChange)="search.set($event)" />
+            </div>
+            <label class="td-sort">
+              <mat-icon>sort</mat-icon>
+              <select [ngModel]="sort()" (ngModelChange)="sort.set($event)" [attr.aria-label]="'technicians.sort.label' | translate">
+                @for (s of sorts; track s) {
+                  <option [value]="s">{{ 'technicians.detail.sort.' + s | translate }}</option>
+                }
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <div class="td-tabs" role="tablist">
+          @for (t of tabs; track t) {
+            <button type="button" role="tab" class="td-tab" [class.td-tab--on]="tab() === t" (click)="tab.set(t)">
+              {{ 'technicians.detail.tab.' + t | translate }}
+              <span class="td-tab__count">{{ counts()[t] }}</span>
+            </button>
+          }
+        </div>
+
+        @if (!visibleTickets().length) {
+          <div class="td-empty">
+            <mat-icon>{{ tickets().length ? 'search_off' : 'inbox' }}</mat-icon>
+            <p>{{ (tickets().length ? 'technicians.detail.noMatch' : 'technicians.detail.noTickets') | translate }}</p>
+          </div>
+        } @else {
+          <ul class="td-list">
+            @for (t of pagedTickets(); track t.id) {
+              <li>
+                <button type="button" class="td-row" (click)="openTicket(t)">
+                  <i class="td-row__dot td-row__dot--{{ t.status.toLowerCase() }}"></i>
+                  <span class="td-row__body">
+                    <span class="td-row__top">
+                      <span class="td-row__code">{{ ticketCode(t) }}</span>
+                      <span class="td-row__machine">{{ equipmentName(t.equipmentId) }}</span>
+                    </span>
+                    <span class="td-row__desc">{{ t.description || '—' }}</span>
+                  </span>
+                  <span class="td-priority td-priority--{{ t.priority.toLowerCase() }}">{{ 'maintenance.priority.' + t.priority | translate }}</span>
+                  <span class="td-row__status">{{ 'maintenance.status.' + t.status | translate }}</span>
+                  <span class="td-row__age" [title]="t.createdAt | date: 'medium'">{{ ticketAge(t) }}</span>
+                  <mat-icon class="td-row__chevron">chevron_right</mat-icon>
+                </button>
+              </li>
+            }
+          </ul>
+          <div class="td-pager">
+            <app-paginator [total]="visibleTickets().length" [pageSizeOptions]="[10, 25, 50]" [(page)]="page" [(pageSize)]="pageSize" />
+          </div>
+        }
+      </section>
+
+      <!-- ── Side ─────────────────────────────────────────────────────── -->
+      <aside class="td-side">
+        <section class="td-card td-progress">
+          <p class="td-eyebrow">{{ 'technicians.detail.completion' | translate }}</p>
+          <div class="td-progress__value">
+            <strong>{{ completionPct() }}%</strong>
+            <span>{{ 'technicians.detail.resolvedOf' | translate: { done: counts().RESOLVED, total: counts().all } }}</span>
+          </div>
+          <span class="td-meter"><span class="td-meter__fill" [style.width.%]="completionPct()"></span></span>
+        </section>
+
+        <section class="td-card td-machines">
+          <h2>{{ 'technicians.detail.machines' | translate }}</h2>
+          @for (m of topMachines(); track m.equipmentId) {
+            <div class="td-machine">
+              <div class="td-machine__label">
+                <span>{{ equipmentName(m.equipmentId) }}</span>
+                <strong>{{ m.count }}</strong>
+              </div>
+              <span class="td-meter td-meter--thin"><span class="td-meter__fill" [style.width.%]="m.pct"></span></span>
+            </div>
+          } @empty {
+            <p class="td-muted">{{ 'technicians.detail.noTickets' | translate }}</p>
+          }
+        </section>
+      </aside>
+    </div>
+
+  } @else if (technicianStore.loading()) {
+    <div class="td-empty td-empty--page"><mat-icon class="spin">autorenew</mat-icon></div>
+  } @else {
+    <div class="td-card td-empty td-empty--page">
+      <mat-icon>person_off</mat-icon>
+      <p>{{ 'technicians.detail.notFound' | translate }}</p>
+      <a class="td-back" routerLink="/technicians">{{ 'technicians.title' | translate }}</a>
+    </div>
+  }
+
+</div>

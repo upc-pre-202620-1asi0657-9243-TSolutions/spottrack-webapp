@@ -8,58 +8,6 @@
     </div>
   </div>
 
-  <!-- Technician management -->
-  <div class="set-card">
-    <div class="set-card__header">
-      <h2 class="set-card__title">{{ 'settings.technicians.title' | translate }}</h2>
-      <p class="set-card__subtitle">{{ 'settings.technicians.subtitle' | translate }}</p>
-    </div>
-
-    <!-- Add technician form -->
-    <div class="set-add-row">
-      <input
-        class="set-add-input"
-        type="text"
-        maxlength="100"
-        [placeholder]="'settings.technicians.namePlaceholder' | translate"
-        [(ngModel)]="nameInput"
-        (input)="onNameInputChange()"
-        (keydown.enter)="addTechnician()"
-      />
-      <button class="btn-add" [disabled]="technicianStore.creating()" (click)="addTechnician()">
-        <mat-icon>add</mat-icon>
-        {{ 'settings.technicians.addBtn' | translate }}
-      </button>
-    </div>
-    @if (nameError()) {
-      <span class="set-field-error">{{ nameError()! | translate }}</span>
-    }
-    @if (technicianStore.error()) {
-      <span class="set-field-error">{{ technicianStore.error() }}</span>
-    }
-
-    <!-- Technician list -->
-    @if (technicianStore.loading()) {
-      <div class="set-loading">
-        <mat-icon class="set-spinner">autorenew</mat-icon>
-      </div>
-    } @else if (technicianStore.technicians().length === 0) {
-      <div class="set-empty">
-        <mat-icon>engineering</mat-icon>
-        <p>{{ 'settings.technicians.empty' | translate }}</p>
-      </div>
-    } @else {
-      <ul class="set-list">
-        @for (technician of technicianStore.technicians(); track technician.id) {
-          <li class="set-item">
-            <mat-icon class="set-item__icon">engineering</mat-icon>
-            <span class="set-item__name">{{ technician.name }}</span>
-          </li>
-        }
-      </ul>
-    }
-  </div>
-
   <!-- Notification preferences -->
   <div class="set-card">
     <div class="set-card__header">

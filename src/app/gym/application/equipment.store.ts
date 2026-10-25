@@ -2,7 +2,7 @@ import { computed, DestroyRef, effect, inject, Injectable, signal, untracked } f
 import { Observable, retry } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Equipment, EquipmentStatus } from '../domain/model/equipment.entity';
-import { EquipmentApi } from '../infrastructure/equipment-api';
+import { EquipmentApi, EquipmentDetails } from '../infrastructure/equipment-api';
 import { ActiveGymStore } from '../../auth/application/active-gym.store';
 
 @Injectable({ providedIn: 'root' })
@@ -83,6 +83,21 @@ export class EquipmentStore {
       error: err => {
         this.equipmentSignal.update(list => list.map(e => e.uuid === uuid ? Object.assign(Object.create(Object.getPrototypeOf(e)), e, { _status: status } as any) : e));
         this.errorSignal.set(this.formatError(err, 'Failed to update equipment status'));
+        this.loadingSignal.set(false);
+      },
+    });
+  }
+
+  updateEquipmentDetails(uuid: string, details: EquipmentDetails): void {
+    this.loadingSignal.set(true);
+    this.errorSignal.set(null);
+    this.api.updateEquipmentDetails(uuid, details).subscribe({
+      next: updated => {
+        this.equipmentSignal.update(list => list.map(e => e.uuid === updated.uuid ? updated : e));
+        this.loadingSignal.set(false);
+      },
+      error: err => {
+        this.errorSignal.set(this.formatError(err, 'Failed to update equipment details'));
         this.loadingSignal.set(false);
       },
     });

@@ -13,7 +13,8 @@ export class MaintenanceTicketAssembler {
       type:          (r.type as TicketType) || TicketType.CORRECTIVE,
       createdAt:     r.createdAt,
       description:   r.description,
-      assignee:      status === TicketStatus.IN_PROGRESS ? (r.technicianId ?? '') : '',
+      // A pending ticket can already have its technician; only resolved ones move it to completedBy.
+      assignee:      status !== TicketStatus.RESOLVED ? (r.technicianId ?? '') : '',
       completedBy:   status === TicketStatus.RESOLVED ? (r.technicianId ?? '') : '',
     });
   }

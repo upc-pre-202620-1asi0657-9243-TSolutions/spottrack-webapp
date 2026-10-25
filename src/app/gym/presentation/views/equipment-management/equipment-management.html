@@ -71,7 +71,7 @@
         <mat-spinner diameter="48"></mat-spinner>
       </div>
     }
-    <table mat-table [dataSource]="filteredEquipment()" class="eq-table">
+    <table mat-table [dataSource]="pagedEquipment()" class="eq-table">
 
       <!-- ID -->
       <ng-container matColumnDef="id">
@@ -142,7 +142,7 @@
             <button
               mat-icon-button
               class="action-btn action-btn--edit"
-              [matTooltip]="'equipment.actions.editStatus' | translate"
+              [matTooltip]="'equipment.actions.edit' | translate"
               (click)="navigateToEdit(row)"
             >
               <mat-icon>edit</mat-icon>
@@ -170,6 +170,16 @@
         </td>
       </tr>
     </table>
+
+    @if (filteredEquipment().length > 0) {
+      <div class="eq-card__footer">
+        <app-paginator
+          [total]="filteredEquipment().length"
+          [pageSizeOptions]="[10, 20, 50]"
+          [(page)]="page"
+          [(pageSize)]="pageSize" />
+      </div>
+    }
   </div>
 
 </div>

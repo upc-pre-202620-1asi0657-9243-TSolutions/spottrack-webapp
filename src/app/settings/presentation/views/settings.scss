@@ -142,52 +142,6 @@ $green:        var(--success);
   to   { transform: rotate(360deg); }
 }
 
-// ─── Empty state ──────────────────────────────────────────────────────────────
-.set-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  padding: 36px 0;
-  color: $text-muted;
-
-  mat-icon { font-size: 40px; width: 40px; height: 40px; opacity: 0.3; }
-  p { margin: 0; font-size: 14px; }
-}
-
-// ─── Technician list ──────────────────────────────────────────────────────────
-.set-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  border-top: 1px solid $border;
-}
-
-.set-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 4px;
-  border-bottom: 1px solid $border;
-  transition: background 0.12s;
-
-  &:last-child { border-bottom: none; }
-  &:hover      { background: $bg-hover; }
-}
-
-.set-item__icon {
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
-  color: $text-muted;
-}
-
-.set-item__name {
-  font-size: 14px;
-  font-weight: 600;
-  color: $text-primary;
-}
-
 // ─── Responsive ──────────────────────────────────────────────────────────────
 @media (max-width: 700px) {
   .set-page    { padding: 16px; gap: 16px; }

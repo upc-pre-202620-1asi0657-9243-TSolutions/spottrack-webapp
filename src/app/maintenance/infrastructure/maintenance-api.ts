@@ -3,13 +3,21 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { BaseApi } from '../../shared/infrastructure/base-api';
-import { MaintenanceTicket, TicketPriority, TicketType } from '../domain/model/maintenance-ticket.entity';
+import { MaintenanceTicket, TicketPriority, TicketStatus, TicketType } from '../domain/model/maintenance-ticket.entity';
 import { MaintenanceSchedule } from '../domain/model/maintenance-schedule.entity';
 import { MaintenanceTicketApiEndpoint } from './maintenance-ticket-api-endpoint';
 import { MaintenanceScheduleApiEndpoint } from './maintenance-schedule-api-endpoint';
 import { MaintenanceTicketResource, MaintenanceLogResource } from './maintenance-response';
 import { MaintenanceTicketAssembler } from './maintenance-ticket-assembler';
 import { environment } from '../../../environments/environment';
+
+/** Editable ticket fields; technicianId reassigns an in-progress ticket. */
+export interface TicketChanges {
+  description:   string;
+  priority:      TicketPriority;
+  type:          TicketType;
+  technicianId?: string | null;
+}
 
 @Injectable({ providedIn: 'root' })
 export class MaintenanceApi extends BaseApi {
@@ -64,10 +72,16 @@ export class MaintenanceApi extends BaseApi {
     ).pipe(map(r => this.ticketAssembler.toEntityFromResource(r)));
   }
 
-  modifyTicketStatus(ticketId: string, status: string): Observable<any> {
-    return this.http.patch(
-      `${this.ticketsUrl}/${ticketId}/status`, { status }
-    );
+  updateTicket(ticketId: string, changes: TicketChanges): Observable<MaintenanceTicket> {
+    return this.http.patch<MaintenanceTicketResource>(`${this.ticketsUrl}/${ticketId}`, changes)
+      .pipe(map(r => this.ticketAssembler.toEntityFromResource(r)));
+  }
+
+  /** The backend reads `newStatus`; the old `{ status }` body was silently ignored. */
+  modifyTicketStatus(ticketId: string, newStatus: TicketStatus): Observable<MaintenanceTicket> {
+    return this.http.patch<MaintenanceTicketResource>(
+      `${this.ticketsUrl}/${ticketId}/status`, { newStatus }
+    ).pipe(map(r => this.ticketAssembler.toEntityFromResource(r)));
   }
 
   completeTicket(ticketId: string): Observable<MaintenanceTicket> {
