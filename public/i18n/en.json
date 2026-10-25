@@ -844,7 +844,7 @@
       "searchMachine": "Search by name, brand or model…",
       "noMachines": "No machines match your search.",
       "pickMachine": "Select a machine to continue",
-      "change": "Change",
+      "change": "Change machine",
       "openTickets": "Open tickets",
       "duplicateWarning": "This machine already has {{count}} open ticket(s). Check the board before filing a duplicate.",
       "problemTitle": "Problem",

@@ -23,10 +23,16 @@
           <span class="nt-step" [class.nt-step--done]="selected()">
             @if (selected()) { <mat-icon>check</mat-icon> } @else { 1 }
           </span>
-          <div>
+          <div class="nt-section__title">
             <h2>{{ 'maintenance.form.equipment' | translate }}</h2>
             <p>{{ 'maintenance.form.equipmentHint' | translate }}</p>
           </div>
+          @if (selected()) {
+            <button type="button" class="btn btn--secondary btn--sm" (click)="clearMachine()">
+              <mat-icon>swap_horiz</mat-icon>
+              {{ 'maintenance.form.change' | translate }}
+            </button>
+          }
         </div>
 
         @if (selected(); as m) {
@@ -41,9 +47,6 @@
                 <mat-icon>{{ statusIcon(m.status) }}</mat-icon>
                 {{ 'equipment.status.' + m.status | translate }}
               </span>
-              <button type="button" class="btn btn--ghost btn--sm" (click)="clearMachine()">
-                {{ 'maintenance.form.change' | translate }}
-              </button>
             </div>
             <dl class="nt-machine__facts">
               <div>

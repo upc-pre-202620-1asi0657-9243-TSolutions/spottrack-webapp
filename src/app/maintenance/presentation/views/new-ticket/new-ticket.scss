@@ -107,6 +107,9 @@
     h2 { margin: 0; font-size: 15px; font-weight: 700; }
     p  { margin: 2px 0 0; font-size: 13px; color: var(--text-muted); }
   }
+
+  // Pushes a step action (e.g. Change machine) to the right edge of the header.
+  &__title { flex: 1; min-width: 0; }
 }
 
 .nt-step {
@@ -603,6 +606,7 @@
   &:focus-visible { outline: none; box-shadow: var(--focus-ring); }
 
   &--sm { height: 30px; padding: 0 10px; font-size: 13px; }
+  &--sm mat-icon { font-size: 16px; width: 16px; height: 16px; }
 
   &--primary {
     background: var(--accent);
@@ -614,12 +618,6 @@
     background: var(--surface);
     border-color: var(--border-strong);
     color: var(--text);
-    &:hover { background: var(--surface-hover); }
-  }
-
-  &--ghost {
-    background: transparent;
-    color: var(--accent-text);
     &:hover { background: var(--surface-hover); }
   }
 }

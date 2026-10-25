@@ -844,7 +844,7 @@
       "searchMachine": "Buscar por nombre, marca o modelo…",
       "noMachines": "Ninguna máquina coincide con tu búsqueda.",
       "pickMachine": "Selecciona una máquina para continuar",
-      "change": "Cambiar",
+      "change": "Cambiar máquina",
       "openTickets": "Tickets abiertos",
       "duplicateWarning": "Esta máquina ya tiene {{count}} ticket(s) abierto(s). Revisa el tablero antes de crear un duplicado.",
       "problemTitle": "Problema",
