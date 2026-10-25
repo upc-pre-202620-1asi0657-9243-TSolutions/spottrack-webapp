@@ -13,13 +13,17 @@ import { MaintenanceTicket, TicketPriority, TicketStatus } from '../../domain/mo
 import { MaintenanceLogResource } from '../../infrastructure/maintenance-response';
 import { ContextMenuDirective } from '../../../shared/presentation/directives/context-menu.directive';
 import { ContextMenuItem } from '../../../shared/application/context-menu.service';
+import { PaginatorComponent, paginate } from '../../../shared/presentation/components/paginator/paginator';
 
 type ModalMode = 'detail' | 'start' | 'complete' | 'log' | null;
+export type TicketView = 'board' | 'list';
+
+const VIEW_STORAGE_KEY = 'spottrack.maintenance.view';
 
 @Component({
   selector: 'app-maintenance',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, MatIconModule, MatFormFieldModule, MatSelectModule, ContextMenuDirective],
+  imports: [CommonModule, FormsModule, RouterLink, TranslateModule, MatIconModule, MatFormFieldModule, MatSelectModule, ContextMenuDirective, PaginatorComponent],
   templateUrl: './maintenance.html',
   styleUrl:    './maintenance.scss',
 })
@@ -33,7 +37,7 @@ export class MaintenanceComponent {
   readonly statusFilter   = signal<TicketStatus | ''>('');
   readonly priorityFilter = signal<TicketPriority | ''>('');
 
-  private filteredTickets = computed(() => {
+  readonly filteredTickets = computed(() => {
     const q = this.searchQuery().toLowerCase();
     const s = this.statusFilter();
     const p = this.priorityFilter();
@@ -49,6 +53,19 @@ export class MaintenanceComponent {
   readonly pendingFiltered    = computed(() => this.filteredTickets().filter(t => t.status === TicketStatus.OPEN));
   readonly inProgressFiltered = computed(() => this.filteredTickets().filter(t => t.status === TicketStatus.IN_PROGRESS));
   readonly resolvedFiltered   = computed(() => this.filteredTickets().filter(t => t.status === TicketStatus.RESOLVED));
+
+  // ── Board / list view ───────────────────────────────────────────────────
+  readonly view = signal<TicketView>(this.readStoredView());
+
+  readonly listPage     = signal(0);
+  readonly listPageSize = signal(10);
+
+  /** Newest first, so fresh tickets lead the list. */
+  readonly listTickets = computed(() =>
+    [...this.filteredTickets()].sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''))
+  );
+
+  readonly pagedList = computed(() => paginate(this.listTickets(), this.listPage(), this.listPageSize()));
 
   // ── Control-point modal (assign-to-start / completion-log-to-resolve) ─────
   readonly modalMode      = signal<ModalMode>(null);
@@ -74,6 +91,29 @@ export class MaintenanceComponent {
       this.submitting.set(false);
       if (!this.store.ticketActionError()) this.closeModal();
     }, { allowSignalWrites: true });
+
+    // A new search or filter starts the list on its first page.
+    effect(() => {
+      this.searchQuery();
+      this.statusFilter();
+      this.priorityFilter();
+      this.listPage.set(0);
+    }, { allowSignalWrites: true });
+  }
+
+  setView(view: TicketView): void {
+    this.view.set(view);
+    try { localStorage.setItem(VIEW_STORAGE_KEY, view); } catch { /* storage blocked: keep it for this visit */ }
+  }
+
+  private readStoredView(): TicketView {
+    try { return localStorage.getItem(VIEW_STORAGE_KEY) === 'list' ? 'list' : 'board'; } catch { return 'board'; }
+  }
+
+  rowMenu(t: MaintenanceTicket): ContextMenuItem[] {
+    if (t.status === TicketStatus.OPEN) return this.pendingMenu(t);
+    if (t.status === TicketStatus.IN_PROGRESS) return this.inProgressMenu(t);
+    return this.resolvedMenu(t);
   }
 
   ticketId(t: MaintenanceTicket): string {

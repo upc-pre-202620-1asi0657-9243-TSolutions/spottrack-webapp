@@ -920,6 +920,16 @@
       "created": "Created",
       "unassigned": "Not assigned yet",
       "ids": "Ticket ID"
+    },
+    "view": {
+      "label": "Ticket view",
+      "board": "Board",
+      "list": "List"
+    },
+    "list": {
+      "ticket": "Ticket",
+      "status": "Status",
+      "age": "Age"
     }
   },
   "routines": {

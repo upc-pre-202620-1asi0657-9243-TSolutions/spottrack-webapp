@@ -920,6 +920,16 @@
       "created": "Creado",
       "unassigned": "Sin asignar",
       "ids": "ID del ticket"
+    },
+    "view": {
+      "label": "Vista de tickets",
+      "board": "Tablero",
+      "list": "Lista"
+    },
+    "list": {
+      "ticket": "Ticket",
+      "status": "Estado",
+      "age": "Antigüedad"
     }
   },
   "routines": {

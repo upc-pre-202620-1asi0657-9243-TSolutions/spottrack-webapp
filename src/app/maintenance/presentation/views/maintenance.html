@@ -75,119 +75,203 @@
         <mat-option value="URGENT">{{ 'maintenance.priority.URGENT' | translate }}</mat-option>
       </mat-select>
     </mat-form-field>
+
+    <div class="view-toggle" role="tablist" [attr.aria-label]="'maintenance.view.label' | translate">
+      <button type="button" role="tab" [class.view-toggle__on]="view() === 'board'" [attr.aria-selected]="view() === 'board'"
+              [title]="'maintenance.view.board' | translate" (click)="setView('board')">
+        <mat-icon>view_kanban</mat-icon>
+        <span>{{ 'maintenance.view.board' | translate }}</span>
+      </button>
+      <button type="button" role="tab" [class.view-toggle__on]="view() === 'list'" [attr.aria-selected]="view() === 'list'"
+              [title]="'maintenance.view.list' | translate" (click)="setView('list')">
+        <mat-icon>view_list</mat-icon>
+        <span>{{ 'maintenance.view.list' | translate }}</span>
+      </button>
+    </div>
   </div>
 
-  <!-- ── Kanban board ───────────────────────────────────────────────── -->
-  <div class="kanban">
+  @if (view() === 'board') {
+    <!-- ── Kanban board ───────────────────────────────────────────────── -->
+    <div class="kanban">
 
-    <!-- Pendiente column -->
-    <div class="kanban-col">
-      <div class="kanban-col__header">
-        <div class="col-title">
-          <mat-icon class="col-dot col-dot--red">radio_button_checked</mat-icon>
-          <span>{{ 'maintenance.col.pending' | translate }} ({{ pendingFiltered().length }})</span>
+      <!-- Pendiente column -->
+      <div class="kanban-col">
+        <div class="kanban-col__header">
+          <div class="col-title">
+            <mat-icon class="col-dot col-dot--red">radio_button_checked</mat-icon>
+            <span>{{ 'maintenance.col.pending' | translate }} ({{ pendingFiltered().length }})</span>
+          </div>
+        </div>
+
+        <div class="ticket-list">
+          @for (t of pendingFiltered(); track t.id) {
+            <div class="ticket-card ticket-card--clickable" role="button" tabindex="0" [appContextMenu]="pendingMenu(t)"
+                 (click)="openDetail(t)" (keydown.enter)="openDetail(t)">
+              <div class="ticket-top">
+                <div class="ticket-meta">
+                  <span class="ticket-id">{{ ticketId(t) }}</span>
+                  <span class="ticket-name">{{ equipmentName(t.equipmentId) }}</span>
+                  <p class="ticket-desc">{{ t.description }}</p>
+                </div>
+                <span class="status-dot status-dot--red"></span>
+              </div>
+              <div class="ticket-row">
+                <span class="priority-badge" [class]="'priority-badge--' + t.priority.toLowerCase()">
+                  {{ 'maintenance.priority.' + t.priority | translate }}
+                </span>
+                <span class="ticket-age">{{ ticketAge(t) }}</span>
+              </div>
+              <button class="btn-start" (click)="openStartModal(t); $event.stopPropagation()">
+                {{ 'maintenance.action.start' | translate }}
+                <mat-icon>arrow_forward</mat-icon>
+              </button>
+            </div>
+          }
+          @empty {
+            <p class="col-empty">{{ 'maintenance.col.empty' | translate }}</p>
+          }
         </div>
       </div>
 
-      <div class="ticket-list">
-        @for (t of pendingFiltered(); track t.id) {
-          <div class="ticket-card ticket-card--clickable" role="button" tabindex="0" [appContextMenu]="pendingMenu(t)"
-               (click)="openDetail(t)" (keydown.enter)="openDetail(t)">
-            <div class="ticket-top">
-              <div class="ticket-meta">
-                <span class="ticket-id">{{ ticketId(t) }}</span>
-                <span class="ticket-name">{{ equipmentName(t.equipmentId) }}</span>
-                <p class="ticket-desc">{{ t.description }}</p>
-              </div>
-              <span class="status-dot status-dot--red"></span>
-            </div>
-            <div class="ticket-row">
-              <span class="priority-badge" [class]="'priority-badge--' + t.priority.toLowerCase()">
-                {{ 'maintenance.priority.' + t.priority | translate }}
-              </span>
-              <span class="ticket-age">{{ ticketAge(t) }}</span>
-            </div>
-            <button class="btn-start" (click)="openStartModal(t); $event.stopPropagation()">
-              {{ 'maintenance.action.start' | translate }}
-              <mat-icon>arrow_forward</mat-icon>
-            </button>
+      <!-- En Progreso column -->
+      <div class="kanban-col">
+        <div class="kanban-col__header">
+          <div class="col-title">
+            <mat-icon class="col-dot col-dot--amber">radio_button_checked</mat-icon>
+            <span>{{ 'maintenance.col.inProgress' | translate }} ({{ inProgressFiltered().length }})</span>
           </div>
-        }
-        @empty {
-          <p class="col-empty">{{ 'maintenance.col.empty' | translate }}</p>
-        }
-      </div>
-    </div>
+        </div>
 
-    <!-- En Progreso column -->
-    <div class="kanban-col">
-      <div class="kanban-col__header">
-        <div class="col-title">
-          <mat-icon class="col-dot col-dot--amber">radio_button_checked</mat-icon>
-          <span>{{ 'maintenance.col.inProgress' | translate }} ({{ inProgressFiltered().length }})</span>
+        <div class="ticket-list">
+          @for (t of inProgressFiltered(); track t.id) {
+            <div class="ticket-card ticket-card--in-progress ticket-card--clickable" role="button" tabindex="0" [appContextMenu]="inProgressMenu(t)"
+                 (click)="openDetail(t)" (keydown.enter)="openDetail(t)">
+              <div class="ticket-top">
+                <div class="ticket-meta">
+                  <span class="ticket-id">{{ ticketId(t) }}</span>
+                  <span class="ticket-name">{{ equipmentName(t.equipmentId) }}</span>
+                  <p class="ticket-desc">{{ t.description }}</p>
+                  @if (t.assignee) {
+                    <p class="ticket-assignee">{{ 'maintenance.assignedTo' | translate }}: {{ t.assignee }}</p>
+                  }
+                </div>
+                <span class="status-dot status-dot--amber"></span>
+              </div>
+              <button class="btn-complete" (click)="openCompleteModal(t); $event.stopPropagation()">
+                {{ 'maintenance.action.complete' | translate }}
+                <mat-icon>check_circle</mat-icon>
+              </button>
+            </div>
+          }
+          @empty {
+            <p class="col-empty">{{ 'maintenance.col.empty' | translate }}</p>
+          }
         </div>
       </div>
 
-      <div class="ticket-list">
-        @for (t of inProgressFiltered(); track t.id) {
-          <div class="ticket-card ticket-card--in-progress ticket-card--clickable" role="button" tabindex="0" [appContextMenu]="inProgressMenu(t)"
-               (click)="openDetail(t)" (keydown.enter)="openDetail(t)">
-            <div class="ticket-top">
-              <div class="ticket-meta">
-                <span class="ticket-id">{{ ticketId(t) }}</span>
-                <span class="ticket-name">{{ equipmentName(t.equipmentId) }}</span>
-                <p class="ticket-desc">{{ t.description }}</p>
-                @if (t.assignee) {
-                  <p class="ticket-assignee">{{ 'maintenance.assignedTo' | translate }}: {{ t.assignee }}</p>
-                }
-              </div>
-              <span class="status-dot status-dot--amber"></span>
-            </div>
-            <button class="btn-complete" (click)="openCompleteModal(t); $event.stopPropagation()">
-              {{ 'maintenance.action.complete' | translate }}
-              <mat-icon>check_circle</mat-icon>
-            </button>
+      <!-- Completado column -->
+      <div class="kanban-col">
+        <div class="kanban-col__header">
+          <div class="col-title">
+            <mat-icon class="col-dot col-dot--green">radio_button_checked</mat-icon>
+            <span>{{ 'maintenance.col.completed' | translate }} ({{ resolvedFiltered().length }})</span>
           </div>
-        }
-        @empty {
-          <p class="col-empty">{{ 'maintenance.col.empty' | translate }}</p>
-        }
-      </div>
-    </div>
+        </div>
 
-    <!-- Completado column -->
-    <div class="kanban-col">
-      <div class="kanban-col__header">
-        <div class="col-title">
-          <mat-icon class="col-dot col-dot--green">radio_button_checked</mat-icon>
-          <span>{{ 'maintenance.col.completed' | translate }} ({{ resolvedFiltered().length }})</span>
+        <div class="ticket-list">
+          @for (t of resolvedFiltered(); track t.id) {
+            <div class="ticket-card ticket-card--completed ticket-card--clickable" role="button" tabindex="0" [appContextMenu]="resolvedMenu(t)"
+                 (click)="openDetail(t)" (keydown.enter)="openDetail(t)">
+              <div class="ticket-top">
+                <div class="ticket-meta">
+                  <span class="ticket-id">{{ ticketId(t) }}</span>
+                  <span class="ticket-name ticket-name--done">{{ equipmentName(t.equipmentId) }}</span>
+                  <p class="ticket-desc">{{ t.description }}</p>
+                  @if (t.completedBy) {
+                    <p class="ticket-assignee">{{ 'maintenance.completedBy' | translate }}: {{ t.completedBy }}</p>
+                  }
+                </div>
+                <mat-icon class="done-check">check_circle</mat-icon>
+              </div>
+            </div>
+          }
+          @empty {
+            <p class="col-empty">{{ 'maintenance.col.empty' | translate }}</p>
+          }
         </div>
       </div>
 
-      <div class="ticket-list">
-        @for (t of resolvedFiltered(); track t.id) {
-          <div class="ticket-card ticket-card--completed ticket-card--clickable" role="button" tabindex="0" [appContextMenu]="resolvedMenu(t)"
-               (click)="openDetail(t)" (keydown.enter)="openDetail(t)">
-            <div class="ticket-top">
-              <div class="ticket-meta">
-                <span class="ticket-id">{{ ticketId(t) }}</span>
-                <span class="ticket-name ticket-name--done">{{ equipmentName(t.equipmentId) }}</span>
-                <p class="ticket-desc">{{ t.description }}</p>
-                @if (t.completedBy) {
-                  <p class="ticket-assignee">{{ 'maintenance.completedBy' | translate }}: {{ t.completedBy }}</p>
-                }
-              </div>
-              <mat-icon class="done-check">check_circle</mat-icon>
-            </div>
-          </div>
-        }
-        @empty {
-          <p class="col-empty">{{ 'maintenance.col.empty' | translate }}</p>
-        }
-      </div>
     </div>
 
-  </div>
+  } @else {
+    <!-- ── List view ──────────────────────────────────────────────────── -->
+    <div class="ticket-table-card">
+      @if (listTickets().length === 0) {
+        <p class="col-empty">{{ 'maintenance.col.empty' | translate }}</p>
+      } @else {
+        <div class="ticket-table-wrap">
+          <table class="ticket-table">
+            <thead>
+              <tr>
+                <th>{{ 'maintenance.list.ticket' | translate }}</th>
+                <th>{{ 'maintenance.form.equipment' | translate }}</th>
+                <th>{{ 'maintenance.list.status' | translate }}</th>
+                <th>{{ 'maintenance.form.priority' | translate }}</th>
+                <th>{{ 'maintenance.form.type' | translate }}</th>
+                <th>{{ 'maintenance.assignedTo' | translate }}</th>
+                <th>{{ 'maintenance.list.age' | translate }}</th>
+                <th class="ticket-table__actions"></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (t of pagedList(); track t.id) {
+                <tr tabindex="0" [appContextMenu]="rowMenu(t)" (click)="openDetail(t)" (keydown.enter)="openDetail(t)">
+                  <td class="ticket-table__id">{{ ticketId(t) }}</td>
+                  <td>
+                    <span class="ticket-table__machine">{{ equipmentName(t.equipmentId) }}</span>
+                    <span class="ticket-table__desc">{{ t.description }}</span>
+                  </td>
+                  <td>
+                    <span class="td-status td-status--{{ t.status.toLowerCase() }}">
+                      <i></i>{{ 'maintenance.status.' + t.status | translate }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="priority-badge priority-badge--{{ t.priority.toLowerCase() }}">
+                      {{ 'maintenance.priority.' + t.priority | translate }}
+                    </span>
+                  </td>
+                  <td class="ticket-table__muted">{{ 'maintenance.type.' + t.type | translate }}</td>
+                  <td class="ticket-table__muted">{{ t.assignee || '—' }}</td>
+                  <td class="ticket-table__muted">{{ ticketAge(t) }}</td>
+                  <td class="ticket-table__actions">
+                    @if (t.status === 'OPEN') {
+                      <button class="row-btn row-btn--start" (click)="openStartModal(t); $event.stopPropagation()">
+                        {{ 'maintenance.action.start' | translate }}
+                      </button>
+                    } @else if (t.status === 'IN_PROGRESS') {
+                      <button class="row-btn row-btn--complete" (click)="openCompleteModal(t); $event.stopPropagation()">
+                        {{ 'maintenance.action.complete' | translate }}
+                      </button>
+                    } @else {
+                      <mat-icon class="done-check">check_circle</mat-icon>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <div class="ticket-table-card__footer">
+          <app-paginator
+            [total]="listTickets().length"
+            [pageSizeOptions]="[10, 20, 50]"
+            [(page)]="listPage"
+            [(pageSize)]="listPageSize" />
+        </div>
+      }
+    </div>
+  }
 
   <!-- ── Ticket details ─────────────────────────────────────────────── -->
   @if (modalMode() === 'detail' && modalTicket(); as t) {

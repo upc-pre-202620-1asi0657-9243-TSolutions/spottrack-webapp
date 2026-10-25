@@ -280,6 +280,121 @@ $blue:     var(--info);
   }
 }
 
+// ── Board / list toggle ──────────────────────────────────────────────────────
+.view-toggle {
+  display: inline-flex;
+  flex-shrink: 0;
+  padding: 3px;
+  background: var(--surface-3);
+  border-radius: var(--radius);
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 12px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: $muted;
+    font: inherit;
+    font-size: .8125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+
+    mat-icon { font-size: 18px; width: 18px; height: 18px; }
+    &:hover { color: $text; }
+    &:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+  }
+
+  .view-toggle__on {
+    background: $bg-card;
+    color: $text;
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+// ── List view ────────────────────────────────────────────────────────────────
+.ticket-table-card {
+  background: $bg-card;
+  border: 1px solid $border;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+
+  &__footer { padding: 10px 16px; border-top: 1px solid $border; }
+}
+
+.ticket-table-wrap { overflow-x: auto; }
+
+.ticket-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .8125rem;
+
+  th {
+    padding: 10px 16px;
+    background: $bg-inner;
+    border-bottom: 1px solid $border;
+    color: $muted;
+    font-size: .75rem;
+    font-weight: 600;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 12px 16px;
+    border-bottom: 1px solid $border;
+    vertical-align: middle;
+  }
+
+  tbody tr {
+    cursor: pointer;
+    transition: background .15s;
+
+    &:hover { background: var(--surface-hover); }
+    &:focus-visible { outline: none; box-shadow: inset var(--focus-ring); }
+    &:last-child td { border-bottom: none; }
+  }
+
+  &__id { font-family: var(--font-mono); font-size: .75rem; color: $muted; white-space: nowrap; }
+
+  &__machine { display: block; font-weight: 600; color: $heading; white-space: nowrap; }
+
+  &__desc {
+    display: block;
+    max-width: 320px;
+    margin-top: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: $muted;
+    font-size: .75rem;
+  }
+
+  &__muted { color: $muted; white-space: nowrap; }
+  &__actions { width: 1%; text-align: right; white-space: nowrap; }
+
+  .td-status, .priority-badge { white-space: nowrap; }
+}
+
+.row-btn {
+  height: 28px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 6px;
+  font: inherit;
+  font-size: .75rem;
+  font-weight: 700;
+  cursor: pointer;
+
+  &--start    { background: $accent; color: var(--accent-contrast); &:hover { background: var(--accent-hover); } }
+  &--complete { background: $green;  color: #fff; &:hover { opacity: .88; } }
+}
+
 // ── Kanban board ──────────────────────────────────────────────────────────────
 .kanban {
   display: grid;
@@ -506,6 +621,8 @@ $blue:     var(--info);
   .maint-stats   { grid-template-columns: repeat(2, 1fr); }
   .filters-bar   { flex-direction: column; align-items: stretch; }
   .filter-field  { width: 100%; }
+  .view-toggle   { align-self: stretch; }
+  .view-toggle button { flex: 1; justify-content: center; }
   .form-grid     { grid-template-columns: 1fr; }
 }
 
