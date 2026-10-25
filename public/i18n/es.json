@@ -354,7 +354,7 @@
     }
   },
   "alerts": {
-    "emptyState": "No tienes alertas pendientes",
+    "emptyState": "Las nuevas alertas aparecerán aquí.",
     "detailsBtn": "Ver detalles →",
     "deleteTitle": "Eliminar alerta",
     "clearAll": "Limpiar todo",
@@ -363,13 +363,13 @@
       "CRITICAL": "Crítico"
     },
     "time": {
-      "moment":  "Hace un momento",
-      "minute":  "Hace {{count}} minuto",
+      "moment": "Hace un momento",
+      "minute": "Hace {{count}} minuto",
       "minutes": "Hace {{count}} minutos",
-      "hour":    "Hace {{count}} hora",
-      "hours":   "Hace {{count}} horas",
-      "day":     "Hace {{count}} día",
-      "days":    "Hace {{count}} días"
+      "hour": "Hace {{count}} hora",
+      "hours": "Hace {{count}} horas",
+      "day": "Hace {{count}} día",
+      "days": "Hace {{count}} días"
     },
     "backend": {
       "maintenanceThreshold": {
@@ -378,6 +378,42 @@
       "anomalyReported": {
         "title": "Anomalía reportada"
       }
+    },
+    "title": "Alertas",
+    "subtitleAdmin": "Eventos de mantenimiento, sensores y equipos de tu gimnasio",
+    "subtitleClient": "Novedades sobre tus reservas",
+    "clearConfirm": "¿Eliminar las {{count}} alertas?",
+    "cancel": "Cancelar",
+    "filter": {
+      "all": "Todas",
+      "critical": "Críticas",
+      "warning": "Advertencias",
+      "info": "Info"
+    },
+    "search": "Buscar alertas…",
+    "emptyTitle": "Estás al día",
+    "noMatch": "Ninguna alerta coincide con estos filtros",
+    "resetFilters": "Limpiar filtros",
+    "group": {
+      "today": "Hoy",
+      "yesterday": "Ayer",
+      "earlier": "Anteriores"
+    },
+    "new": "Nueva desde tu última visita",
+    "goToTarget": "Abrir página relacionada",
+    "backToInbox": "Volver a alertas",
+    "dismiss": "Eliminar alerta",
+    "noDescription": "Sin más detalles.",
+    "notFound": "Esta alerta ya no existe.",
+    "source": {
+      "admin": "Gimnasio",
+      "client": "Reserva",
+      "system": "Sistema"
+    },
+    "fields": {
+      "severity": "Severidad",
+      "received": "Recibida",
+      "source": "Origen"
     }
   },
   "nav": {

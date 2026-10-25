@@ -1,51 +1,98 @@
-<div class="alerts-container">
-  @if (alertsList.length > 0) {
-    <div class="alerts-toolbar">
-      <button class="clear-all-btn" (click)="clearAll()">
-        <mat-icon>clear_all</mat-icon>
-        {{ 'alerts.clearAll' | translate }}
-      </button>
+<div class="al-page">
+
+  <!-- ── Header ──────────────────────────────────────────────────────────── -->
+  <header class="al-header">
+    <div>
+      <h1 class="al-header__title">{{ 'alerts.title' | translate }}</h1>
+      <p class="al-header__subtitle">{{ (isAdmin() ? 'alerts.subtitleAdmin' : 'alerts.subtitleClient') | translate }}</p>
+    </div>
+    @if (alertsList().length) {
+      @if (confirmClear()) {
+        <div class="al-confirm">
+          <span>{{ 'alerts.clearConfirm' | translate: { count: alertsList().length } }}</span>
+          <button type="button" class="btn btn--secondary btn--sm" (click)="confirmClear.set(false)">{{ 'alerts.cancel' | translate }}</button>
+          <button type="button" class="btn btn--danger btn--sm" (click)="clearAll()">{{ 'alerts.clearAll' | translate }}</button>
+        </div>
+      } @else {
+        <button type="button" class="btn btn--secondary" (click)="confirmClear.set(true)">
+          <mat-icon>clear_all</mat-icon>
+          {{ 'alerts.clearAll' | translate }}
+        </button>
+      }
+    }
+  </header>
+
+  <!-- ── Toolbar ─────────────────────────────────────────────────────────── -->
+  @if (alertsList().length) {
+    <div class="al-toolbar">
+      <div class="al-tabs" role="tablist">
+        @for (f of filters; track f) {
+          <button type="button" role="tab" class="al-tab al-tab--{{ f }}" [class.al-tab--on]="filter() === f" (click)="filter.set(f)">
+            @if (f !== 'all') { <i class="al-tab__dot"></i> }
+            {{ 'alerts.filter.' + f | translate }}
+            <span class="al-tab__count">{{ counts()[f] }}</span>
+          </button>
+        }
+      </div>
+      <div class="al-search">
+        <mat-icon>search</mat-icon>
+        <input type="text" [placeholder]="'alerts.search' | translate" [ngModel]="search()" (ngModelChange)="search.set($event)" />
+      </div>
     </div>
   }
-  <div class="alerts-grid">
-    @for (alert of alertsList; track alert.id) {
-      <div class="alert-card" [appContextMenu]="alertMenu(alert)">
 
-        <button class="close-btn" (click)="deleteAlert($event, alert.id)" [title]="'alerts.deleteTitle' | translate">
-          <mat-icon>close</mat-icon>
-        </button>
+  <!-- ── Inbox ───────────────────────────────────────────────────────────── -->
+  @if (!alertsList().length) {
+    <div class="al-card al-empty">
+      <span class="al-empty__icon"><mat-icon>notifications_none</mat-icon></span>
+      <h3>{{ 'alerts.emptyTitle' | translate }}</h3>
+      <p>{{ 'alerts.emptyState' | translate }}</p>
+    </div>
+  } @else if (!groups().length) {
+    <div class="al-card al-empty">
+      <span class="al-empty__icon"><mat-icon>search_off</mat-icon></span>
+      <h3>{{ 'alerts.noMatch' | translate }}</h3>
+      <button type="button" class="btn btn--secondary btn--sm" (click)="filter.set('all'); search.set('')">{{ 'alerts.resetFilters' | translate }}</button>
+    </div>
+  } @else {
+    @for (group of groups(); track group.key) {
+      <section class="al-group">
+        <h2 class="al-group__title">{{ 'alerts.group.' + group.key | translate }} <span>{{ group.alerts.length }}</span></h2>
+        <ul class="al-card al-list">
+          @for (alert of group.alerts; track alert.id) {
+            <li class="al-row al-row--{{ tone(alert) }}" role="button" tabindex="0"
+                [appContextMenu]="alertMenu(alert)" (click)="openAlert(alert)" (keydown.enter)="openAlert(alert)">
+              <span class="al-row__icon"><mat-icon>{{ alert.icon }}</mat-icon></span>
 
-        <div class="alert-card-top">
-          <div class="alert-icon-container" [ngClass]="'bg-' + alert.type">
-            <mat-icon>{{ alert.icon }}</mat-icon>
-          </div>
+              <div class="al-row__body">
+                <div class="al-row__title">
+                  @if (newIds().has(alert.id)) { <i class="al-new" [title]="'alerts.new' | translate"></i> }
+                  <h3>{{ resolveTitle(alert) }}</h3>
+                  @if (alert.severity) {
+                    <span class="al-badge al-badge--{{ tone(alert) }}">{{ 'alerts.severity.' + alert.severity | translate }}</span>
+                  }
+                </div>
+                <p class="al-row__desc">{{ resolveDescription(alert) }}</p>
+              </div>
 
-          <div class="alert-content">
-            <div class="alert-title-row">
-              <h3 class="alert-title">{{ resolveTitle(alert) }}</h3>
-              @if (alert.severity) {
-                <span class="severity-badge" [ngClass]="'severity-' + alert.severity.toLowerCase()">
-                  {{ 'alerts.severity.' + alert.severity | translate }}
-                </span>
-              }
-            </div>
-            <p class="alert-description">{{ resolveDescription(alert) }}</p>
-          </div>
-        </div>
-
-        <div class="alert-card-bottom">
-          <span class="alert-time">{{ getRelativeTime(alert.date) }}</span>
-          <button class="details-btn" (click)="navigateTo(alert.targetRoute)">
-            {{ 'alerts.detailsBtn' | translate }}
-          </button>
-        </div>
-
-      </div>
-    } @empty {
-      <div class="empty-state">
-        <mat-icon>done_all</mat-icon>
-        <p>{{ 'alerts.emptyState' | translate }}</p>
-      </div>
+              <div class="al-row__end">
+                <span class="al-row__time" [title]="alert.date | date: 'medium'">{{ getRelativeTime(alert.date) }}</span>
+                <div class="al-row__actions">
+                  @if (alert.targetRoute) {
+                    <button type="button" class="icon-btn" (click)="goToTarget($event, alert)" [title]="'alerts.goToTarget' | translate">
+                      <mat-icon>open_in_new</mat-icon>
+                    </button>
+                  }
+                  <button type="button" class="icon-btn icon-btn--danger" (click)="deleteAlert($event, alert.id)" [title]="'alerts.deleteTitle' | translate">
+                    <mat-icon>delete_outline</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </li>
+          }
+        </ul>
+      </section>
     }
-  </div>
+  }
+
 </div>

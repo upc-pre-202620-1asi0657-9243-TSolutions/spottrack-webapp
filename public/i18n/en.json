@@ -354,7 +354,7 @@
     }
   },
   "alerts": {
-    "emptyState": "No pending alerts",
+    "emptyState": "New alerts will show up here.",
     "detailsBtn": "View details →",
     "deleteTitle": "Delete alert",
     "clearAll": "Clear all",
@@ -363,13 +363,13 @@
       "CRITICAL": "Critical"
     },
     "time": {
-      "moment":  "Just now",
-      "minute":  "{{count}} minute ago",
+      "moment": "Just now",
+      "minute": "{{count}} minute ago",
       "minutes": "{{count}} minutes ago",
-      "hour":    "{{count}} hour ago",
-      "hours":   "{{count}} hours ago",
-      "day":     "{{count}} day ago",
-      "days":    "{{count}} days ago"
+      "hour": "{{count}} hour ago",
+      "hours": "{{count}} hours ago",
+      "day": "{{count}} day ago",
+      "days": "{{count}} days ago"
     },
     "backend": {
       "maintenanceThreshold": {
@@ -378,6 +378,42 @@
       "anomalyReported": {
         "title": "Anomaly Reported"
       }
+    },
+    "title": "Alerts",
+    "subtitleAdmin": "Maintenance, sensor and equipment events across your gym",
+    "subtitleClient": "Updates about your reservations",
+    "clearConfirm": "Delete all {{count}} alerts?",
+    "cancel": "Cancel",
+    "filter": {
+      "all": "All",
+      "critical": "Critical",
+      "warning": "Warning",
+      "info": "Info"
+    },
+    "search": "Search alerts…",
+    "emptyTitle": "You're all caught up",
+    "noMatch": "No alerts match these filters",
+    "resetFilters": "Clear filters",
+    "group": {
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "earlier": "Earlier"
+    },
+    "new": "New since your last visit",
+    "goToTarget": "Open related page",
+    "backToInbox": "Back to alerts",
+    "dismiss": "Delete alert",
+    "noDescription": "No further details.",
+    "notFound": "This alert no longer exists.",
+    "source": {
+      "admin": "Gym",
+      "client": "Reservation",
+      "system": "System"
+    },
+    "fields": {
+      "severity": "Severity",
+      "received": "Received",
+      "source": "Source"
     }
   },
   "nav": {
