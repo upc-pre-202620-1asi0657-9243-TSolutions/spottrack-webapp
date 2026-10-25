@@ -28,6 +28,10 @@ export class AlertsStore {
     this.service.markReadForRole(role);
   }
 
+  markRead(id: string): void {
+    this.service.markRead(id);
+  }
+
   deleteAlert(id: string): void {
     this.service.deleteAlert(id);
   }

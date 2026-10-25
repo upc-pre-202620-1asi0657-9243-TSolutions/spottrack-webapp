@@ -91,6 +91,11 @@ export class AlertsService {
     this.alerts.update(list => list.filter(a => !toClear.includes(a)));
   }
 
+  /** Marks one alert read, e.g. when it is opened in the inbox reading pane. */
+  markRead(id: string): void {
+    this.alerts.update(list => list.map(a => a.id === id && !a.read ? { ...a, read: true } : a));
+  }
+
   // Only marks alerts that belong to the given role as read
   markReadForRole(role: 'admin' | 'client'): void {
     this.alerts.update(list =>
