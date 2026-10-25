@@ -1,4 +1,4 @@
-import { Component, signal, computed, inject, effect, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, signal, computed, inject, effect, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
@@ -24,6 +24,7 @@ interface PositionedEquipment {
   left:     string;
   icon:     string;
   category: 'CARDIO' | 'STRENGTH';
+  subZone:  'CARDIO' | 'FREE_WEIGHTS' | 'UPPER_BODY' | 'LOWER_BODY';
 }
 
 interface ZoneColumn {
@@ -45,7 +46,6 @@ interface ZoneColumn {
   styleUrl: './map.component.css',
 })
 export class MapComponent implements OnInit {
-  @ViewChild('heatCanvas') private heatCanvasRef?: ElementRef<HTMLCanvasElement>;
 
   private readonly reservationStore = inject(ReservationStore);
   private readonly equipmentStore   = inject(EquipmentStore);
@@ -85,12 +85,9 @@ export class MapComponent implements OnInit {
       this.reservationStore.clearError();
     });
 
-    // Redraw heatmap when intensity or view mode changes.
-    effect(() => {
-      void this.liveIntensityByUuid();
-      void this.viewMode();
-      setTimeout(() => this.drawMainHeatmap(), 80);
-    });
+    // Redraw heatmap colours whenever intensity or view mode changes.
+    // The CSS approach is signal-reactive — no manual redraw needed.
+    // (Kept as no-op to preserve structure in case canvas is re-added later.)
   }
 
   ngOnInit(): void {
@@ -158,6 +155,7 @@ export class MapComponent implements OnInit {
           ...this.autoPositionInZone(j, col.equipment.length, colLeftPct, colWidthPct),
           icon:     this.resolveIcon(eq.name),
           category: this.equipmentCategory(eq.name),
+          subZone:  this.resolveSubZone(eq.name),
         })),
       };
     });
@@ -301,55 +299,166 @@ export class MapComponent implements OnInit {
 
   getBranchHeatColor(branchId: string, uuid: string): string {
     const t = this.liveIntensityByUuid()[uuid] ?? 0;
-    const [r, g, b] = this.rgbFromIntensity(t);
-    return `rgb(${r},${g},${b})`;
+    // Matches the organic blob palette: teal (cold) → orange → magenta (hot)
+    if (t <= 0)    return 'rgb(0,180,160)';
+    if (t < 0.5)   return `rgb(255,${Math.round(160 - t * 200)},0)`;
+    return `rgb(255,${Math.round(20 + (1 - t) * 60)},${Math.round(t * 30)})`;
   }
 
   getBranchHeatOpacity(_branchId: string, uuid: string): number {
     return this.liveIntensityByUuid()[uuid] ?? 0;
   }
 
-  // ── Canvas heatmap ────────────────────────────────────────────────────────
+  // ── CSS-driven organic heatmap helpers ───────────────────────────────────
 
-  private drawMainHeatmap(): void {
-    if (this.viewMode() !== 'HEATMAP') return;
-    const canvas = this.heatCanvasRef?.nativeElement;
-    if (!canvas) return;
-    const parent = canvas.parentElement;
-    if (!parent) return;
-    const W = parent.offsetWidth, H = parent.offsetHeight;
-    if (!W || !H) return;
-    canvas.width = W; canvas.height = H;
-    const ctx = canvas.getContext('2d')!;
-    ctx.clearRect(0, 0, W, H);
+  /**
+   * Returns a multi-stop radial-gradient that mimics the thermal reference:
+   *   core (magenta/red) → orange → yellow → teal → transparent edge
+   * Intensity 0 (cold/available) → soft teal-blue blob
+   * Intensity 1 (hot/occupied)  → bright magenta-red core + wide bloom
+   */
+  heatGradient(uuid: string): string {
+    const t = this.liveIntensityByUuid()[uuid] ?? 0;
 
-    const items     = this.zoneLayout().flatMap(col => col.equipment)
-      .map(e => ({ key: e.eq.uuid, top: e.top, left: e.left }));
-    const intensity = this.liveIntensityByUuid();
-    const sorted    = [...items].sort((a, b) => (intensity[a.key] ?? 0) - (intensity[b.key] ?? 0));
-
-    for (const item of sorted) {
-      const t         = intensity[item.key] ?? 0;
-      const x         = (parseFloat(item.left) / 100) * W;
-      const y         = (parseFloat(item.top)  / 100) * H;
-      const radius    = 150 + t * 110;
-      const [r, g, b] = this.rgbFromIntensity(t);
-      const alpha     = t > 0 ? 0.10 + t * 0.38 : 0.04;
-      const grad = ctx.createRadialGradient(x, y, 0, x, y, radius);
-      grad.addColorStop(0,   `rgba(${r},${g},${b},${alpha})`);
-      grad.addColorStop(0.5, `rgba(${r},${g},${b},${alpha * 0.35})`);
-      grad.addColorStop(1,   'rgba(0,0,0,0)');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, W, H);
+    if (t <= 0.05) {
+      // Cold machine — diffuse teal-blue whisper
+      return [
+        'radial-gradient(ellipse at center,',
+        '  rgba(0,200,180,0.55)   0%,',
+        '  rgba(0,150,200,0.30)  25%,',
+        '  rgba(20,80,160,0.14)  55%,',
+        '  rgba(10,30,80,0.04)   80%,',
+        '  transparent           100%)',
+      ].join('\n');
     }
+
+    // Hot colour stops scale with t
+    const coreAlpha   = 0.55 + t * 0.40;          // 0.55 → 0.95
+    const midAlpha    = 0.30 + t * 0.30;           // 0.30 → 0.60
+    const outerAlpha  = 0.08 + t * 0.20;           // 0.08 → 0.28
+
+    // Core colour transitions magenta → red as intensity rises
+    const coreMagenta = `rgba(255,${Math.round(20 + (1 - t) * 60)},${Math.round(t * 30)},${coreAlpha.toFixed(2)})`;
+    const innerOrange = `rgba(255,${Math.round(80 + (1 - t) * 80)},0,${(coreAlpha * 0.7).toFixed(2)})`;
+    const midYellow   = `rgba(255,${Math.round(180 + (1 - t) * 60)},0,${midAlpha.toFixed(2)})`;
+    const outerTeal   = `rgba(0,${Math.round(180 + t * 60)},${Math.round(150 - t * 100)},${outerAlpha.toFixed(2)})`;
+
+    return [
+      'radial-gradient(ellipse at center,',
+      `  ${coreMagenta}          0%,`,
+      `  ${innerOrange}         18%,`,
+      `  ${midYellow}           38%,`,
+      `  ${outerTeal}           65%,`,
+      '  rgba(0,60,100,0.03)   85%,',
+      '  transparent           100%)',
+    ].join('\n');
   }
 
-  private rgbFromIntensity(t: number): [number, number, number] {
-    if (t <= 0)   return [30, 80, 200];
-    if (t < 0.25) return [0, Math.round(t * 4 * 150), 255];
-    if (t < 0.5)  { const s = (t - 0.25) * 4; return [0, 150 + Math.round(s * 105), Math.round(255 * (1 - s))]; }
-    if (t < 0.75) { const s = (t - 0.5)  * 4; return [Math.round(s * 255), 255, 0]; }
-    const s = (t - 0.75) * 4; return [255, Math.round(255 * (1 - s)), 0];
+  /**
+   * Returns the blob diameter as CSS px string.
+   * Cold machines: 120px  |  Hot machines: 340px
+   */
+  heatRadius(uuid: string): string {
+    const t = this.liveIntensityByUuid()[uuid] ?? 0;
+    // Larger blobs: 200px (cold) → 420px (hot) for full zone coverage
+    const px = Math.round(200 + t * 220);
+    return `${px}px`;
+  }
+
+  /**
+   * Returns a CSS colour for the ghost pin border ring that matches the
+   * current heat level (teal when cold, magenta when hot).
+   */
+  heatBorderColor(uuid: string): string {
+    const t = this.liveIntensityByUuid()[uuid] ?? 0;
+    if (t <= 0.05) return 'rgba(0,200,180,0.55)';
+    if (t < 0.5)   return `rgba(255,${Math.round(160 - t * 200)},0,0.7)`;
+    return `rgba(255,${Math.round(20 + (1 - t) * 60)},${Math.round(t * 20)},0.85)`;
+  }
+
+  /**
+   * Computes the zone-level ambient thermal gradient.
+   * One large, diffuse blob per training zone, based on the average
+   * utilization intensity of all equipment in that zone.
+   * Cold zones: teal-blue  |  Warm zones: orange-yellow  |  Hot: magenta-red
+   */
+  zoneAmbient(equipment: PositionedEquipment[]): string {
+    if (equipment.length === 0) {
+      // No equipment — faint cold teal whisper
+      return [
+        'radial-gradient(ellipse at 50% 50%,',
+        '  rgba(0,100,180,0.30)   0%,',
+        '  rgba(0,60,140,0.18)   45%,',
+        '  rgba(0,30,80,0.06)    75%,',
+        '  transparent           100%)',
+      ].join(' ');
+    }
+    const avgT = equipment.reduce(
+      (sum, e) => sum + (this.liveIntensityByUuid()[e.eq.uuid] ?? 0), 0
+    ) / equipment.length;
+
+    if (avgT <= 0.08) {
+      // Cold zone — cyan-teal base
+      return [
+        'radial-gradient(ellipse at 50% 50%,',
+        '  rgba(0,190,210,0.50)   0%,',
+        '  rgba(0,120,190,0.30)  40%,',
+        '  rgba(0,70,160,0.14)   70%,',
+        '  transparent           100%)',
+      ].join(' ');
+    }
+
+    // Warm/hot zone — interpolate cyan → orange → magenta
+    const a1 = 0.40 + avgT * 0.45;   // centre alpha
+    const a2 = 0.20 + avgT * 0.30;   // mid alpha
+    const g  = Math.round(150 - avgT * 130);   // green channel drops as temp rises
+    const b  = Math.round(30  - avgT * 30);    // blue channel
+    return [
+      'radial-gradient(ellipse at 50% 50%,',
+      `  rgba(255,${g},${Math.max(0,b)},${a1.toFixed(2)})  0%,`,
+      `  rgba(255,${Math.round(g*1.4)},0,${a2.toFixed(2)})  40%,`,
+      '  rgba(0,100,180,0.12)   75%,',
+      '  transparent            100%)',
+    ].join(' ');
+  }
+
+
+  // ── Blueprint-level heat blob positioning ────────────────────────────────
+  //
+  // The gym-blueprint is divided into this approximate percentage grid:
+  //   Width: Training 0–62%, Support 62–100%
+  //   Height inside training block (flex 1.1 + 1 + 1 = 3.1 units):
+  //     Cardio:      0% – 35.5%
+  //     Middle row:  35.5% – 67.7%  (Free Weights 0–34% W, Studio 34–62% W)
+  //     Bottom row:  67.7% – 100%   (Upper Body 0–31% W, Lower Body 31–62% W)
+
+  private heatBlobInZone(i: number, total: number): { rTop: number; rLeft: number } {
+    const n    = Math.max(1, total);
+    const cols = Math.min(4, Math.ceil(Math.sqrt(n)));
+    const rows = Math.ceil(n / cols);
+    const col  = i % cols;
+    const row  = Math.floor(i / cols);
+    return {
+      rLeft: ((col + 0.5) / cols) * 100,
+      rTop:  ((row + 0.5) / rows) * 100,
+    };
+  }
+
+  blueprintHeatPos(
+    i: number, total: number,
+    subZone: 'CARDIO' | 'FREE_WEIGHTS' | 'UPPER_BODY' | 'LOWER_BODY',
+  ): { top: string; left: string } {
+    const bounds: Record<string, { x0: number; x1: number; y0: number; y1: number }> = {
+      CARDIO:       { x0: 0,  x1: 62, y0: 0,    y1: 35.5 },
+      FREE_WEIGHTS: { x0: 2,  x1: 34, y0: 35.5, y1: 67.7 },
+      UPPER_BODY:   { x0: 2,  x1: 31, y0: 67.7, y1: 100  },
+      LOWER_BODY:   { x0: 32, x1: 61, y0: 67.7, y1: 100  },
+    };
+    const b = bounds[subZone];
+    const { rTop, rLeft } = this.heatBlobInZone(i, total);
+    const top  = b.y0 + (rTop  / 100) * (b.y1 - b.y0);
+    const left = b.x0 + (rLeft / 100) * (b.x1 - b.x0);
+    return { top: `${top.toFixed(1)}%`, left: `${left.toFixed(1)}%` };
   }
 
   // ── Auto-positioning within a zone column ─────────────────────────────────
@@ -387,7 +496,74 @@ export class MapComponent implements OnInit {
       ? 'CARDIO' : 'STRENGTH';
   }
 
+  /**
+   * Determines which sub-zone of the floor plan this equipment belongs to.
+   * Falls back to FREE_WEIGHTS for any unrecognised STRENGTH equipment.
+   */
+  private resolveSubZone(
+    name: string,
+  ): 'CARDIO' | 'FREE_WEIGHTS' | 'UPPER_BODY' | 'LOWER_BODY' {
+    const n = name.toLowerCase();
+    if (/treadmill|cinta|running|bike|cycl|bicicleta|elliptic|el[íi]ptic|remo|rowing|cardio/.test(n))
+      return 'CARDIO';
+    if (/leg|pierna|squat|sentadilla|leg.*curl|leg.*press|calf|pantorrilla|gl[uú]teo|abductor|aductor|lower.*body|inferior/.test(n))
+      return 'LOWER_BODY';
+    if (/cable|pecho|chest|shoulder|hombro|tr[íi]cep|b[íi]cep|curl|press|inclin|decline|fly|espalda|back|dorsal|lat|upper.*body|superior|multigimnasio|multi.*funci/.test(n))
+      return 'UPPER_BODY';
+    return 'FREE_WEIGHTS';
+  }
+
+  // ── Floor plan sub-zone distribution getters ──────────────────────────────
+
+  get allPositionedEquipment(): PositionedEquipment[] {
+    return this.filteredZoneLayout.flatMap(col => col.equipment);
+  }
+
+  get cardioEquipment(): PositionedEquipment[] {
+    return this.allPositionedEquipment.filter(e => e.subZone === 'CARDIO');
+  }
+
+  private get strengthGrouped() {
+    const strength = this.allPositionedEquipment.filter(e => e.category === 'STRENGTH');
+    const groups: Record<string, PositionedEquipment[]> = {
+      'FREE_WEIGHTS': [],
+      'UPPER_BODY': [],
+      'LOWER_BODY': []
+    };
+    
+    // Pass 1: Strict matching
+    const unassigned: PositionedEquipment[] = [];
+    for (const eq of strength) {
+      if (eq.subZone === 'FREE_WEIGHTS' || eq.subZone === 'UPPER_BODY' || eq.subZone === 'LOWER_BODY') {
+        groups[eq.subZone].push(eq);
+      } else {
+        unassigned.push(eq);
+      }
+    }
+
+    // Pass 2: Distribute unassigned evenly across the 3 zones
+    const zones = ['FREE_WEIGHTS', 'UPPER_BODY', 'LOWER_BODY'];
+    unassigned.forEach((eq, i) => {
+      groups[zones[i % 3]].push(eq);
+    });
+
+    return groups;
+  }
+
+  get freeWeightsEquipment(): PositionedEquipment[] {
+    return this.strengthGrouped['FREE_WEIGHTS'];
+  }
+
+  get upperBodyEquipment(): PositionedEquipment[] {
+    return this.strengthGrouped['UPPER_BODY'];
+  }
+
+  get lowerBodyEquipment(): PositionedEquipment[] {
+    return this.strengthGrouped['LOWER_BODY'];
+  }
+
   // ── Actions ───────────────────────────────────────────────────────────────
+
 
   setFilter(f: FilterTab): void { this.activeFilter.set(f); }
 
