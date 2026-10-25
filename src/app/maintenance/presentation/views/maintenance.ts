@@ -14,7 +14,7 @@ import { MaintenanceLogResource } from '../../infrastructure/maintenance-respons
 import { ContextMenuDirective } from '../../../shared/presentation/directives/context-menu.directive';
 import { ContextMenuItem } from '../../../shared/application/context-menu.service';
 
-type ModalMode = 'start' | 'complete' | 'log' | null;
+type ModalMode = 'detail' | 'start' | 'complete' | 'log' | null;
 
 @Component({
   selector: 'app-maintenance',
@@ -91,6 +91,23 @@ export class MaintenanceComponent {
     return this.equipmentStore.equipment().find(e => e.uuid === id)?.name ?? id;
   }
 
+  equipmentOf(id: string) {
+    return this.equipmentStore.equipment().find(e => e.uuid === id) ?? null;
+  }
+
+  /** Full ticket view; completion notes load alongside so resolved tickets show their history. */
+  openDetail(t: MaintenanceTicket): void {
+    this.modalTicket.set(t);
+    this.store.clearTicketActionError();
+    this.modalMode.set('detail');
+    this.logEntries.set([]);
+    this.logLoading.set(true);
+    this.store.getCompletionLogs(t.id).subscribe({
+      next:  logs => { this.logEntries.set(logs); this.logLoading.set(false); },
+      error: () => this.logLoading.set(false),
+    });
+  }
+
   openStartModal(t: MaintenanceTicket): void {
     this.modalTicket.set(t);
     this.technicianInput.set('');
@@ -146,6 +163,7 @@ export class MaintenanceComponent {
 
   pendingMenu(t: MaintenanceTicket): ContextMenuItem[] {
     return [
+      { label: 'View details',  icon: 'open_in_full', action: () => this.openDetail(t) },
       { label: 'Start ticket',  icon: 'play_arrow',   action: () => this.openStartModal(t) },
       { label: '', icon: '', separator: true, action: () => {} },
       { label: 'View log',      icon: 'history',      action: () => this.openLogModal(t) },
@@ -155,6 +173,7 @@ export class MaintenanceComponent {
 
   inProgressMenu(t: MaintenanceTicket): ContextMenuItem[] {
     return [
+      { label: 'View details',  icon: 'open_in_full', action: () => this.openDetail(t) },
       { label: 'Mark complete', icon: 'check_circle', action: () => this.openCompleteModal(t) },
       { label: '', icon: '', separator: true, action: () => {} },
       { label: 'View log',      icon: 'history',      action: () => this.openLogModal(t) },
@@ -164,6 +183,7 @@ export class MaintenanceComponent {
 
   resolvedMenu(t: MaintenanceTicket): ContextMenuItem[] {
     return [
+      { label: 'View details',  icon: 'open_in_full', action: () => this.openDetail(t) },
       { label: 'View log',      icon: 'history',      action: () => this.openLogModal(t) },
       { label: 'Copy ticket ID', icon: 'content_copy', action: () => navigator.clipboard.writeText(this.ticketId(t)) },
     ];

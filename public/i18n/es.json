@@ -914,6 +914,12 @@
       "logTitle": "Registro de finalización",
       "logLoading": "Cargando registro...",
       "logEmpty": "Aún no hay registros de finalización."
+    },
+    "detail": {
+      "description": "Descripción",
+      "created": "Creado",
+      "unassigned": "Sin asignar",
+      "ids": "ID del ticket"
     }
   },
   "routines": {

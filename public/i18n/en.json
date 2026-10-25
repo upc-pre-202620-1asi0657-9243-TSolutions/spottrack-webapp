@@ -914,6 +914,12 @@
       "logTitle": "Completion log",
       "logLoading": "Loading log...",
       "logEmpty": "No completion log entries yet."
+    },
+    "detail": {
+      "description": "Description",
+      "created": "Created",
+      "unassigned": "Not assigned yet",
+      "ids": "Ticket ID"
     }
   },
   "routines": {
