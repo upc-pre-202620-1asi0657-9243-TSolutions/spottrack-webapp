@@ -1,7 +1,7 @@
 import { Component, computed, effect, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -38,6 +38,14 @@ export class MaintenanceComponent {
 
   /** ?ticket=<id> (e.g. from the Technicians page) opens that ticket once the board loads. */
   private deepLinkTicketId: string | null = inject(ActivatedRoute).snapshot.queryParamMap.get('ticket');
+
+  /**
+   * ?equipment=<id> (e.g. from an alert in the inbox) opens that machine's active ticket;
+   * if it has none — anomaly and sensor alerts don't open one — the new-ticket form opens for it.
+   */
+  private deepLinkEquipmentId: string | null = inject(ActivatedRoute).snapshot.queryParamMap.get('equipment');
+
+  private readonly router = inject(Router);
 
   // ── Filters ─────────────────────────────────────────────────────────────
   readonly searchQuery    = signal('');
@@ -111,6 +119,20 @@ export class MaintenanceComponent {
       if (ticket) {
         this.deepLinkTicketId = null;
         this.openDetail(ticket);
+      }
+    }, { allowSignalWrites: true });
+
+    effect(() => {
+      const equipmentId = this.deepLinkEquipmentId;
+      if (!equipmentId || !this.store.ticketsLoaded()) return;
+      this.deepLinkEquipmentId = null;
+      const active = this.store.tickets()
+        .filter(t => t.equipmentId === equipmentId && t.status !== TicketStatus.RESOLVED)
+        .sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''))[0];
+      if (active) {
+        this.openDetail(active);
+      } else {
+        this.router.navigate(['/maintenance/new-ticket'], { queryParams: { equipment: equipmentId }, replaceUrl: true });
       }
     }, { allowSignalWrites: true });
 

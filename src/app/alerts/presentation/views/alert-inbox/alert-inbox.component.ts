@@ -214,7 +214,7 @@ export class AlertInboxComponent {
   }
 
   openTarget(alert: AppAlert): void {
-    if (alert.targetRoute) this.router.navigate([alert.targetRoute]);
+    if (alert.targetRoute) this.router.navigate([alert.targetRoute], { queryParams: alert.targetQuery });
   }
 
   clearAll(): void {
