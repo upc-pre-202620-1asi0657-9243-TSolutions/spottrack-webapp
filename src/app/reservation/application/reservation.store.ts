@@ -131,15 +131,24 @@ export class ReservationStore {
         });
         this.creatingSignal.set(false);
         this.loadHistory();
+        this.equipmentStore.refreshEquipment();
       },
       error: (err) => {
         const errBody   = err?.error ?? {};
         const serverMsg = ((errBody.details ?? errBody.message ?? '') as string).toLowerCase();
-        const isConflict = serverMsg.includes('active reservation');
-        this.errorSignal.set(
-          isConflict ? 'reservation.error.alreadyActive' : 'reservation.error.generic'
-        );
+        let errorKey = 'reservation.error.generic';
+        if (serverMsg.includes('equipment already has') || serverMsg.includes('equipment is already reserved')) {
+          errorKey = 'reservation.error.equipmentAlreadyReserved';
+        } else if (serverMsg.includes('client already has') || serverMsg.includes('you already have')) {
+          errorKey = 'reservation.error.alreadyActive';
+        } else if (serverMsg.includes('not available')) {
+          errorKey = 'reservation.error.equipmentNotAvailable';
+        } else if (serverMsg.includes('active reservation')) {
+          errorKey = 'reservation.error.alreadyActive';
+        }
+        this.errorSignal.set(errorKey);
         this.creatingSignal.set(false);
+        this.equipmentStore.refreshEquipment();
       },
     });
   }
@@ -172,6 +181,7 @@ export class ReservationStore {
           });
         }
         this.loadHistory();
+        this.equipmentStore.refreshEquipment();
       },
       error: () => {},
     });
@@ -185,8 +195,8 @@ export class ReservationStore {
     }
 
     this.api.cancelReservation(reservationId).subscribe({
-      next:  () => this.loadHistory(),
-      error: () => this.loadHistory(),
+      next:  () => { this.loadHistory(); this.equipmentStore.refreshEquipment(); },
+      error: () => { this.loadHistory(); this.equipmentStore.refreshEquipment(); },
     });
   }
 
@@ -198,8 +208,8 @@ export class ReservationStore {
     }
 
     this.api.endReservation(reservationId).subscribe({
-      next:  () => this.loadHistory(),
-      error: () => this.loadHistory(),
+      next:  () => { this.loadHistory(); this.equipmentStore.refreshEquipment(); },
+      error: () => { this.loadHistory(); this.equipmentStore.refreshEquipment(); },
     });
   }
 

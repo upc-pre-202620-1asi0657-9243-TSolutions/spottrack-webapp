@@ -35,7 +35,7 @@ export class EquipmentStore {
     e.status === EquipmentStatus.ACTIVE
   ).length);
 
-  private static readonly POLL_INTERVAL_MS = 15000;
+  private static readonly POLL_INTERVAL_MS = 5000;
 
   constructor(private api: EquipmentApi) {
     // A client sees only their active gym's equipment via the association-guarded
@@ -148,7 +148,7 @@ export class EquipmentStore {
   }
 
   /** Silent background refresh — no loading/error signal churn, so status cards update without flicker. */
-  private refreshEquipment(): void {
+  refreshEquipment(): void {
     this.equipmentSource().subscribe({
       next: list => this.equipmentSignal.set(list),
       error: () => {},

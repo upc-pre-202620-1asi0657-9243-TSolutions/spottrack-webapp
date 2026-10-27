@@ -302,6 +302,8 @@
     },
     "error": {
       "alreadyActive": "You already have an active reservation. Cancel it or wait for it to expire before creating a new one.",
+      "equipmentAlreadyReserved": "This machine already has an active reservation by another user.",
+      "equipmentNotAvailable": "This machine is not available for reservation.",
       "generic": "Could not create the reservation. Please try again."
     },
     "history": {
