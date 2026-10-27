@@ -1,0 +1,6 @@
+node_modules
+dist
+.angular
+.git
+c4-frontend
+docs
