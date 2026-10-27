@@ -1,0 +1,31 @@
+name: Deploy to GCP VM
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-vm
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          command_timeout: 20m
+          script: |
+            set -e
+            cd ~/spottrack-webapp
+            git fetch origin develop
+            git reset --hard origin/develop
+            sudo docker build -t spottrack-webapp .
+            sudo docker rm -f spottrack-webapp || true
+            sudo docker run -d --name spottrack-webapp --restart always -p 80:8080 -e BACKEND_URL=${{ vars.BACKEND_URL }} spottrack-webapp
+            sudo docker image prune -f
