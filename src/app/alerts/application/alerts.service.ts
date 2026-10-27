@@ -15,6 +15,7 @@ export interface AppAlert {
   icon: string;
   date: Date;
   targetRoute: string;
+  targetQuery?: Record<string, string>; // narrows the target page, e.g. to the equipment's ticket
   read: boolean;
 }
 
@@ -51,6 +52,7 @@ export class AlertsService {
       icon:        isWarning ? 'build' : 'report_problem',
       date:        new Date(r.createdAt),
       targetRoute: '/maintenance',
+      targetQuery: { equipment: r.equipmentId },
       read:        r.isResolved,
     };
   }

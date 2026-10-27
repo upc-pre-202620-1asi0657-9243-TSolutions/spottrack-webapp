@@ -18,6 +18,7 @@ export class MaintenanceStore {
   private readonly ticketsSignal   = signal<MaintenanceTicket[]>([]);
   private readonly schedulesSignal = signal<MaintenanceSchedule[]>([]);
   private readonly loadingSignal   = signal(false);
+  private readonly ticketsLoadedSignal = signal(false);
   private readonly errorSignal     = signal<string | null>(null);
   private readonly lastScheduledSignal = signal<MaintenanceSchedule | null>(null);
 
@@ -31,7 +32,9 @@ export class MaintenanceStore {
   readonly tickets       = this.ticketsSignal.asReadonly();
   readonly schedules     = this.schedulesSignal.asReadonly();
   readonly loading       = this.loadingSignal.asReadonly();
-  readonly error         = this.errorSignal.asReadonly();
+  /** True once the first ticket fetch has answered, so "no ticket found" is a real answer. */
+  readonly ticketsLoaded = this.ticketsLoadedSignal.asReadonly();
+  readonly error        = this.errorSignal.asReadonly();
   readonly lastScheduled = this.lastScheduledSignal.asReadonly();
 
   readonly ticketActionLoading = this.ticketActionLoadingSignal.asReadonly();
@@ -214,7 +217,10 @@ export class MaintenanceStore {
   private loadAll(): void {
     this.loadingSignal.set(true);
     this.api.getTickets().pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({ next: l => this.ticketsSignal.set(l), error: () => {} });
+      .subscribe({
+        next:  l => { this.ticketsSignal.set(l); this.ticketsLoadedSignal.set(true); },
+        error: () => this.ticketsLoadedSignal.set(true),
+      });
     this.api.getSchedules().pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({ next: l => { this.schedulesSignal.set(l); this.loadingSignal.set(false); }, error: () => this.loadingSignal.set(false) });
   }
