@@ -2,27 +2,30 @@ import { computed, DestroyRef, effect, inject, Injectable, signal } from '@angul
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AnalyticsApi } from '../infrastructure/analytics-api';
 import { EquipmentResource } from '../infrastructure/analytics-response';
-import { AnalyticsStat } from '../domain/model/analytics-stat.entity';
 import { UsageHeatmapApi } from '../infrastructure/usage-heatmap-api';
 import { UsageHeatmapResource } from '../infrastructure/usage-heatmap-response';
+import { RelocationInsightsResource } from '../infrastructure/relocation-insights-response';
 import { lastDays } from './usage-heatmap.store';
 import { AdminGymStore } from '../../gym/application/admin-gym.store';
 
 // ── Hourly occupancy point ────────────────────────────────────────────────────
 export interface HourlyPoint { hour: string; occupancy: number; }
 
-// ── Weekly usage point ────────────────────────────────────────────────────────
+// ── Usage per weekday (hours), for the window and the one right before ───────
 export interface WeekDay { day: string; usage: number; prevUsage: number; }
 
-// ── Relocation recommendation ─────────────────────────────────────────────────
+// ── Relocation recommendation (computed by the backend) ──────────────────────
 export interface RelocationRec {
-  machine:         string;
-  fromBranch:      string;
-  fromOccupancy:   number;
-  toBranch:        string;
-  toOccupancy:     number;
-  savingsPerMonth: number;
-  priority:        'LOW' | 'MEDIUM' | 'HIGH';
+  equipmentId:          string;
+  machine:              string;
+  fromBranch:           string;
+  fromOccupancy:        number;
+  toBranch:             string;
+  toOccupancy:          number;
+  /** % of opening hours the machine itself was in use. */
+  machineUtilization:   number;
+  /** Backend explanation with the figures behind the suggestion. */
+  reason:               string;
 }
 
 // ── Machine-type pie segment ──────────────────────────────────────────────────
@@ -31,14 +34,34 @@ export interface MachineTypeSegment { label: string; pct: number; color: string;
 // ── KPI stat card ─────────────────────────────────────────────────────────────
 export interface BranchStats {
   totalHours:      number;
-  hoursChange:     number;
+  /** % change vs the previous window; null when the previous window had no use to compare with. */
+  hoursChange:     number | null;
   occupancy:       number;
   occupancyChange: number;
   peak:            number;
   peakTime:        string;
+  /** Equipment with no use at all in the window. */
   inactive:        number;
+  /** Change in that count vs the previous window. */
   inactiveChange:  number;
 }
+
+// ── Executive summary, derived from the same measured data ───────────────────
+export interface ExecutiveSummary {
+  hoursChange:     number | null;
+  /** Hours of the day whose occupancy reached the stress threshold, e.g. ['18:00', '19:00']. */
+  stressHours:     string[];
+  inactive:        number;
+  equipmentCount:  number;
+}
+
+/** Hourly occupancy at or above this % counts as a stress peak (same line as the chart's 90% guide). */
+const STRESS_OCCUPANCY = 90;
+
+const WEEKDAY_LABELS: Record<string, string> = {
+  MONDAY: 'Lun', TUESDAY: 'Mar', WEDNESDAY: 'Mié', THURSDAY: 'Jue',
+  FRIDAY: 'Vie', SATURDAY: 'Sáb', SUNDAY: 'Dom',
+};
 
 const CARDIO_NAMES = /treadmill|bike|cycl|elliptic|row|cardio|cinta|remo|bicicleta|elíptic|escalador|stair/;
 const FREE_WEIGHT_NAMES = /rack|banco|bench|barra|barbell|mancuerna|dumbbell|kettlebell|disco|plate|peso libre/;
@@ -55,6 +78,18 @@ function hourLabel(hour: number): string {
   return `${String(hour).padStart(2, '0')}:00`;
 }
 
+function toHours(minutes: number): number {
+  return Math.round((minutes / 60) * 10) / 10;
+}
+
+/** Smallest 1/2/5×10ⁿ value at or above `value`, so the bar chart axis has round ticks. */
+function niceCeiling(value: number): number {
+  if (value <= 0) return 1;
+  const magnitude = Math.pow(10, Math.floor(Math.log10(value)));
+  const step = [1, 2, 5, 10].find(f => f * magnitude >= value) ?? 10;
+  return step * magnitude;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AnalyticsStore {
 
@@ -64,91 +99,73 @@ export class AnalyticsStore {
   private readonly destroyRef    = inject(DestroyRef);
 
   // ── Raw signals ───────────────────────────────────────────────────────────
-  private readonly _analyticsStats = signal<AnalyticsStat[]>([]);
-  private readonly _equipments     = signal<EquipmentResource[]>([]);
-  /** Occupancy built by the backend from real sensor sessions for the selected period. */
-  private readonly _usage          = signal<UsageHeatmapResource | null>(null);
-  private readonly _loading        = signal(false);
-  private readonly _error          = signal<string | null>(null);
+  private readonly _equipments = signal<EquipmentResource[]>([]);
+  /** Usage measured by the backend from real sensor sessions for the selected period and branch. */
+  private readonly _usage      = signal<UsageHeatmapResource | null>(null);
+  /** Branch demand and relocation suggestions for the selected period. */
+  private readonly _insights   = signal<RelocationInsightsResource | null>(null);
+  private readonly _loading    = signal(false);
+  private readonly _error      = signal<string | null>(null);
 
   readonly loading = this._loading.asReadonly();
   readonly error   = this._error.asReadonly();
 
   // ── Filter signals (driven from UI) ──────────────────────────────────────
-  readonly selectedBranch  = signal<'all' | 'main'>('all');
+  /** 'all' or a branchId of the admin's gym. */
+  readonly selectedBranch  = signal<string>('all');
   readonly selectedPeriod  = signal<'month' | 'quarter' | 'year'>('month');
-
-  private readonly periodMultiplier = computed(() =>
-    ({ month: 1, quarter: 3, year: 12 })[this.selectedPeriod()]
-  );
 
   private readonly periodDays = computed(() =>
     ({ month: 30, quarter: 90, year: 365 })[this.selectedPeriod()]
   );
 
-  // ── Filtered usage stats (reacts to selectedBranch) ─────────────────────
-  private readonly _filteredStats = computed(() => {
-    const branch = this.selectedBranch();
-    const stats  = this._analyticsStats();
-    if (branch === 'all') return stats;
-    // 'main' → only equipment in zone 1 (primary zone of Main Branch)
-    return stats.filter(s => s.zoneId === 1);
-  });
+  /** Real branches of the gym, for the branch filter. */
+  readonly branches = computed(() =>
+    (this._insights()?.branches ?? []).map(b => ({ branchId: b.branchId, name: b.name }))
+  );
 
   // ── KPI stat cards ────────────────────────────────────────────────────────
   readonly stats = computed<BranchStats>(() => {
-    const stats      = this._filteredStats();
-    const multiplier = this.periodMultiplier();
-
-    if (!stats.length) {
-      return { totalHours: 0, hoursChange: 0, occupancy: 0, occupancyChange: 0,
+    const usage = this._usage();
+    if (!usage) {
+      return { totalHours: 0, hoursChange: null, occupancy: 0, occupancyChange: 0,
                peak: 0, peakTime: '—', inactive: 0, inactiveChange: 0 };
     }
 
-    const baseHours     = stats.reduce((s, r) => s + r.totalUsageHours, 0);
-    const totalHours    = Math.round(baseHours * multiplier);
-    const inactiveCount = stats.filter(r => r.downtimeCost >= 30).length;
-    const inactive      = Math.round(inactiveCount * 24 * multiplier);
-    const hoursChange = Math.round(stats.reduce((s, r) => s + r.percentageComparison, 0) / stats.length);
-
-    // Occupancy and peak are measured from sensor sessions during opening hours.
-    const usage     = this._usage();
-    const occupancy = usage?.occupancyRate ?? 0;
-    const peakHour  = usage?.peakHour ?? null;
+    const minutes         = (usage.daily ?? []).reduce((s, d) => s + d.activeMinutes, 0);
+    const previousMinutes = (usage.daily ?? []).reduce((s, d) => s + d.previousActiveMinutes, 0);
+    const peakHour        = usage.peakHour;
 
     return {
-      totalHours,
-      hoursChange,
-      occupancy,
-      occupancyChange:  Math.round((occupancy - (usage?.previousOccupancyRate ?? 0)) * 10) / 10,
-      peak:             usage?.peakOccupancyRate ?? 0,
-      peakTime:         peakHour === null ? '—' : `${hourLabel(peakHour)} - ${hourLabel(peakHour + 1)}`,
-      inactive,
-      inactiveChange:  -8,
+      totalHours:      Math.round(minutes / 60),
+      hoursChange:     previousMinutes > 0 ? Math.round(((minutes - previousMinutes) / previousMinutes) * 100) : null,
+      occupancy:       usage.occupancyRate,
+      occupancyChange: Math.round((usage.occupancyRate - usage.previousOccupancyRate) * 10) / 10,
+      peak:            usage.peakOccupancyRate,
+      peakTime:        peakHour === null ? '—' : `${hourLabel(peakHour)} - ${hourLabel(peakHour + 1)}`,
+      inactive:        usage.inactiveEquipmentCount ?? 0,
+      inactiveChange:  (usage.inactiveEquipmentCount ?? 0) - (usage.previousInactiveEquipmentCount ?? 0),
     };
   });
 
-  // ── Bar chart: weekly usage (derived from total hours × 7 days) ───────────
-  readonly weeklyData = computed<WeekDay[]>(() => {
-    const stats = this._filteredStats();
-    if (!stats.length) return [];
+  // ── Bar chart: usage per weekday, measured from sensor sessions ──────────
+  readonly weeklyData = computed<WeekDay[]>(() =>
+    (this._usage()?.daily ?? []).map(d => ({
+      day:       WEEKDAY_LABELS[d.dayOfWeek] ?? d.dayOfWeek,
+      usage:     toHours(d.activeMinutes),
+      prevUsage: toHours(d.previousActiveMinutes),
+    }))
+  );
 
-    const totalHours = stats.reduce((s, r) => s + r.totalUsageHours, 0);
-    const days = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
-    const weights = [0.85, 1.00, 0.90, 1.10, 1.25, 1.15, 0.70];
-    const wSum    = weights.reduce((a, b) => a + b, 0);
+  /** Top of the bar chart axis: the highest bar (current or previous), rounded up. */
+  readonly maxCapacity = computed(() =>
+    niceCeiling(Math.max(0, ...this.weeklyData().flatMap(b => [b.usage, b.prevUsage])))
+  );
 
-    return days.map((day, i) => {
-      const usage     = Math.round((weights[i] / wSum) * totalHours * 7);
-      const prevUsage = Math.round(usage * 0.88);
-      return { day, usage, prevUsage };
-    });
-  });
-
-  readonly maxCapacity = computed(() => {
-    const bars = this.weeklyData();
-    if (!bars.length) return 600;
-    return Math.max(...bars.map(b => b.usage), 600);
+  /** Axis labels from top to bottom. */
+  readonly barTicks = computed(() => {
+    const max = this.maxCapacity();
+    return [1, 0.75, 0.5, 0.25, 0].map(f => Math.round(max * f * 10) / 10);
   });
 
   // ── Line chart: hourly occupancy measured from sensor sessions ────────
@@ -160,9 +177,9 @@ export class AnalyticsStore {
   readonly machineTypes = computed<MachineTypeSegment[]>(() => {
     const branch   = this.selectedBranch();
     const allEquip = this._equipments();
-    const equips   = branch === 'main'
-      ? allEquip.filter(e => e.zoneId === '1')
-      : allEquip;
+    // A branch heatmap lists exactly the equipment of that branch.
+    const inBranch = new Set((this._usage()?.equipment ?? []).map(e => e.equipmentId));
+    const equips   = branch === 'all' ? allEquip : allEquip.filter(e => inBranch.has(e.equipmentId));
 
     // Grouped by name, like the gym map does: zone ids are UUIDs, so they can't tell types apart.
     const counts = { Cardio: 0, Fuerza: 0, Pesas: 0 };
@@ -187,36 +204,31 @@ export class AnalyticsStore {
     }).join(', ');
   }
 
-  // ── Relocation recommendations ────────────────────────────────────────────
+  // ── Relocation recommendations (backend: idle branch → saturated branch) ──
   readonly relocationData = computed<RelocationRec[]>(() => {
-    const stats = this._filteredStats();
-    if (!stats.length) return [];
-
-    const BRANCHES = ['Sede Miraflores', 'Sede San Isidro', 'Sede Surco', 'Sede Barranco'];
-
-    return stats
-      // Recommend relocation for equipment that is low-usage AND in service.
-      // 'OPERATIONAL' isn't a real EquipmentStatus value (AVAILABLE/IN_USE/
-      // MAINTENANCE/OUT_OF_SERVICE) — this never matched anything before.
-      .filter(s => s.totalUsageHours < 100 && s.status === 'AVAILABLE')
-      .map((s, i): RelocationRec => {
-        const fromOcc     = Math.round(s.totalUsageHours / 2);
-        const toOcc       = Math.min(99, fromOcc + Math.round(40 + Math.random() * 30));
-        const savings     = Math.round((toOcc - fromOcc) * 12);
-        const priority: 'LOW' | 'MEDIUM' | 'HIGH' =
-          fromOcc < 30 ? 'HIGH' : fromOcc < 50 ? 'MEDIUM' : 'LOW';
-
-        return {
-          machine:         s.equipmentName,
-          fromBranch:      BRANCHES[i % BRANCHES.length],
-          fromOccupancy:   fromOcc,
-          toBranch:        BRANCHES[(i + 2) % BRANCHES.length],
-          toOccupancy:     toOcc,
-          savingsPerMonth: savings,
-          priority,
-        };
-      });
+    const branch      = this.selectedBranch();
+    const suggestions = this._insights()?.suggestions ?? [];
+    return suggestions
+      .filter(s => branch === 'all' || s.fromBranchId === branch || s.toBranchId === branch)
+      .map(s => ({
+        equipmentId:        s.equipmentId,
+        machine:            s.equipmentName,
+        fromBranch:         s.fromBranchName,
+        fromOccupancy:      s.fromBranchUtilizationRate,
+        toBranch:           s.toBranchName,
+        toOccupancy:        s.toBranchUtilizationRate,
+        machineUtilization: s.equipmentUtilizationRate,
+        reason:             s.reason,
+      }));
   });
+
+  // ── Executive summary ─────────────────────────────────────────────────────
+  readonly executiveSummary = computed<ExecutiveSummary>(() => ({
+    hoursChange:    this.stats().hoursChange,
+    stressHours:    this.hourlyData().filter(h => h.occupancy >= STRESS_OCCUPANCY).map(h => h.hour),
+    inactive:       this.stats().inactive,
+    equipmentCount: this._usage()?.equipmentCount ?? 0,
+  }));
 
   // ── SVG line chart geometry ───────────────────────────────────────────────
   readonly SVG_W = 1160;
@@ -240,26 +252,45 @@ export class AnalyticsStore {
     return `M${pts[0].x},${this.SVG_H} ${pts.map(p => `L${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ')} L${pts[pts.length - 1].x},${this.SVG_H} Z`;
   });
 
-  readonly threshold90Y = this.SVG_H - 0.9 * this.SVG_H;
+  readonly threshold90Y = this.SVG_H - (STRESS_OCCUPANCY / 100) * this.SVG_H;
 
   // ── Constructor: load data ────────────────────────────────────────────────
   constructor() {
     this.load();
-    // Re-measure occupancy whenever the admin's gym is known or the period changes.
+    // Re-measure whenever the admin's gym is known or the period/branch changes.
+    effect(() => {
+      const gymId  = this.adminGymStore.primaryGym()?.gymId;
+      const days   = this.periodDays();
+      const branch = this.selectedBranch();
+      if (gymId) this.loadUsage(gymId, branch, days);
+    });
     effect(() => {
       const gymId = this.adminGymStore.primaryGym()?.gymId;
       const days  = this.periodDays();
-      if (gymId) this.loadUsage(gymId, days);
+      if (gymId) this.loadInsights(gymId, days);
     });
   }
 
-  private loadUsage(gymId: string, days: number): void {
+  private loadUsage(gymId: string, branch: string, days: number): void {
     const { from, to } = lastDays(days);
-    this.usageApi.getGymUsage(gymId, from, to)
+    const request = branch === 'all'
+      ? this.usageApi.getGymUsage(gymId, from, to)
+      : this.usageApi.getBranchUsage(branch, from, to);
+    request
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next:  usage => this._usage.set(usage),
         error: () => this._usage.set(null),
+      });
+  }
+
+  private loadInsights(gymId: string, days: number): void {
+    const { from, to } = lastDays(days);
+    this.usageApi.getRelocationInsights(gymId, from, to)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next:  insights => this._insights.set(insights),
+        error: () => this._insights.set(null),
       });
   }
 
@@ -270,8 +301,7 @@ export class AnalyticsStore {
     this.api.getAnalyticsData()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: ({ stats, equipments }) => {
-          this._analyticsStats.set(stats);
+        next: ({ equipments }) => {
           this._equipments.set(equipments);
           this._loading.set(false);
         },
@@ -284,9 +314,10 @@ export class AnalyticsStore {
 
   /** Called by AuthStore on logout to prevent stale analytics data from bleeding into the next session. */
   reset(): void {
-    this._analyticsStats.set([]);
     this._equipments.set([]);
     this._usage.set(null);
+    this._insights.set(null);
+    this.selectedBranch.set('all');
     this._loading.set(false);
     this._error.set(null);
   }

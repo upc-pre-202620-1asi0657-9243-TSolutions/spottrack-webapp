@@ -16,6 +16,13 @@ export interface EquipmentUsageResource {
   heat:            number;
 }
 
+/** Minutes of use on one weekday, added up across the window (and the window right before it). */
+export interface DailyUsageResource {
+  dayOfWeek:             'MONDAY' | 'TUESDAY' | 'WEDNESDAY' | 'THURSDAY' | 'FRIDAY' | 'SATURDAY' | 'SUNDAY';
+  activeMinutes:         number;
+  previousActiveMinutes: number;
+}
+
 export interface UsageHeatmapResource {
   from:                  string;
   to:                    string;
@@ -28,4 +35,8 @@ export interface UsageHeatmapResource {
   peakOccupancyRate:     number;
   hourly:                HourlyOccupancyResource[];
   equipment:             EquipmentUsageResource[];
+  daily:                 DailyUsageResource[];
+  /** Equipment with no use at all in the window / in the window right before it. */
+  inactiveEquipmentCount:         number;
+  previousInactiveEquipmentCount: number;
 }

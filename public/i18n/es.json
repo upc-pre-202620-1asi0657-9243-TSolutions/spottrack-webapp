@@ -757,8 +757,7 @@
       },
       "branch": {
         "label": "Sede",
-        "all": "Todas las sedes",
-        "main": "Sede Principal"
+        "all": "Todas las sedes"
       },
       "customRange": "Rango Personalizado",
       "dateStart": "Inicio",
@@ -768,14 +767,15 @@
       "totalHours": "Horas Totales de Uso",
       "occupancyRate": "Tasa de Ocupación",
       "peakUsage": "Pico Máximo",
-      "inactiveTime": "Tiempo Inactivo",
-      "vsLastMonth": "vs mes anterior"
+      "inactiveEquipment": "Equipos sin Uso",
+      "vsLastMonth": "vs periodo anterior",
+      "noPreviousData": "Sin datos del periodo anterior"
     },
     "charts": {
-      "weeklyUsage": "Uso Semanal vs Capacidad",
+      "weeklyUsage": "Uso por Día de la Semana (h)",
       "showComparison": "Mostrar Comparativa",
       "hideComparison": "Ocultar Comparativa",
-      "prevMonth": "Mes anterior",
+      "prevMonth": "Periodo anterior",
       "usage": "Uso",
       "capacity": "Capacidad",
       "machineTypes": "Distribución por Tipo de Máquina",
@@ -785,21 +785,24 @@
       "title": "Recomendaciones de Reubicación",
       "subtitle": "Máquinas infrautilizadas detectadas entre sedes — reubicarlas maximiza el ROI de activos",
       "opportunities": "oportunidades",
-      "action": "Reubicar"
+      "action": "Reubicar",
+      "machineUse": "de uso de la máquina"
     },
     "executive": {
       "title": "Resumen Ejecutivo",
       "positive": {
-        "title": "Rendimiento Positivo",
-        "description": "El uso de máquinas ha aumentado un 12% este mes, indicando mayor retención de clientes y mejor aprovechamiento de activos."
+        "title": "Evolución del Uso",
+        "description": "Las horas de uso de las máquinas variaron {{change}}% respecto al periodo anterior.",
+        "noData": "Aún no hay datos del periodo anterior para comparar el uso."
       },
       "bottleneck": {
-        "title": "Cuello de Botella Detectado",
-        "description": "Las horas de 18:00 a 20:00 consistentemente superan el 90% de capacidad. Recomendación: Considerar adquirir 2 máquinas adicionales de alto uso o implementar sistema de reservas."
+        "title": "Cuellos de Botella",
+        "description": "Estas franjas alcanzaron al menos 90% de ocupación: {{hours}}. Considera reforzar el equipamiento o promover reservas en esos horarios.",
+        "none": "Ninguna franja horaria alcanzó el 90% de ocupación en el periodo."
       },
       "optimization": {
-        "title": "Optimización Requerida",
-        "description": "Se registraron 124 horas de inactividad programada por mantenimiento. Aplicar el calendario inteligente podría reducir este número en un 30%."
+        "title": "Equipos sin Uso",
+        "description": "{{inactive}} de {{total}} equipos no registraron uso en el periodo. Revisa su ubicación o las recomendaciones de reubicación."
       }
     }
   },

@@ -42,6 +42,7 @@ export class AnalyticsComponent implements OnInit {
   // ── Filters ──────────────────────────────────────────────────────────────
   readonly selectedPeriod = this.store.selectedPeriod;
   readonly selectedBranch = this.store.selectedBranch;
+  readonly branches       = this.store.branches;
   readonly showComparison = signal(false);
 
   readonly dateRange = new FormGroup({
@@ -55,8 +56,9 @@ export class AnalyticsComponent implements OnInit {
   // ── Bar chart ─────────────────────────────────────────────────────────────
   get weeklyData() { return this.store.weeklyData(); }
 
+  readonly barTicks = this.store.barTicks;
+
   barPct(value: number): string { return `${(value / this.store.maxCapacity()) * 100}%`; }
-  capacityPct():         string { return `${(500 / this.store.maxCapacity()) * 100}%`; }
 
   // ── Pie chart ─────────────────────────────────────────────────────────────
   get machineTypes() { return this.store.machineTypes(); }
@@ -74,6 +76,12 @@ export class AnalyticsComponent implements OnInit {
   // ── Relocation recommendations ────────────────────────────────────────────
   get relocationData() { return this.store.relocationData(); }
 
+  // ── Executive summary ─────────────────────────────────────────────────────
+  readonly executive = this.store.executiveSummary;
+
+  /** '+12' / '-3' / '0' for change figures. */
+  signed(value: number): string { return value > 0 ? `+${value}` : `${value}`; }
+
   readonly relocationPage     = signal(0);
   readonly relocationPageSize = signal(5);
   readonly pagedRelocations = computed(() =>
@@ -87,24 +95,24 @@ export class AnalyticsComponent implements OnInit {
       ['SpotTrack Analytics Export', new Date().toLocaleDateString('es-PE')],
       [],
       ['ESTADÍSTICAS GENERALES'],
-      ['Horas Totales de Uso', `${s.totalHours}h`, `${s.hoursChange > 0 ? '+' : ''}${s.hoursChange}% vs mes anterior`],
-      ['Tasa de Ocupación',    `${s.occupancy}%`,  `${s.occupancyChange > 0 ? '+' : ''}${s.occupancyChange} pp vs mes anterior`],
+      ['Horas Totales de Uso', `${s.totalHours}h`, s.hoursChange === null ? 'sin datos del periodo anterior' : `${this.signed(s.hoursChange)}% vs periodo anterior`],
+      ['Tasa de Ocupación',    `${s.occupancy}%`,  `${this.signed(s.occupancyChange)} pp vs periodo anterior`],
       ['Pico Máximo',          `${s.peak}%`,        s.peakTime],
-      ['Tiempo Inactivo',      `${s.inactive}h`,   `${s.inactiveChange}% vs mes anterior`],
+      ['Equipos sin uso',      `${s.inactive}`,    `${this.signed(s.inactiveChange)} vs periodo anterior`],
       [],
-      ['USO SEMANAL'],
-      ['Día', 'Uso (h)', 'Mes Anterior (h)', 'Capacidad (h)'],
-      ...this.weeklyData.map(d => [d.day, String(d.usage), String(d.prevUsage), '500']),
+      ['USO POR DÍA DE LA SEMANA'],
+      ['Día', 'Uso (h)', 'Periodo Anterior (h)'],
+      ...this.weeklyData.map(d => [d.day, String(d.usage), String(d.prevUsage)]),
       [],
       ['PICOS DE OCUPACIÓN POR HORA'],
       ['Hora', 'Ocupación (%)'],
       ...this.hourlyData.map(d => [d.hour, String(d.occupancy)]),
       [],
       ['RECOMENDACIONES DE REUBICACIÓN'],
-      ['Máquina', 'Sede Origen', 'Ocupación Origen (%)', 'Sede Destino', 'Ocupación Destino (%)', 'Ahorro Estimado/mes', 'Prioridad'],
+      ['Máquina', 'Uso de la Máquina (%)', 'Sede Origen', 'Ocupación Origen (%)', 'Sede Destino', 'Ocupación Destino (%)', 'Motivo'],
       ...this.relocationData.map(r => [
-        r.machine, r.fromBranch, String(r.fromOccupancy),
-        r.toBranch, String(r.toOccupancy), `$${r.savingsPerMonth}`, r.priority,
+        r.machine, String(r.machineUtilization), r.fromBranch, String(r.fromOccupancy),
+        r.toBranch, String(r.toOccupancy), r.reason,
       ]),
     ];
 
