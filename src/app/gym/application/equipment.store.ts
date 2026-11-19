@@ -4,11 +4,31 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Equipment, EquipmentStatus } from '../domain/model/equipment.entity';
 import { EquipmentApi, EquipmentDetails } from '../infrastructure/equipment-api';
 import { ActiveGymStore } from '../../auth/application/active-gym.store';
+import { AdminGymStore } from './admin-gym.store';
+import { StompClient } from '../../shared/infrastructure/stomp-client';
+
+/** Payload of /topic/gyms/{gymId}/equipment. */
+interface EquipmentStatusMessage {
+  equipmentId: string;
+  status:      EquipmentStatus;
+  changedAt:   string;
+}
+
+/** Copy with a new status: signals need a new reference to notify the map and counters. */
+function withStatus(e: Equipment, status: EquipmentStatus): Equipment {
+  return new Equipment({
+    uuid: e.uuid, zoneId: e.zoneId, name: e.name, brand: e.brand, model: e.model,
+    purchaseAmount: e.purchaseAmount, purchaseCurrency: e.purchaseCurrency,
+    status, maintenanceThreshold: e.maintenanceThreshold,
+  });
+}
 
 @Injectable({ providedIn: 'root' })
 export class EquipmentStore {
 
   private readonly activeGymStore = inject(ActiveGymStore);
+  private readonly adminGymStore  = inject(AdminGymStore);
+  private readonly stomp          = inject(StompClient);
   private readonly destroyRef     = inject(DestroyRef);
 
   private readonly equipmentSignal = signal<Equipment[]>([]);
@@ -35,7 +55,18 @@ export class EquipmentStore {
     e.status === EquipmentStatus.ACTIVE
   ).length);
 
-  private static readonly POLL_INTERVAL_MS = 5000;
+  /** Safety net only: while the STOMP socket is down the list is re-read at this pace. */
+  private static readonly FALLBACK_POLL_INTERVAL_MS = 30000;
+
+  /**
+   * Gyms whose live status feed we follow: the client's active gym, or every gym the admin
+   * owns (the admin endpoint lists the equipment of all of them).
+   */
+  private readonly liveGymIds = computed(() => {
+    const active = this.activeGymStore.activeGym()?.gymId;
+    if (active) return [active];
+    return this.adminGymStore.myGyms().map(g => g.gymId);
+  }, { equal: (a, b) => a.length === b.length && a.every((id, i) => id === b[i]) });
 
   constructor(private api: EquipmentApi) {
     // A client sees only their active gym's equipment via the association-guarded
@@ -46,7 +77,34 @@ export class EquipmentStore {
       this.activeGymStore.activeGym();
       untracked(() => this.loadEquipment());
     });
-    setInterval(() => this.refreshEquipment(), EquipmentStore.POLL_INTERVAL_MS);
+
+    // Live status: one subscription per followed gym; a change patches only that machine.
+    effect(onCleanup => {
+      const subscriptions = this.liveGymIds().map(gymId =>
+        this.stomp.watch<EquipmentStatusMessage>(`/topic/gyms/${gymId}/equipment`)
+          .subscribe(message => this.applyStatusChange(message)));
+      onCleanup(() => subscriptions.forEach(s => s.unsubscribe()));
+    });
+
+    // Messages sent while the socket was down are lost: re-read the list on every (re)connect.
+    effect(() => {
+      if (this.stomp.connected()) untracked(() => this.refreshEquipment());
+    });
+
+    setInterval(() => {
+      if (!this.stomp.connected()) this.refreshEquipment();
+    }, EquipmentStore.FALLBACK_POLL_INTERVAL_MS);
+  }
+
+  private applyStatusChange({ equipmentId, status }: EquipmentStatusMessage): void {
+    const current = this.equipmentSignal().find(e => e.uuid === equipmentId);
+    if (!current) {
+      // Equipment we haven't loaded yet (e.g. just registered): re-read the list.
+      this.refreshEquipment();
+      return;
+    }
+    if (current.status === status) return;
+    this.equipmentSignal.update(list => list.map(e => e.uuid === equipmentId ? withStatus(e, status) : e));
   }
 
   /** Client → gym-scoped endpoint (their active gym); admin → the admin-owned equipment endpoint. */
