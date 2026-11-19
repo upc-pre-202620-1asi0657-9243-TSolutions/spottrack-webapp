@@ -145,15 +145,15 @@
       </div>
     }
 
-    <!-- Expired cards kept from session state so user can dismiss them -->
-    @for (expired of expiredReservations(); track expired.machineId) {
+    <!-- Reservations that ran out during this visit, kept until the user dismisses them -->
+    @for (expired of expiredReservations(); track expired.reservationId) {
       <div class="rv-notice rv-notice--neutral rv-expired">
-        <mat-icon>{{ expired.icon }}</mat-icon>
+        <mat-icon>timer_off</mat-icon>
         <div class="rv-expired__text">
-          <strong>{{ 'reservation.expired.title' | translate }} · {{ 'machines.names.' + expired.nameKey | translate }}</strong>
+          <strong>{{ 'reservation.expired.title' | translate }} · {{ expired.equipmentName }}</strong>
           <span>{{ 'reservation.expired.subtitle' | translate }}</span>
         </div>
-        <button class="btn btn--ghost btn--sm" (click)="dismissExpired(expired.machineId)">
+        <button class="btn btn--ghost btn--sm" (click)="dismissExpired(expired.reservationId)">
           <mat-icon>delete_outline</mat-icon>
         </button>
       </div>

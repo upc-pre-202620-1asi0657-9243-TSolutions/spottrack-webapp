@@ -157,28 +157,6 @@
       "profileFailed": "Tu cuenta fue creada, pero no pudimos guardar tu perfil. Inténtalo de nuevo desde tu página de perfil."
     }
   },
-  "machines": {
-    "zones": {
-      "fuerza": "Zona Fuerza",
-      "cardio": "Zona Cardio"
-    },
-    "names": {
-      "cinta1": "Cinta 1",
-      "cinta2": "Cinta 2",
-      "prensa": "Prensa",
-      "prensaPiernas": "Prensa de Piernas",
-      "poleaAlta": "Polea Alta",
-      "rackSentadilla1": "Rack Sentadilla #1",
-      "rackSentadilla2": "Rack Sentadilla #2",
-      "bancoPecho": "Banco Pecho",
-      "bancoPechoPlano": "Banco Pecho Plano",
-      "bancoPechoInclinado": "Banco Pecho Inclinado",
-      "maquinaRemo": "Máquina de Remo",
-      "remo": "Remo",
-      "eliptica": "Elíptica",
-      "raquetmaquina": "Raquetmáquina"
-    }
-  },
   "map": {
     "title": "Mapa de Disponibilidad en Tiempo Real",
     "subtitle": "Visualiza el estado de todas las máquinas del gimnasio",

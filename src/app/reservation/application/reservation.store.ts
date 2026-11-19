@@ -2,10 +2,16 @@ import { computed, effect, inject, Injectable, signal, untracked } from '@angula
 import { AuthStore } from '../../auth/application/auth.store';
 import { EquipmentStore } from '../../gym/application/equipment.store';
 import { EquipmentStatus } from '../../gym/domain/model/equipment.entity';
-import { GymStateService, GymMachine } from '../../shared/application/gym-state.service';
 import { AlertsService } from '../../alerts/application/alerts.service';
 import { ReservationApi } from '../infrastructure/reservation-api';
 import { ReservationResource } from '../infrastructure/reservation-response';
+
+/** A reservation that ran out while the client was on the page, kept until they dismiss it. */
+export interface ExpiredReservation {
+  reservationId: string;
+  equipmentId:   string;
+  equipmentName: string;
+}
 
 interface TrackedReservation {
   reservationId:   string;
@@ -21,7 +27,6 @@ export class ReservationStore {
 
   private readonly api            = inject(ReservationApi);
   private readonly auth           = inject(AuthStore);
-  private readonly gymState       = inject(GymStateService);
   private readonly equipmentStore = inject(EquipmentStore);
   private readonly alertsService  = inject(AlertsService);
 
@@ -31,15 +36,15 @@ export class ReservationStore {
   private readonly errorSignal       = signal<string | null>(null);
   private readonly creatingSignal    = signal(false);
   private readonly nowMs             = signal(Date.now());
+  private readonly expiredSignal     = signal<ExpiredReservation[]>([]);
 
   private readonly endedIds = new Set<string>();
 
   readonly activeReservations   = computed(() => this.historySignal().filter(r => r.status === 'ACTIVE'));
-  readonly availableMachines    = this.gymState.availableMachines;
   readonly availableEquipment   = computed(() =>
     this.equipmentStore.equipment().filter(e => e.status === EquipmentStatus.AVAILABLE)
   );
-  readonly expiredReservations  = this.gymState.expiredReservations;
+  readonly expiredReservations  = this.expiredSignal.asReadonly();
   readonly history              = this.historySignal.asReadonly();
   readonly historyLoading       = this.histLoadingSignal.asReadonly();
   readonly reservationError     = this.errorSignal.asReadonly();
@@ -61,8 +66,10 @@ export class ReservationStore {
         expired.forEach(r => {
           if (!this.endedIds.has(r.id)) {
             this.endedIds.add(r.id);
+            const equipmentName = this.getEquipmentName(r.equipmentId);
+            this.expiredSignal.update(list => [...list, { reservationId: r.id, equipmentId: r.equipmentId, equipmentName }]);
             this.endReservation(r.id);
-            this.alertsService.addReservationExpiredAlert(this.getEquipmentName(r.equipmentId));
+            this.alertsService.addReservationExpiredAlert(equipmentName);
           }
         });
       });
@@ -105,18 +112,15 @@ export class ReservationStore {
     const toTimeString = (d: Date)   =>
       `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 
-    const equipmentId = this.resolveEquipmentUuid(machineId);
-
     this.api.initiateExpressReservation({
       clientId,
-      equipmentId,
+      equipmentId: machineId,
       startTime:   toTimeString(now),
       endTime:     toTimeString(endDate),
       startedAt:   now.toISOString().split('.')[0],
       timeExpiry:  activation.toISOString().split('.')[0],
     }).subscribe({
       next: res => {
-        this.gymState.createReservation(machineId, durationSeconds);
         this.tracked.update(map => {
           const next = new Map(map);
           next.set(machineId, {
@@ -167,7 +171,6 @@ export class ReservationStore {
     this.api.startTimer(reservationId, durationMinutes).subscribe({
       next: () => {
         if (entry) {
-          this.gymState.activateReservation(entry.machineId);
           this.tracked.update(map => {
             const next = new Map(map);
             const cur  = next.get(entry.machineId);
@@ -189,10 +192,7 @@ export class ReservationStore {
 
   cancelReservation(reservationId: string): void {
     const entry = [...this.tracked().values()].find(v => v.reservationId === reservationId);
-    if (entry) {
-      this.gymState.cancelReservation(entry.machineId);
-      this.removeTracked(entry.machineId);
-    }
+    if (entry) this.removeTracked(entry.machineId);
 
     this.api.cancelReservation(reservationId).subscribe({
       next:  () => { this.loadHistory(); this.equipmentStore.refreshEquipment(); },
@@ -202,10 +202,7 @@ export class ReservationStore {
 
   endReservation(reservationId: string): void {
     const entry = [...this.tracked().values()].find(v => v.reservationId === reservationId);
-    if (entry) {
-      this.gymState.cancelReservation(entry.machineId);
-      this.removeTracked(entry.machineId);
-    }
+    if (entry) this.removeTracked(entry.machineId);
 
     this.api.endReservation(reservationId).subscribe({
       next:  () => { this.loadHistory(); this.equipmentStore.refreshEquipment(); },
@@ -221,25 +218,20 @@ export class ReservationStore {
     return 'activated';
   }
 
-  dismissExpired(machineId: string): void {
-    this.gymState.dismissExpiredReservation(machineId);
-    this.removeTracked(machineId);
+  dismissExpired(reservationId: string): void {
+    this.expiredSignal.update(list => list.filter(r => r.reservationId !== reservationId));
   }
 
-  formatTimer(seconds: number):    string  { return this.gymState.formatTimer(seconds); }
-  getZoneKey(category: string):    string  { return this.gymState.getZoneKey(category); }
-  isExpired(machine: GymMachine):  boolean { return machine.timerSeconds === 0; }
+  formatTimer(seconds: number): string {
+    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const s = (seconds % 60).toString().padStart(2, '0');
+    return `${m}:${s}`;
+  }
 
   getEquipmentName(equipmentId: string): string {
     const byUuid = this.equipmentStore.equipment().find(e => e.uuid === equipmentId);
     if (byUuid) return byUuid.name;
-    const byLocalId = this.gymState.machines().find(m => m.id === equipmentId);
-    if (byLocalId) return byLocalId.nameKey;
     return equipmentId.length > 12 ? equipmentId.slice(0, 8) + '…' : equipmentId;
-  }
-
-  private resolveEquipmentUuid(machineId: string): string {
-    return machineId; // real equipment ids are always UUIDs; anything else is a legacy mock machine id
   }
 
   private parseDurationMinutes(startTime: string, endTime: string): number {

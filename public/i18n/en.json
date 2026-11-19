@@ -157,28 +157,6 @@
       "profileFailed": "Your account was created, but we couldn't save your profile. Please try again from your profile page."
     }
   },
-  "machines": {
-    "zones": {
-      "fuerza": "Strength Zone",
-      "cardio": "Cardio Zone"
-    },
-    "names": {
-      "cinta1": "Treadmill 1",
-      "cinta2": "Treadmill 2",
-      "prensa": "Leg Press",
-      "prensaPiernas": "Leg Press",
-      "poleaAlta": "High Cable",
-      "rackSentadilla1": "Squat Rack #1",
-      "rackSentadilla2": "Squat Rack #2",
-      "bancoPecho": "Bench Press",
-      "bancoPechoPlano": "Flat Bench Press",
-      "bancoPechoInclinado": "Incline Bench Press",
-      "maquinaRemo": "Rowing Machine",
-      "remo": "Rowing",
-      "eliptica": "Elliptical",
-      "raquetmaquina": "Multi-Function Machine"
-    }
-  },
   "map": {
     "title": "Real-Time Availability Map",
     "subtitle": "View the status of all gym machines",
