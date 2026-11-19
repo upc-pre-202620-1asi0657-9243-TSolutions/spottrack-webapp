@@ -115,9 +115,8 @@ export class ReservationListComponent implements OnInit {
   }
 
   cancelReservation(reservationId: string): void { this.store.cancelReservation(reservationId); }
-  dismissExpired(machineId: string):        void { this.store.dismissExpired(machineId); }
+  dismissExpired(reservationId: string):    void { this.store.dismissExpired(reservationId); }
   formatTimer(seconds: number):             string { return this.store.formatTimer(seconds); }
-  getZoneKey(category: string):             string { return this.store.getZoneKey(category); }
   equipmentName(equipmentId: string):       string { return this.store.getEquipmentName(equipmentId); }
 
   timeRemaining(reservationId: string, timerExpiry: string | null | undefined): number {

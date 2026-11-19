@@ -34,7 +34,9 @@
       <mat-label>{{ 'analytics.filters.branch.label' | translate }}</mat-label>
       <mat-select [value]="selectedBranch()" (valueChange)="selectedBranch.set($event)">
         <mat-option value="all">{{ 'analytics.filters.branch.all' | translate }}</mat-option>
-        <mat-option value="main">{{ 'analytics.filters.branch.main' | translate }}</mat-option>
+        @for (b of branches(); track b.branchId) {
+          <mat-option [value]="b.branchId">{{ b.name }}</mat-option>
+        }
       </mat-select>
     </mat-form-field>
 
@@ -57,8 +59,14 @@
       <div class="stat-card__info">
         <p class="stat-card__label">{{ 'analytics.stats.totalHours' | translate }}</p>
         <p class="stat-card__value">{{ stats().totalHours | number:'1.0-0' }}h</p>
-        <p class="stat-card__change stat-card__change--green">
-          +{{ stats().hoursChange }}% {{ 'analytics.stats.vsLastMonth' | translate }}
+        <p class="stat-card__change"
+           [class.stat-card__change--green]="(stats().hoursChange ?? 0) >= 0"
+           [class.stat-card__change--red]="(stats().hoursChange ?? 0) < 0">
+          @if (stats().hoursChange === null) {
+            {{ 'analytics.stats.noPreviousData' | translate }}
+          } @else {
+            {{ signed(stats().hoursChange!) }}% {{ 'analytics.stats.vsLastMonth' | translate }}
+          }
         </p>
       </div>
       <mat-icon class="stat-card__icon stat-card__icon--blue">schedule</mat-icon>
@@ -86,10 +94,10 @@
 
     <div class="stat-card">
       <div class="stat-card__info">
-        <p class="stat-card__label">{{ 'analytics.stats.inactiveTime' | translate }}</p>
-        <p class="stat-card__value">{{ stats().inactive }}h</p>
+        <p class="stat-card__label">{{ 'analytics.stats.inactiveEquipment' | translate }}</p>
+        <p class="stat-card__value">{{ stats().inactive }}</p>
         <p class="stat-card__change stat-card__change--amber">
-          {{ stats().inactiveChange }}% {{ 'analytics.stats.vsLastMonth' | translate }}
+          {{ signed(stats().inactiveChange) }} {{ 'analytics.stats.vsLastMonth' | translate }}
         </p>
       </div>
       <div class="stat-card__dot"></div>
@@ -111,7 +119,7 @@
 
       <div class="bar-chart">
         <div class="bar-chart__y-axis">
-          <span>600</span><span>450</span><span>300</span><span>150</span><span>0</span>
+          @for (t of barTicks(); track $index) { <span>{{ t }}</span> }
         </div>
         <div class="bar-chart__plot">
           <div class="bar-chart__grid">
@@ -121,7 +129,6 @@
             <div class="grid-line"></div>
             <div class="grid-line"></div>
           </div>
-          <div class="capacity-line" [style.bottom]="capacityPct()"></div>
           <div class="bar-chart__bars">
             @for (d of weeklyData; track d.day) {
               <div class="bar-group">
@@ -220,16 +227,13 @@
     </div>
 
     <div class="reloc-list">
-      @for (r of pagedRelocations(); track r.machine) {
-        <div class="reloc-row" [appContextMenu]="relocationMenu(r.machine)">
-
-          <span class="priority-badge" [class]="'priority-badge--' + r.priority.toLowerCase()">
-            {{ r.priority }}
-          </span>
+      @for (r of pagedRelocations(); track r.equipmentId) {
+        <div class="reloc-row" [appContextMenu]="relocationMenu(r.machine)" [title]="r.reason">
 
           <div class="reloc-machine">
             <mat-icon class="reloc-machine__icon">fitness_center</mat-icon>
             <span>{{ r.machine }}</span>
+            <span class="occ-value occ-value--low">{{ r.machineUtilization }}% {{ 'analytics.relocation.machineUse' | translate }}</span>
           </div>
 
           <div class="reloc-branch">
@@ -250,11 +254,6 @@
               <div class="occ-bar__fill occ-bar__fill--high" [style.width.%]="r.toOccupancy"></div>
             </div>
             <span class="occ-value occ-value--high">{{ r.toOccupancy }}% ocupación</span>
-          </div>
-
-          <div class="reloc-savings">
-            <mat-icon>savings</mat-icon>
-            <span>+${{ r.savingsPerMonth }}/mes</span>
           </div>
 
           <button class="btn-relocate">
@@ -286,7 +285,13 @@
         <mat-icon class="insight__icon">check_circle</mat-icon>
         <div class="insight__body">
           <p class="insight__title insight__title--green">{{ 'analytics.executive.positive.title' | translate }}</p>
-          <p class="insight__desc">{{ 'analytics.executive.positive.description' | translate }}</p>
+          <p class="insight__desc">
+            @if (executive().hoursChange === null) {
+              {{ 'analytics.executive.positive.noData' | translate }}
+            } @else {
+              {{ 'analytics.executive.positive.description' | translate: { change: signed(executive().hoursChange!) } }}
+            }
+          </p>
         </div>
       </div>
 
@@ -294,7 +299,13 @@
         <mat-icon class="insight__icon">warning</mat-icon>
         <div class="insight__body">
           <p class="insight__title insight__title--red">{{ 'analytics.executive.bottleneck.title' | translate }}</p>
-          <p class="insight__desc">{{ 'analytics.executive.bottleneck.description' | translate }}</p>
+          <p class="insight__desc">
+            @if (executive().stressHours.length === 0) {
+              {{ 'analytics.executive.bottleneck.none' | translate }}
+            } @else {
+              {{ 'analytics.executive.bottleneck.description' | translate: { hours: executive().stressHours.join(', ') } }}
+            }
+          </p>
         </div>
       </div>
 
@@ -302,7 +313,7 @@
         <mat-icon class="insight__icon">info</mat-icon>
         <div class="insight__body">
           <p class="insight__title insight__title--amber">{{ 'analytics.executive.optimization.title' | translate }}</p>
-          <p class="insight__desc">{{ 'analytics.executive.optimization.description' | translate }}</p>
+          <p class="insight__desc">{{ 'analytics.executive.optimization.description' | translate: { inactive: executive().inactive, total: executive().equipmentCount } }}</p>
         </div>
       </div>
 

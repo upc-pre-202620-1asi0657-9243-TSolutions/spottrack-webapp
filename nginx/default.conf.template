@@ -15,6 +15,18 @@ server {
         proxy_read_timeout 60s;
     }
 
+    # STOMP sobre WebSocket: el backend publica el estado de los equipos en tiempo real
+    location /ws/ {
+        proxy_pass ${BACKEND_URL};
+        proxy_ssl_server_name on;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_read_timeout 3600s;
+    }
+
     # Rutas de Angular (SPA): si no existe el archivo, devuelve index.html
     location / {
         try_files $uri $uri/ /index.html;

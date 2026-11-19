@@ -233,6 +233,7 @@ $blue       : var(--info);
     font-size: 0.75rem;
 
     &--green { color: $green; }
+    &--red   { color: $red; }
     &--amber { color: $amber; }
     &--muted { color: $muted; }
   }
@@ -352,15 +353,6 @@ $blue       : var(--info);
   width: 100%;
   height: 1px;
   background: var(--chart-grid);
-}
-
-.capacity-line {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 0;
-  border-top: 2px dashed var(--border-strong);
-  pointer-events: none;
 }
 
 .bar-chart__bars {
@@ -577,22 +569,6 @@ $blue       : var(--info);
   }
 }
 
-.priority-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 3px 10px;
-  border-radius: 6px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  white-space: nowrap;
-  flex-shrink: 0;
-
-  &--high   { background: var(--danger-soft);  border: 1px solid $red;   color: $red;   }
-  &--medium { background: var(--warning-soft); border: 1px solid $amber; color: $amber; }
-  &--low    { background: var(--info-soft);    border: 1px solid $blue;  color: $blue;  }
-}
-
 .reloc-machine {
   display: flex;
   align-items: center;
@@ -659,23 +635,6 @@ $blue       : var(--info);
     font-size: 20px;
     width: 20px;
     height: 20px;
-  }
-}
-
-.reloc-savings {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: $green;
-  font-weight: 700;
-  font-size: 0.875rem;
-  min-width: 120px;
-  flex-shrink: 0;
-
-  mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
   }
 }
 
@@ -1021,7 +980,6 @@ $blue       : var(--info);
   .stat-card__value { font-size: 1.5rem; }
   .reloc-machine { min-width: unset; }
   .reloc-branch { min-width: unset; }
-  .reloc-savings { min-width: unset; }
   .roi-sim-inputs { grid-template-columns: 1fr; }
   .header-actions { flex-wrap: wrap; width: 100%; .btn-accent, .btn-outline { flex: 1; justify-content: center; } }
 }

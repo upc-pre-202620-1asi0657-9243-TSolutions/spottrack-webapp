@@ -157,28 +157,6 @@
       "profileFailed": "Your account was created, but we couldn't save your profile. Please try again from your profile page."
     }
   },
-  "machines": {
-    "zones": {
-      "fuerza": "Strength Zone",
-      "cardio": "Cardio Zone"
-    },
-    "names": {
-      "cinta1": "Treadmill 1",
-      "cinta2": "Treadmill 2",
-      "prensa": "Leg Press",
-      "prensaPiernas": "Leg Press",
-      "poleaAlta": "High Cable",
-      "rackSentadilla1": "Squat Rack #1",
-      "rackSentadilla2": "Squat Rack #2",
-      "bancoPecho": "Bench Press",
-      "bancoPechoPlano": "Flat Bench Press",
-      "bancoPechoInclinado": "Incline Bench Press",
-      "maquinaRemo": "Rowing Machine",
-      "remo": "Rowing",
-      "eliptica": "Elliptical",
-      "raquetmaquina": "Multi-Function Machine"
-    }
-  },
   "map": {
     "title": "Real-Time Availability Map",
     "subtitle": "View the status of all gym machines",
@@ -779,8 +757,7 @@
       },
       "branch": {
         "label": "Branch",
-        "all": "All branches",
-        "main": "Main Branch"
+        "all": "All branches"
       },
       "customRange": "Custom Range",
       "dateStart": "Start",
@@ -790,14 +767,15 @@
       "totalHours": "Total Usage Hours",
       "occupancyRate": "Occupancy Rate",
       "peakUsage": "Peak Usage",
-      "inactiveTime": "Inactive Time",
-      "vsLastMonth": "vs last month"
+      "inactiveEquipment": "Unused Equipment",
+      "vsLastMonth": "vs previous period",
+      "noPreviousData": "No data for the previous period"
     },
     "charts": {
-      "weeklyUsage": "Weekly Usage vs Capacity",
+      "weeklyUsage": "Usage by Day of the Week (h)",
       "showComparison": "Show Comparison",
       "hideComparison": "Hide Comparison",
-      "prevMonth": "Previous month",
+      "prevMonth": "Previous period",
       "usage": "Usage",
       "capacity": "Capacity",
       "machineTypes": "Distribution by Machine Type",
@@ -807,21 +785,24 @@
       "title": "Relocation Recommendations",
       "subtitle": "Underutilized machines identified across branches — relocate to maximize asset ROI",
       "opportunities": "opportunities",
-      "action": "Relocate"
+      "action": "Relocate",
+      "machineUse": "machine use"
     },
     "executive": {
       "title": "Executive Summary",
       "positive": {
-        "title": "Positive Performance",
-        "description": "Machine usage has increased 12% this month, indicating better client retention and improved asset utilization."
+        "title": "Usage Trend",
+        "description": "Machine usage hours changed {{change}}% compared with the previous period.",
+        "noData": "There is no data for the previous period to compare usage with yet."
       },
       "bottleneck": {
-        "title": "Bottleneck Detected",
-        "description": "Hours from 18:00 to 20:00 consistently exceed 90% capacity. Recommendation: Consider acquiring 2 additional high-use machines or implementing a reservation system."
+        "title": "Bottlenecks",
+        "description": "These time slots reached at least 90% occupancy: {{hours}}. Consider adding equipment or encouraging reservations at those times.",
+        "none": "No time slot reached 90% occupancy in the period."
       },
       "optimization": {
-        "title": "Optimization Required",
-        "description": "124 hours of scheduled downtime recorded for maintenance. Applying the smart scheduler could reduce this figure by 30%."
+        "title": "Unused Equipment",
+        "description": "{{inactive}} of {{total}} machines recorded no use in the period. Review their placement or the relocation suggestions."
       }
     }
   },

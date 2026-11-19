@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { UsageHeatmapResource } from './usage-heatmap-response';
+import { RelocationInsightsResource } from './relocation-insights-response';
 
 /** Usage history built by the backend from real sensor sessions. Dates are inclusive, yyyy-MM-dd. */
 @Injectable({ providedIn: 'root' })
@@ -16,6 +17,12 @@ export class UsageHeatmapApi {
 
   getBranchUsage(branchId: string, from: string, to: string): Observable<UsageHeatmapResource> {
     return this.http.get<UsageHeatmapResource>(`${this.base}/branches/${branchId}`, { params: this.range(from, to) });
+  }
+
+  /** Branch demand and machines worth moving from idle branches to saturated ones (admin only). */
+  getRelocationInsights(gymId: string, from: string, to: string): Observable<RelocationInsightsResource> {
+    return this.http.get<RelocationInsightsResource>(`${this.base}/gyms/${gymId}/relocation-insights`,
+      { params: this.range(from, to) });
   }
 
   private range(from: string, to: string): HttpParams {
