@@ -165,7 +165,7 @@ export class AnalyticsStore {
   /** Axis labels from top to bottom. */
   readonly barTicks = computed(() => {
     const max = this.maxCapacity();
-    return [1, 0.75, 0.5, 0.25, 0].map(f => Math.round(max * f * 10) / 10);
+    return [1, 0.75, 0.5, 0.25, 0].map(f => Math.round(max * f * 100) / 100);
   });
 
   // ── Line chart: hourly occupancy measured from sensor sessions ────────
