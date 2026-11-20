@@ -2,10 +2,13 @@ import { Injectable, signal, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { AlertsApi } from '../infrastructure/alerts-api';
 import { AlertResource } from '../infrastructure/alerts-response';
+import { ClientNotificationsApi } from '../../notifications/infrastructure/client-notifications-api';
 
 export interface AppAlert {
   id: string;
   backendId?: number;       // present only for alerts sourced from the backend
+  clientNotificationId?: number; // present only for client notifications sourced from the backend
+  equipmentId?: string;
   severity?: 'WARNING' | 'CRITICAL'; // present only for alerts sourced from the backend
   title?: string;           // plain text (for dynamically generated alerts)
   titleKey?: string;        // i18n key (for seeded/static alerts)
@@ -23,6 +26,7 @@ export interface AppAlert {
 export class AlertsService {
   private translate = inject(TranslateService);
   private api        = inject(AlertsApi);
+  private notificationsApi = inject(ClientNotificationsApi);
 
   alerts = signal<AppAlert[]>([]);
 
@@ -76,11 +80,24 @@ export class AlertsService {
     ]);
   }
 
+  /**
+   * Adds client notifications coming from the backend (initial load or real-time push).
+   * Notifications already in the inbox are kept as they are, so local read state isn't lost.
+   */
+  addClientNotifications(incoming: AppAlert[]): void {
+    this.alerts.update(list => {
+      const known = new Set(list.map(a => a.id));
+      const fresh = incoming.filter(a => !known.has(a.id));
+      return [...fresh, ...list].sort((a, b) => b.date.getTime() - a.date.getTime());
+    });
+  }
+
   deleteAlert(id: string): void {
     const alert = this.alerts().find(a => a.id === id);
     if (alert?.backendId) {
       this.api.resolveAlert(alert.backendId).subscribe();
     }
+    if (alert) this.syncClientNotificationRead(alert);
     this.alerts.update(list => list.filter(a => a.id !== id));
   }
 
@@ -89,12 +106,15 @@ export class AlertsService {
     const toClear = this.alerts().filter(a => role === 'client' ? a.type === 'client' : a.type !== 'client');
     for (const alert of toClear) {
       if (alert.backendId) this.api.resolveAlert(alert.backendId).subscribe();
+      this.syncClientNotificationRead(alert);
     }
     this.alerts.update(list => list.filter(a => !toClear.includes(a)));
   }
 
   /** Marks one alert read, e.g. when it is opened in the inbox reading pane. */
   markRead(id: string): void {
+    const alert = this.alerts().find(a => a.id === id);
+    if (alert) this.syncClientNotificationRead(alert);
     this.alerts.update(list => list.map(a => a.id === id && !a.read ? { ...a, read: true } : a));
   }
 
@@ -105,12 +125,22 @@ export class AlertsService {
 
   // Only marks alerts that belong to the given role as read
   markReadForRole(role: 'admin' | 'client'): void {
+    if (role === 'client') {
+      this.alerts().filter(a => a.type === 'client').forEach(a => this.syncClientNotificationRead(a));
+    }
     this.alerts.update(list =>
       list.map(a => {
         if (role === 'client' && a.type !== 'client') return a;
         return { ...a, read: true };
       })
     );
+  }
+
+  /** A client notification read (or removed) in the inbox is marked read in the backend too. */
+  private syncClientNotificationRead(alert: AppAlert): void {
+    if (alert.clientNotificationId && !alert.read) {
+      this.notificationsApi.markAsRead(alert.clientNotificationId).subscribe({ error: () => {} });
+    }
   }
 
   /** Called by AuthStore on logout to prevent stale alert data from bleeding into the next session. */
