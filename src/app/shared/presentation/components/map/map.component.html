@@ -683,10 +683,12 @@
 
         @if (isInUse(selectedEquipment()!.eq.status)) {
           <div class="detail-actions">
-            <button class="btn-action-cyan" (click)="notifyWhenFree()">
-              <mat-icon>notifications</mat-icon>
-              {{ 'map.detail.notifyBtn' | translate }}
-            </button>
+            @if (canWatch(selectedEquipment()!.eq.status)) {
+              <button class="btn-action-cyan" (click)="toggleNotifyWhenFree()">
+                <mat-icon>{{ isWatching(selectedEquipment()!.eq.uuid) ? 'notifications_off' : 'notifications' }}</mat-icon>
+                {{ (isWatching(selectedEquipment()!.eq.uuid) ? 'map.detail.notifyOffBtn' : 'map.detail.notifyBtn') | translate }}
+              </button>
+            }
             <button class="btn-action-dark" (click)="openAlternatives()">
               <mat-icon>autorenew</mat-icon>
               {{ 'map.detail.alternativesBtn' | translate }}
@@ -706,6 +708,14 @@
                 : ('map.detail.status.OUT_OF_SERVICE' | translate) }}
             </p>
           </div>
+          @if (canWatch(selectedEquipment()!.eq.status)) {
+            <div class="detail-actions">
+              <button class="btn-action-cyan" (click)="toggleNotifyWhenFree()">
+                <mat-icon>{{ isWatching(selectedEquipment()!.eq.uuid) ? 'notifications_off' : 'notifications' }}</mat-icon>
+                {{ (isWatching(selectedEquipment()!.eq.uuid) ? 'map.detail.notifyOffBtn' : 'map.detail.notifyBackBtn') | translate }}
+              </button>
+            </div>
+          }
         }
 
         @if (selectedEquipment()!.eq.status === 'AVAILABLE' && !isPending(selectedEquipment()!.eq.uuid)) {
