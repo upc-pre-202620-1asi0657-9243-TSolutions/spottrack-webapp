@@ -210,7 +210,9 @@
       "status": {
         "AVAILABLE": "Disponible",
         "IN_USE": "En Uso",
-        "RESERVED": "Reservado"
+        "RESERVED": "Reservado",
+        "MAINTENANCE": "En mantenimiento",
+        "OUT_OF_SERVICE": "Fuera de servicio"
       },
       "reservedByUser": "Tienes esta máquina reservada",
       "notifyBtn": "Notificarme cuando esté libre",
