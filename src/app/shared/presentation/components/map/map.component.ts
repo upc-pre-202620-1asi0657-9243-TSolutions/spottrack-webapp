@@ -16,6 +16,8 @@ import { Zone } from '../../../../gym/domain/model/zone.entity';
 import { ActiveGymStore } from '../../../../auth/application/active-gym.store';
 import { ThemeService } from '../../../application/theme.service';
 import { UsageHeatmapStore, UsageWindow } from '../../../../analytics/application/usage-heatmap.store';
+import { EquipmentWatchStore } from '../../../../notifications/application/equipment-watch.store';
+import { AuthStore } from '../../../../auth/application/auth.store';
 
 export type FilterTab = 'ALL' | 'STRENGTH' | 'CARDIO';
 export type ViewMode  = 'MAP' | 'HEATMAP' | 'ALL_BRANCHES';
@@ -57,6 +59,8 @@ export class MapComponent implements OnInit {
   private readonly usageHeatmapStore = inject(UsageHeatmapStore);
   private readonly snackBar         = inject(MatSnackBar);
   private readonly translate        = inject(TranslateService);
+  private readonly watchStore       = inject(EquipmentWatchStore);
+  private readonly authStore        = inject(AuthStore);
   readonly themeService             = inject(ThemeService, { optional: true });
 
   readonly selectedBranchId      = signal<string | null>(null);
@@ -617,7 +621,33 @@ export class MapComponent implements OnInit {
     });
   }
 
-  notifyWhenFree():   void { this.notify('map.detail.notifications.notified'); }
+  /** The notification bell is only offered to clients, on machines that can't be used right now. */
+  canWatch(status: EquipmentStatus): boolean {
+    return this.authStore.isClient() && (this.isInUse(status)
+      || status === EquipmentStatus.MAINTENANCE || status === EquipmentStatus.OUT_OF_SERVICE);
+  }
+
+  isWatching(uuid: string): boolean {
+    return this.watchStore.isWatching(uuid);
+  }
+
+  /** Turns the bell of the selected machine on or off; the backend notifies the client when it frees up. */
+  toggleNotifyWhenFree(): void {
+    const eq = this.selectedEquipment();
+    if (!eq) return;
+    const uuid = eq.eq.uuid;
+    const watching = this.watchStore.isWatching(uuid);
+    const request = watching ? this.watchStore.unwatch(uuid) : this.watchStore.watch(uuid);
+    request.subscribe({
+      next: () => this.notify(watching
+        ? 'map.detail.notifications.notifyOff'
+        : 'map.detail.notifications.notified'),
+      error: err => this.notify(err?.status === 422
+        ? 'map.detail.notifications.notifyUnavailable'
+        : 'map.detail.notifications.notifyFailed'),
+    });
+  }
+
   reportAsFree():     void { this.notify('map.detail.notifications.reportedFree'); }
   reportAsOccupied(): void { this.notify('map.detail.notifications.reportedOccupied'); }
 }

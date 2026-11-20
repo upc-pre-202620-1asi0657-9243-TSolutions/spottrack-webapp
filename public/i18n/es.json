@@ -210,10 +210,17 @@
       "status": {
         "AVAILABLE": "Disponible",
         "IN_USE": "En Uso",
-        "RESERVED": "Reservado"
+        "RESERVED": "Reservado",
+        "MAINTENANCE": "En mantenimiento",
+        "OUT_OF_SERVICE": "Fuera de servicio",
+        "OCCUPIED": "En Uso",
+        "ACTIVE": "En Uso",
+        "DECOMMISSIONED": "Dado de baja"
       },
       "reservedByUser": "Tienes esta máquina reservada",
       "notifyBtn": "Notificarme cuando esté libre",
+      "notifyOffBtn": "Dejar de avisarme",
+      "notifyBackBtn": "Avisarme cuando vuelva",
       "alternativesBtn": "Ver alternativas",
       "reportFreeBtn": "Reportar como libre",
       "reserveBtn": "Reservar",
@@ -222,7 +229,10 @@
         "notified": "Te notificaremos cuando esta máquina esté libre",
         "reportedFree": "Máquina reportada como libre. ¡Gracias!",
         "reserved": "Máquina reservada con éxito",
-        "reportedOccupied": "Máquina reportada como ocupada. ¡Gracias!"
+        "reportedOccupied": "Máquina reportada como ocupada. ¡Gracias!",
+        "notifyOff": "Ya no recibirás avisos de esta máquina",
+        "notifyUnavailable": "Esta máquina ya está disponible",
+        "notifyFailed": "No pudimos actualizar el aviso. Inténtalo de nuevo."
       }
     },
     "alternatives": {
@@ -328,6 +338,21 @@
     }
   },
   "clientAlerts": {
+    "equipmentAvailable": {
+      "title": "{{machine}} está libre",
+      "titleGeneric": "Una máquina está libre",
+      "description": "{{machine}}, que estabas esperando, ya está libre. ¡Apúrate antes de que alguien más la tome!"
+    },
+    "equipmentRestored": {
+      "title": "{{machine}} volvió a estar operativa",
+      "titleGeneric": "Una máquina volvió a estar operativa",
+      "description": "{{machine}} fue reparada y ya está operativa de nuevo."
+    },
+    "equipmentOccupiedAgain": {
+      "title": "{{machine}} está ocupada otra vez",
+      "titleGeneric": "Una máquina está ocupada otra vez",
+      "description": "Alguien más tomó {{machine}} antes de que llegaras."
+    },
     "reservationExpired": {
       "title": "Reserva Expirada: {{machine}}",
       "description": "Tu reserva de {{machine}} ha finalizado. La máquina ya está disponible para otros usuarios."

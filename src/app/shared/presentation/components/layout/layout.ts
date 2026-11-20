@@ -12,6 +12,7 @@ import { UserProfile } from '../user-profile/user-profile';
 import { AlertsService } from '../../../../alerts/application/alerts.service';
 import { ContextMenuComponent } from '../context-menu/context-menu.component';
 import { ThemeToggle } from '../theme-toggle/theme-toggle';
+import { ClientNotificationsStore } from '../../../../notifications/application/client-notifications.store';
 
 @Component({
   selector: 'app-layout',
@@ -36,6 +37,8 @@ export class Layout {
   private router      = inject(Router);
   private authStore   = inject(AuthStore);
   private alertsSvc   = inject(AlertsService);
+  // Eagerly created so a signed-in client receives machine notifications on any page.
+  private readonly clientNotifications = inject(ClientNotificationsStore);
 
   // Role-aware badge: clients only count their own unread alerts
   readonly unreadCount = computed(() => {
