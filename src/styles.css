@@ -209,22 +209,45 @@ app-layout {
   font-weight: 600;
 }
 
-/* Routine creation snackbar */
-.routine-snackbar {
-  background-color: var(--surface) !important;
-  color: var(--text) !important;
-  border: 1px solid var(--accent) !important;
-  border-radius: var(--radius) !important;
-  box-shadow: var(--shadow-lg) !important;
+/* ── Notifications (MatSnackBar) ─────────────────────────────────────────────
+   Material paints the snackbar on an inner .mat-mdc-snackbar-surface using its
+   inverse-surface colours, which in dark mode turn into a light (pinkish) tone.
+   Colours are driven through Material's own tokens instead, so every snackbar
+   follows the app theme in both light and dark mode. */
+.mat-mdc-snack-bar-container {
+  --mat-snack-bar-container-color: var(--surface);
+  --mat-snack-bar-supporting-text-color: var(--text);
+  --mat-snack-bar-button-color: var(--accent-text);
+  --mat-snack-bar-container-shape: var(--radius);
 }
 
-.routine-snackbar .mat-mdc-snack-bar-label {
-  color: var(--text) !important;
+.mat-mdc-snack-bar-container .mat-mdc-snackbar-surface {
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-lg);
 }
 
-.routine-snackbar .mat-mdc-button {
-  color: var(--accent-text) !important;
+.mat-mdc-snack-bar-container .mat-mdc-snack-bar-label {
+  font-weight: 500;
+}
+
+.mat-mdc-snack-bar-container .mat-mdc-snack-bar-action {
   font-weight: 700;
+}
+
+/* Success / info notifications: brand accent edge */
+.routine-snackbar .mat-mdc-snackbar-surface {
+  border-color: var(--accent);
+  border-left-width: 4px;
+}
+
+/* Error notifications: danger edge and action */
+.error-snackbar {
+  --mat-snack-bar-button-color: var(--danger);
+}
+
+.error-snackbar .mat-mdc-snackbar-surface {
+  border-color: var(--danger);
+  border-left-width: 4px;
 }
 
 /* Thin, theme-aware scrollbars */
