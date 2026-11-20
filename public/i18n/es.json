@@ -212,7 +212,10 @@
         "IN_USE": "En Uso",
         "RESERVED": "Reservado",
         "MAINTENANCE": "En mantenimiento",
-        "OUT_OF_SERVICE": "Fuera de servicio"
+        "OUT_OF_SERVICE": "Fuera de servicio",
+        "OCCUPIED": "En Uso",
+        "ACTIVE": "En Uso",
+        "DECOMMISSIONED": "Dado de baja"
       },
       "reservedByUser": "Tienes esta máquina reservada",
       "notifyBtn": "Notificarme cuando esté libre",

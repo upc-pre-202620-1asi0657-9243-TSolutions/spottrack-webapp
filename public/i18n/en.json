@@ -212,7 +212,10 @@
         "IN_USE": "In Use",
         "RESERVED": "Reserved",
         "MAINTENANCE": "Under maintenance",
-        "OUT_OF_SERVICE": "Out of service"
+        "OUT_OF_SERVICE": "Out of service",
+        "OCCUPIED": "In Use",
+        "ACTIVE": "In Use",
+        "DECOMMISSIONED": "Decommissioned"
       },
       "reservedByUser": "You have reserved this machine",
       "notifyBtn": "Notify me when free",

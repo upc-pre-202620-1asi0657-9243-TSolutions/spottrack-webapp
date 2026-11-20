@@ -664,7 +664,7 @@
                   @if (isPending(selectedEquipment()!.eq.uuid)) {
                     {{ 'map.detail.status.RESERVED' | translate }}
                   } @else {
-                    {{ selectedEquipment()!.eq.status }}
+                    {{ ('map.detail.status.' + selectedEquipment()!.eq.status) | translate }}
                   }
                 </span>
               </p>
