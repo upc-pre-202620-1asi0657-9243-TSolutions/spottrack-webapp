@@ -214,6 +214,8 @@
       },
       "reservedByUser": "You have reserved this machine",
       "notifyBtn": "Notify me when free",
+      "notifyOffBtn": "Stop notifying me",
+      "notifyBackBtn": "Notify me when it's back",
       "alternativesBtn": "See alternatives",
       "reportFreeBtn": "Report as free",
       "reserveBtn": "Reserve",
@@ -222,7 +224,10 @@
         "notified": "You'll be notified when this machine is free",
         "reportedFree": "Machine reported as free. Thank you!",
         "reserved": "Machine reserved successfully",
-        "reportedOccupied": "Machine reported as occupied. Thank you!"
+        "reportedOccupied": "Machine reported as occupied. Thank you!",
+        "notifyOff": "You won't be notified about this machine anymore",
+        "notifyUnavailable": "This machine is already available",
+        "notifyFailed": "We couldn't update the notification. Try again."
       }
     },
     "alternatives": {
@@ -328,6 +333,21 @@
     }
   },
   "clientAlerts": {
+    "equipmentAvailable": {
+      "title": "{{machine}} is free",
+      "titleGeneric": "A machine is free",
+      "description": "{{machine}} you were waiting for is free now. Hurry before someone else takes it!"
+    },
+    "equipmentRestored": {
+      "title": "{{machine}} is back in service",
+      "titleGeneric": "A machine is back in service",
+      "description": "{{machine}} has been repaired and is operational again."
+    },
+    "equipmentOccupiedAgain": {
+      "title": "{{machine}} is occupied again",
+      "titleGeneric": "A machine is occupied again",
+      "description": "Someone else took {{machine}} before you got there."
+    },
     "reservationExpired": {
       "title": "Reservation Expired: {{machine}}",
       "description": "Your reservation for {{machine}} has ended. The machine is now available for other users."
