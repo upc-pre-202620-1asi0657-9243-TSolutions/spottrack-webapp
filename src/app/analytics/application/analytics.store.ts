@@ -17,6 +17,15 @@ export interface PeakSlot { range: string; maxOccupancy: number; }
 // ── Usage per weekday (hours), for the window and the one right before ───────
 export interface WeekDay { day: string; usage: number; prevUsage: number; }
 
+// ── Occupancy grid: one row per weekday, one cell per opening hour ────────────
+export interface DayHourCell {
+  hour:      string;
+  /** null when the window never reached this slot (e.g. a weekday outside it). */
+  occupancy: number | null;
+  peak:      boolean;
+}
+export interface DayHourRow { day: string; cells: DayHourCell[]; }
+
 // ── Relocation recommendation (computed by the backend) ──────────────────────
 export interface RelocationRec {
   equipmentId:          string;
@@ -178,6 +187,35 @@ export class AnalyticsStore {
       occupancy: h.occupancyRate,
       peak:      h.occupancyRate >= STRESS_OCCUPANCY,
     }))
+  );
+
+  /** Opening hours of the grid's columns, e.g. ['06:00', ..., '21:00']. */
+  readonly gridHours = computed<string[]>(() => {
+    const usage = this._usage();
+    if (!usage) return [];
+    return Array.from({ length: usage.closingHour - usage.openingHour }, (_, i) => hourLabel(usage.openingHour + i));
+  });
+
+  /** Occupancy of every opening hour on every weekday, Monday first. */
+  readonly dayHourGrid = computed<DayHourRow[]>(() => {
+    const usage = this._usage();
+    if (!usage) return [];
+    const rates = new Map((usage.hourlyByDay ?? []).map(o => [`${o.dayOfWeek}-${o.hour}`, o.occupancyRate]));
+    return Object.entries(WEEKDAY_LABELS).map(([dayOfWeek, day]) => ({
+      day,
+      cells: Array.from({ length: usage.closingHour - usage.openingHour }, (_, i) => {
+        const hour      = usage.openingHour + i;
+        const occupancy = rates.get(`${dayOfWeek}-${hour}`) ?? null;
+        return { hour: hourLabel(hour), occupancy, peak: occupancy !== null && occupancy >= STRESS_OCCUPANCY };
+      }),
+    }));
+  });
+
+  /** Weekday + hour slots that reached the stress threshold, busiest first. */
+  readonly dayHourPeaks = computed(() =>
+    this.dayHourGrid()
+      .flatMap(r => r.cells.filter(c => c.peak).map(c => ({ day: r.day, hour: c.hour, occupancy: c.occupancy as number })))
+      .sort((a, b) => b.occupancy - a.occupancy)
   );
 
   /** Whether any session fell inside opening hours in the selected window. */

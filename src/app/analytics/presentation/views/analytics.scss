@@ -449,6 +449,7 @@ $blue       : var(--info);
   &--current { background: $accent; }
   &--prev    { background: color-mix(in srgb, var(--accent) 35%, transparent); }
   &--peak    { background: var(--danger); }
+  &--empty   { background: transparent; border: 1px dashed var(--border-strong); }
 }
 
 .legend-line {
@@ -608,6 +609,65 @@ $blue       : var(--info);
     margin-left: auto;
     font-size: 0.75rem;
     color: $muted;
+  }
+}
+
+.peak-summary__more {
+  color: $muted;
+  font-weight: 600;
+}
+
+.heat-scale {
+  width: 64px;
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(to right, var(--surface-3), var(--accent));
+}
+
+// ── Occupancy by day and hour ─────────────────────────────────────────────────
+// The grid keeps a readable cell size and scrolls inside the card on narrow screens.
+.day-hour-scroll {
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.day-hour-grid {
+  display: grid;
+  gap: 3px;
+  min-width: max-content;
+  font-size: 0.7rem;
+
+  &__hour {
+    text-align: center;
+    color: $muted;
+  }
+
+  &__day {
+    display: flex;
+    align-items: center;
+    color: $text;
+    font-weight: 600;
+  }
+}
+
+.day-hour-cell {
+  height: 28px;
+  border-radius: 4px;
+  background: var(--surface-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &--empty {
+    background: transparent;
+    border: 1px dashed var(--border);
+  }
+
+  &--peak {
+    background: var(--danger);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.65rem;
   }
 }
 

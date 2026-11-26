@@ -809,7 +809,10 @@
       "stressPeak": "Pico de estrés (≥ 90%)",
       "peakSlots": "Franjas pico:",
       "noPeaks": "Ninguna franja horaria alcanzó el 90% de ocupación en este periodo.",
-      "noSessions": "No hay sesiones registradas en horario de atención para este periodo."
+      "noSessions": "No hay sesiones registradas en horario de atención para este periodo.",
+      "dayHour": "Ocupación por Día y Hora (%)",
+      "dayHourSubtitle": "Promedio de cada franja horaria por día de la semana. Las celdas en rojo superan el 90% de aforo.",
+      "outOfPeriod": "Sin datos en el periodo"
     },
     "relocation": {
       "title": "Recomendaciones de Reubicación",

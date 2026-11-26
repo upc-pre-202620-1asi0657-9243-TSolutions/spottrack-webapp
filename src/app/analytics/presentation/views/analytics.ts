@@ -77,6 +77,17 @@ export class AnalyticsComponent implements OnInit {
   readonly polylinePoints = this.store.polylinePoints;
   readonly areaPath       = this.store.areaPath;
 
+  // ── Occupancy by day and hour (heat map) ─────────────────────────────────
+  readonly gridHours    = this.store.gridHours;
+  readonly dayHourGrid  = this.store.dayHourGrid;
+  readonly dayHourPeaks = this.store.dayHourPeaks;
+
+  /** Cell colour: from the empty surface to full accent as occupancy grows. */
+  cellBackground(occupancy: number | null): string | null {
+    if (occupancy === null || occupancy <= 0) return null;
+    return `color-mix(in srgb, var(--accent) ${Math.max(12, Math.round(occupancy))}%, var(--surface-3))`;
+  }
+
   // ── Relocation recommendations ────────────────────────────────────────────
   get relocationData() { return this.store.relocationData(); }
 
@@ -111,6 +122,10 @@ export class AnalyticsComponent implements OnInit {
       ['PICOS DE OCUPACIÓN POR HORA'],
       ['Hora', 'Ocupación (%)'],
       ...this.hourlyData.map(d => [d.hour, String(d.occupancy)]),
+      [],
+      ['OCUPACIÓN POR DÍA Y HORA (%)'],
+      ['Día', ...this.gridHours()],
+      ...this.dayHourGrid().map(r => [r.day, ...r.cells.map(c => c.occupancy === null ? '' : String(c.occupancy))]),
       [],
       ['RECOMENDACIONES DE REUBICACIÓN'],
       ['Máquina', 'Uso de la Máquina (%)', 'Sede Origen', 'Ocupación Origen (%)', 'Sede Destino', 'Ocupación Destino (%)', 'Motivo'],

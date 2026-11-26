@@ -249,6 +249,62 @@
     </div>
   </div>
 
+  <!-- ── Occupancy by day and hour (US-18) ──────────────────────────────── -->
+  <div class="chart-card chart-card--full">
+    <div class="chart-card__header">
+      <div>
+        <span class="chart-card__title">{{ 'analytics.charts.dayHour' | translate }}</span>
+        <p class="chart-card__subtitle">{{ 'analytics.charts.dayHourSubtitle' | translate }}</p>
+      </div>
+    </div>
+
+    @if (!hasHourlyUsage()) {
+      <p class="peak-summary__empty">{{ 'analytics.charts.noSessions' | translate }}</p>
+    } @else {
+      <div class="day-hour-scroll">
+        <div class="day-hour-grid" [style.grid-template-columns]="'44px repeat(' + gridHours().length + ', minmax(30px, 1fr))'">
+          <span></span>
+          @for (h of gridHours(); track h) {
+            <span class="day-hour-grid__hour">{{ h.slice(0, 2) }}</span>
+          }
+          @for (row of dayHourGrid(); track row.day) {
+            <span class="day-hour-grid__day">{{ row.day }}</span>
+            @for (c of row.cells; track c.hour) {
+              <span class="day-hour-cell"
+                    [class.day-hour-cell--empty]="c.occupancy === null"
+                    [class.day-hour-cell--peak]="c.peak"
+                    [style.background]="c.peak ? null : cellBackground(c.occupancy)"
+                    [title]="row.day + ' ' + c.hour + ' · ' + (c.occupancy === null ? '—' : c.occupancy + '%')">
+                @if (c.peak) { {{ c.occupancy | number:'1.0-0' }} }
+              </span>
+            }
+          }
+        </div>
+      </div>
+
+      <div class="peak-summary">
+        @if (dayHourPeaks().length === 0) {
+          <p class="peak-summary__empty">{{ 'analytics.charts.noPeaks' | translate }}</p>
+        } @else {
+          <span class="peak-summary__label">{{ 'analytics.charts.peakSlots' | translate }}</span>
+          @for (p of dayHourPeaks().slice(0, 6); track p.day + p.hour) {
+            <span class="peak-chip">{{ p.day }} {{ p.hour }} · {{ p.occupancy }}%</span>
+          }
+          @if (dayHourPeaks().length > 6) {
+            <span class="peak-summary__more">+{{ dayHourPeaks().length - 6 }}</span>
+          }
+        }
+        <span class="peak-summary__legend">
+          <span class="legend-item">
+            0%<span class="heat-scale"></span>100%
+          </span>
+          <span class="legend-item"><span class="legend-dot legend-dot--peak"></span>{{ 'analytics.charts.stressPeak' | translate }}</span>
+          <span class="legend-item"><span class="legend-dot legend-dot--empty"></span>{{ 'analytics.charts.outOfPeriod' | translate }}</span>
+        </span>
+      </div>
+    }
+  </div>
+
   <!-- ── Relocation recommendations (US-27) ─────────────────────────────── -->
   <div class="chart-card chart-card--full">
     <div class="chart-card__header">

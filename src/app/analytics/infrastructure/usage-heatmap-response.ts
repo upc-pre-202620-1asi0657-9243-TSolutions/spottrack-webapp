@@ -23,6 +23,13 @@ export interface DailyUsageResource {
   previousActiveMinutes: number;
 }
 
+/** Occupancy of one opening hour on one weekday, averaged across every such day of the window. */
+export interface DayHourOccupancyResource {
+  dayOfWeek:     DailyUsageResource['dayOfWeek'];
+  hour:          number;
+  occupancyRate: number;
+}
+
 export interface UsageHeatmapResource {
   from:                  string;
   to:                    string;
@@ -39,4 +46,6 @@ export interface UsageHeatmapResource {
   /** Equipment with no use at all in the window / in the window right before it. */
   inactiveEquipmentCount:         number;
   previousInactiveEquipmentCount: number;
+  /** Every (weekday, opening hour) the window reached; slots it never reached are left out. */
+  hourlyByDay:                    DayHourOccupancyResource[];
 }
