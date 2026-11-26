@@ -804,7 +804,12 @@
       "usage": "Uso",
       "capacity": "Capacidad",
       "machineTypes": "Distribución por Tipo de Máquina",
-      "stressPeaks": "Picos de Estrés por Hora (Aforo > 90%)"
+      "stressPeaks": "Picos de Estrés por Hora (Aforo > 90%)",
+      "occupancy": "Ocupación",
+      "stressPeak": "Pico de estrés (≥ 90%)",
+      "peakSlots": "Franjas pico:",
+      "noPeaks": "Ninguna franja horaria alcanzó el 90% de ocupación en este periodo.",
+      "noSessions": "No hay sesiones registradas en horario de atención para este periodo."
     },
     "relocation": {
       "title": "Recomendaciones de Reubicación",

@@ -69,6 +69,10 @@ export class AnalyticsComponent implements OnInit {
   get hourlyData()     { return this.store.hourlyData(); }
   get threshold90Y()   { return this.store.threshold90Y; }
 
+  readonly svgWidth       = this.store.SVG_W;
+  readonly svgHeight      = this.store.SVG_H;
+  readonly hasHourlyUsage = this.store.hasHourlyUsage;
+  readonly peakSlots      = this.store.peakSlots;
   readonly linePoints     = this.store.linePoints;
   readonly polylinePoints = this.store.polylinePoints;
   readonly areaPath       = this.store.areaPath;

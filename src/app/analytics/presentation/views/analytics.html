@@ -190,8 +190,8 @@
         <svg viewBox="0 0 1160 200" preserveAspectRatio="none" class="line-svg">
           <defs>
             <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%"   style="stop-color: var(--danger)" stop-opacity="0.25"/>
-              <stop offset="100%" style="stop-color: var(--danger)" stop-opacity="0"/>
+              <stop offset="0%"   style="stop-color: var(--accent)" stop-opacity="0.3"/>
+              <stop offset="100%" style="stop-color: var(--accent)" stop-opacity="0"/>
             </linearGradient>
           </defs>
           @for (y of [0, 50, 100, 150, 200]; track y) {
@@ -201,18 +201,51 @@
                 style="stroke: var(--danger)" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.7"/>
           <text x="4" [attr.y]="threshold90Y - 4" style="fill: var(--danger)" font-size="10" opacity="0.8">90%</text>
           <path [attr.d]="areaPath()" fill="url(#areaGrad)"/>
-          <polyline [attr.points]="polylinePoints()" fill="none" style="stroke: var(--danger)" stroke-width="2.5"
+          <polyline [attr.points]="polylinePoints()" fill="none" style="stroke: var(--accent)" stroke-width="2.5"
                     stroke-linejoin="round" stroke-linecap="round"/>
           @for (p of linePoints(); track p.hour) {
-            <circle [attr.cx]="p.x" [attr.cy]="p.y" r="4" style="fill: var(--danger); stroke: var(--surface)" stroke-width="2"/>
+            @if (p.peak) {
+              <circle [attr.cx]="p.x" [attr.cy]="p.y" r="7" class="line-point line-point--peak">
+                <title>{{ p.hour }} · {{ p.occupancy }}%</title>
+              </circle>
+            } @else {
+              <circle [attr.cx]="p.x" [attr.cy]="p.y" r="4" class="line-point">
+                <title>{{ p.hour }} · {{ p.occupancy }}%</title>
+              </circle>
+            }
           }
         </svg>
+        <div class="line-chart__peak-labels">
+          @for (p of linePoints(); track p.hour) {
+            @if (p.peak) {
+              <span class="peak-label" [style.left.%]="(p.x / svgWidth) * 100"
+                    [style.top.%]="(p.y / svgHeight) * 100">{{ p.occupancy }}%</span>
+            }
+          }
+        </div>
         <div class="line-chart__x-axis">
           @for (p of hourlyData; track p.hour) {
-            <span>{{ p.hour }}</span>
+            <span [class.line-chart__x-label--peak]="p.peak">{{ p.hour }}</span>
           }
         </div>
       </div>
+    </div>
+
+    <div class="peak-summary">
+      @if (!hasHourlyUsage()) {
+        <p class="peak-summary__empty">{{ 'analytics.charts.noSessions' | translate }}</p>
+      } @else if (peakSlots().length === 0) {
+        <p class="peak-summary__empty">{{ 'analytics.charts.noPeaks' | translate }}</p>
+      } @else {
+        <span class="peak-summary__label">{{ 'analytics.charts.peakSlots' | translate }}</span>
+        @for (s of peakSlots(); track s.range) {
+          <span class="peak-chip">{{ s.range }} · {{ s.maxOccupancy }}%</span>
+        }
+      }
+      <span class="peak-summary__legend">
+        <span class="legend-item"><span class="legend-dot legend-dot--current"></span>{{ 'analytics.charts.occupancy' | translate }}</span>
+        <span class="legend-item"><span class="legend-dot legend-dot--peak"></span>{{ 'analytics.charts.stressPeak' | translate }}</span>
+      </span>
     </div>
   </div>
 

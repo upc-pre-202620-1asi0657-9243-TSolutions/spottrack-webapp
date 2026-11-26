@@ -9,7 +9,10 @@ import { lastDays } from './usage-heatmap.store';
 import { AdminGymStore } from '../../gym/application/admin-gym.store';
 
 // ── Hourly occupancy point ────────────────────────────────────────────────────
-export interface HourlyPoint { hour: string; occupancy: number; }
+export interface HourlyPoint { hour: string; occupancy: number; /** Reached the stress threshold. */ peak: boolean; }
+
+// ── Consecutive stress-peak hours, e.g. 18:00 - 20:00 at up to 94% ──────────
+export interface PeakSlot { range: string; maxOccupancy: number; }
 
 // ── Usage per weekday (hours), for the window and the one right before ───────
 export interface WeekDay { day: string; usage: number; prevUsage: number; }
@@ -56,7 +59,7 @@ export interface ExecutiveSummary {
 }
 
 /** Hourly occupancy at or above this % counts as a stress peak (same line as the chart's 90% guide). */
-const STRESS_OCCUPANCY = 90;
+export const STRESS_OCCUPANCY = 90;
 
 const WEEKDAY_LABELS: Record<string, string> = {
   MONDAY: 'Lun', TUESDAY: 'Mar', WEDNESDAY: 'Mié', THURSDAY: 'Jue',
@@ -170,8 +173,36 @@ export class AnalyticsStore {
 
   // ── Line chart: hourly occupancy measured from sensor sessions ────────
   readonly hourlyData = computed<HourlyPoint[]>(() =>
-    (this._usage()?.hourly ?? []).map(h => ({ hour: hourLabel(h.hour), occupancy: h.occupancyRate }))
+    (this._usage()?.hourly ?? []).map(h => ({
+      hour:      hourLabel(h.hour),
+      occupancy: h.occupancyRate,
+      peak:      h.occupancyRate >= STRESS_OCCUPANCY,
+    }))
   );
+
+  /** Whether any session fell inside opening hours in the selected window. */
+  readonly hasHourlyUsage = computed(() => (this._usage()?.hourly ?? []).some(h => h.occupancyRate > 0));
+
+  /** Stress-peak hours merged into consecutive time slots, in order of the day. */
+  readonly peakSlots = computed<PeakSlot[]>(() => {
+    const slots: PeakSlot[] = [];
+    let start: number | null = null;
+    let max = 0;
+    const hourly = this._usage()?.hourly ?? [];
+    hourly.forEach((h, i) => {
+      if (h.occupancyRate >= STRESS_OCCUPANCY) {
+        if (start === null) { start = h.hour; max = 0; }
+        max = Math.max(max, h.occupancyRate);
+      }
+      const next = hourly[i + 1];
+      const slotEnds = start !== null && (!next || next.occupancyRate < STRESS_OCCUPANCY || next.hour !== h.hour + 1);
+      if (slotEnds && start !== null) {
+        slots.push({ range: `${hourLabel(start)} - ${hourLabel(h.hour + 1)}`, maxOccupancy: max });
+        start = null;
+      }
+    });
+    return slots;
+  });
 
   // ── Pie chart: machine types breakdown ────────────────────────────────────
   readonly machineTypes = computed<MachineTypeSegment[]>(() => {
@@ -225,7 +256,7 @@ export class AnalyticsStore {
   // ── Executive summary ─────────────────────────────────────────────────────
   readonly executiveSummary = computed<ExecutiveSummary>(() => ({
     hoursChange:    this.stats().hoursChange,
-    stressHours:    this.hourlyData().filter(h => h.occupancy >= STRESS_OCCUPANCY).map(h => h.hour),
+    stressHours:    this.hourlyData().filter(h => h.peak).map(h => h.hour),
     inactive:       this.stats().inactive,
     equipmentCount: this._usage()?.equipmentCount ?? 0,
   }));
