@@ -804,7 +804,15 @@
       "usage": "Usage",
       "capacity": "Capacity",
       "machineTypes": "Distribution by Machine Type",
-      "stressPeaks": "Stress Peaks by Hour (Occupancy > 90%)"
+      "stressPeaks": "Stress Peaks by Hour (Occupancy > 90%)",
+      "occupancy": "Occupancy",
+      "stressPeak": "Stress peak (≥ 90%)",
+      "peakSlots": "Peak time slots:",
+      "noPeaks": "No time slot reached 90% occupancy in this period.",
+      "noSessions": "No sessions were recorded during opening hours in this period.",
+      "dayHour": "Occupancy by Day and Hour (%)",
+      "dayHourSubtitle": "Average of each time slot per day of the week. Red cells exceed 90% occupancy.",
+      "outOfPeriod": "No data in the period"
     },
     "relocation": {
       "title": "Relocation Recommendations",

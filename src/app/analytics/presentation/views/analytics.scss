@@ -448,6 +448,8 @@ $blue       : var(--info);
 
   &--current { background: $accent; }
   &--prev    { background: color-mix(in srgb, var(--accent) 35%, transparent); }
+  &--peak    { background: var(--danger); }
+  &--empty   { background: transparent; border: 1px dashed var(--border-strong); }
 }
 
 .legend-line {
@@ -531,6 +533,38 @@ $blue       : var(--info);
   display: flex;
   flex-direction: column;
   gap: 4px;
+  position: relative;
+  min-width: 0;
+}
+
+.line-point {
+  fill: var(--accent);
+  stroke: var(--surface);
+  stroke-width: 2;
+
+  &--peak {
+    fill: var(--danger);
+    stroke-width: 3;
+  }
+}
+
+// Labels sit over the SVG (which stretches non-uniformly) so the text keeps its shape.
+.line-chart__peak-labels {
+  position: absolute;
+  inset: 0 0 22px 0;
+  pointer-events: none;
+}
+
+.peak-label {
+  position: absolute;
+  transform: translate(-50%, calc(-100% - 10px));
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 .line-svg {
@@ -545,6 +579,105 @@ $blue       : var(--info);
   font-size: 0.7rem;
   color: $muted;
   padding: 0 2px;
+}
+
+.line-chart__x-label--peak {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+.peak-summary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.8125rem;
+
+  &__label {
+    font-weight: 600;
+    color: $text;
+  }
+
+  &__empty {
+    margin: 0;
+    color: $muted;
+  }
+
+  &__legend {
+    display: flex;
+    gap: 16px;
+    margin-left: auto;
+    font-size: 0.75rem;
+    color: $muted;
+  }
+}
+
+.peak-summary__more {
+  color: $muted;
+  font-weight: 600;
+}
+
+.heat-scale {
+  width: 64px;
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(to right, var(--surface-3), var(--accent));
+}
+
+// ── Occupancy by day and hour ─────────────────────────────────────────────────
+// The grid keeps a readable cell size and scrolls inside the card on narrow screens.
+.day-hour-scroll {
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.day-hour-grid {
+  display: grid;
+  gap: 3px;
+  min-width: max-content;
+  font-size: 0.7rem;
+
+  &__hour {
+    text-align: center;
+    color: $muted;
+  }
+
+  &__day {
+    display: flex;
+    align-items: center;
+    color: $text;
+    font-weight: 600;
+  }
+}
+
+.day-hour-cell {
+  height: 28px;
+  border-radius: 4px;
+  background: var(--surface-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &--empty {
+    background: transparent;
+    border: 1px dashed var(--border);
+  }
+
+  &--peak {
+    background: var(--danger);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.65rem;
+  }
+}
+
+.peak-chip {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--danger-soft);
+  color: var(--danger);
+  font-weight: 600;
+  font-size: 0.75rem;
 }
 
 // ── Relocation recommendations ────────────────────────────────────────────────

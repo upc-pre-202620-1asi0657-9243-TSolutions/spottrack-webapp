@@ -190,8 +190,8 @@
         <svg viewBox="0 0 1160 200" preserveAspectRatio="none" class="line-svg">
           <defs>
             <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%"   style="stop-color: var(--danger)" stop-opacity="0.25"/>
-              <stop offset="100%" style="stop-color: var(--danger)" stop-opacity="0"/>
+              <stop offset="0%"   style="stop-color: var(--accent)" stop-opacity="0.3"/>
+              <stop offset="100%" style="stop-color: var(--accent)" stop-opacity="0"/>
             </linearGradient>
           </defs>
           @for (y of [0, 50, 100, 150, 200]; track y) {
@@ -201,19 +201,108 @@
                 style="stroke: var(--danger)" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.7"/>
           <text x="4" [attr.y]="threshold90Y - 4" style="fill: var(--danger)" font-size="10" opacity="0.8">90%</text>
           <path [attr.d]="areaPath()" fill="url(#areaGrad)"/>
-          <polyline [attr.points]="polylinePoints()" fill="none" style="stroke: var(--danger)" stroke-width="2.5"
+          <polyline [attr.points]="polylinePoints()" fill="none" style="stroke: var(--accent)" stroke-width="2.5"
                     stroke-linejoin="round" stroke-linecap="round"/>
           @for (p of linePoints(); track p.hour) {
-            <circle [attr.cx]="p.x" [attr.cy]="p.y" r="4" style="fill: var(--danger); stroke: var(--surface)" stroke-width="2"/>
+            @if (p.peak) {
+              <circle [attr.cx]="p.x" [attr.cy]="p.y" r="7" class="line-point line-point--peak">
+                <title>{{ p.hour }} · {{ p.occupancy }}%</title>
+              </circle>
+            } @else {
+              <circle [attr.cx]="p.x" [attr.cy]="p.y" r="4" class="line-point">
+                <title>{{ p.hour }} · {{ p.occupancy }}%</title>
+              </circle>
+            }
           }
         </svg>
+        <div class="line-chart__peak-labels">
+          @for (p of linePoints(); track p.hour) {
+            @if (p.peak) {
+              <span class="peak-label" [style.left.%]="(p.x / svgWidth) * 100"
+                    [style.top.%]="(p.y / svgHeight) * 100">{{ p.occupancy }}%</span>
+            }
+          }
+        </div>
         <div class="line-chart__x-axis">
           @for (p of hourlyData; track p.hour) {
-            <span>{{ p.hour }}</span>
+            <span [class.line-chart__x-label--peak]="p.peak">{{ p.hour }}</span>
           }
         </div>
       </div>
     </div>
+
+    <div class="peak-summary">
+      @if (!hasHourlyUsage()) {
+        <p class="peak-summary__empty">{{ 'analytics.charts.noSessions' | translate }}</p>
+      } @else if (peakSlots().length === 0) {
+        <p class="peak-summary__empty">{{ 'analytics.charts.noPeaks' | translate }}</p>
+      } @else {
+        <span class="peak-summary__label">{{ 'analytics.charts.peakSlots' | translate }}</span>
+        @for (s of peakSlots(); track s.range) {
+          <span class="peak-chip">{{ s.range }} · {{ s.maxOccupancy }}%</span>
+        }
+      }
+      <span class="peak-summary__legend">
+        <span class="legend-item"><span class="legend-dot legend-dot--current"></span>{{ 'analytics.charts.occupancy' | translate }}</span>
+        <span class="legend-item"><span class="legend-dot legend-dot--peak"></span>{{ 'analytics.charts.stressPeak' | translate }}</span>
+      </span>
+    </div>
+  </div>
+
+  <!-- ── Occupancy by day and hour (US-18) ──────────────────────────────── -->
+  <div class="chart-card chart-card--full">
+    <div class="chart-card__header">
+      <div>
+        <span class="chart-card__title">{{ 'analytics.charts.dayHour' | translate }}</span>
+        <p class="chart-card__subtitle">{{ 'analytics.charts.dayHourSubtitle' | translate }}</p>
+      </div>
+    </div>
+
+    @if (!hasHourlyUsage()) {
+      <p class="peak-summary__empty">{{ 'analytics.charts.noSessions' | translate }}</p>
+    } @else {
+      <div class="day-hour-scroll">
+        <div class="day-hour-grid" [style.grid-template-columns]="'44px repeat(' + gridHours().length + ', minmax(30px, 1fr))'">
+          <span></span>
+          @for (h of gridHours(); track h) {
+            <span class="day-hour-grid__hour">{{ h.slice(0, 2) }}</span>
+          }
+          @for (row of dayHourGrid(); track row.day) {
+            <span class="day-hour-grid__day">{{ row.day }}</span>
+            @for (c of row.cells; track c.hour) {
+              <span class="day-hour-cell"
+                    [class.day-hour-cell--empty]="c.occupancy === null"
+                    [class.day-hour-cell--peak]="c.peak"
+                    [style.background]="c.peak ? null : cellBackground(c.occupancy)"
+                    [title]="row.day + ' ' + c.hour + ' · ' + (c.occupancy === null ? '—' : c.occupancy + '%')">
+                @if (c.peak) { {{ c.occupancy | number:'1.0-0' }} }
+              </span>
+            }
+          }
+        </div>
+      </div>
+
+      <div class="peak-summary">
+        @if (dayHourPeaks().length === 0) {
+          <p class="peak-summary__empty">{{ 'analytics.charts.noPeaks' | translate }}</p>
+        } @else {
+          <span class="peak-summary__label">{{ 'analytics.charts.peakSlots' | translate }}</span>
+          @for (p of dayHourPeaks().slice(0, 6); track p.day + p.hour) {
+            <span class="peak-chip">{{ p.day }} {{ p.hour }} · {{ p.occupancy }}%</span>
+          }
+          @if (dayHourPeaks().length > 6) {
+            <span class="peak-summary__more">+{{ dayHourPeaks().length - 6 }}</span>
+          }
+        }
+        <span class="peak-summary__legend">
+          <span class="legend-item">
+            0%<span class="heat-scale"></span>100%
+          </span>
+          <span class="legend-item"><span class="legend-dot legend-dot--peak"></span>{{ 'analytics.charts.stressPeak' | translate }}</span>
+          <span class="legend-item"><span class="legend-dot legend-dot--empty"></span>{{ 'analytics.charts.outOfPeriod' | translate }}</span>
+        </span>
+      </div>
+    }
   </div>
 
   <!-- ── Relocation recommendations (US-27) ─────────────────────────────── -->
